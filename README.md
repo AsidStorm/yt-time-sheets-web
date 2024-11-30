@@ -24,3 +24,5 @@
 1. REACT_APP_API_HOST - HOST для бэкэнда
 2. REACT_APP_API_PORT - Порт для бэкэнда при работе через http://
 3. REACT_APP_HTTPS_API_PORT - Порт для бэкэнда при работе через https://
+4. REACT_APP_ANALYTICS - Включение аналитики (yes - для yt-time-sheets.ru, no - для билда в маркетплейс, debug - для отладки, события будут распечатаны)
+5. REACT_APP_GTM_ID - Идетификатор GTM счётчика, только если аналитика включена
