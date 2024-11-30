@@ -24,6 +24,7 @@ import {
 import Link from "@mui/material/Link";
 import YandexId from "./yandex-id-big.svg"
 import TextField from "@mui/material/TextField";
+import GitHubIcon from '@mui/icons-material/GitHub';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import IconButton from "@mui/material/IconButton";
@@ -32,6 +33,8 @@ import InitialConfigDialog from "./Components/InitialConfigDialog";
 import './App.css';
 import {orgIdOwner, pushAnalytics} from "./helpers";
 import ChangelogDialog from "./Components/ChangelogDialog";
+import {Card, CardHeader} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
 
 function App() {
     const [users, setUsers] = useState([]);
@@ -477,8 +480,25 @@ function App() {
                             readOnly={readOnly}
                             admin={admin}
                             highlightTime={highlightTime}
-                        />
-                        }
+                        />}
+                    </Grid>
+                    <Grid item xs={0} md={4} />
+                    <Grid item xs={12} md={4}>
+                        <Card sx={{ maxWidth: 345 }}>
+                            <CardHeader
+                                avatar={
+                                    <Avatar sx={{ bgcolor: "black" }}>
+                                        <GitHubIcon />
+                                    </Avatar>
+                                }
+                                title={<React.Fragment>
+                                    <Link href="https://github.com/AsidStorm/yt-time-sheets-web" target="_blank" rel="nofollow noopener">web</Link> / <Link href="https://github.com/AsidStorm/yt-time-sheets-api" target="_blank" rel="nofollow noopener">api</Link>
+                                </React.Fragment>}
+                                subheader={<React.Fragment>
+                                    При поддержке <Link href="https://udpauto.ru/?utm_source=yt-time-sheets" target="_blank" rel="nofollow noopener">UDP Auto</Link>
+                                </React.Fragment>}
+                            />
+                        </Card>
                     </Grid>
                 </Grid>}
                 {authorized === AUTHORIZED_STATE_NONE && <Grid container spacing={2} direction="column"
@@ -491,6 +511,23 @@ function App() {
                         <Button onClick={() => { setSsoDialog(prev => ({...prev, open: true})); pushAnalytics('ssoButtonClick'); }}>
                             Войти с помощью SSO
                         </Button>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Card sx={{ maxWidth: 345 }}>
+                            <CardHeader
+                                avatar={
+                                    <Avatar sx={{ bgcolor: "black" }}>
+                                        <GitHubIcon />
+                                    </Avatar>
+                                }
+                                title={<React.Fragment>
+                                    <Link href="https://github.com/AsidStorm/yt-time-sheets-web" target="_blank" rel="nofollow noopener">web</Link> / <Link href="https://github.com/AsidStorm/yt-time-sheets-api" target="_blank" rel="nofollow noopener">api</Link>
+                                </React.Fragment>}
+                                subheader={<React.Fragment>
+                                    При поддержке <Link href="https://udpauto.ru/?utm_source=yt-time-sheets" target="_blank" rel="nofollow noopener">UDP Auto</Link>
+                                </React.Fragment>}
+                            />
+                        </Card>
                     </Grid>
                 </Grid>}
                 {authorized === AUTHORIZED_STATE_NO_ORG_ID && <form onSubmit={onOrgSubmit}><Grid container spacing={2}>
@@ -520,6 +557,25 @@ function App() {
                     <Grid item xs={0} md={4} />
                     <Grid item xs={12} md={4}>
                         <Button fullWidth onClick={() => exit()}>Отменить</Button>
+                    </Grid>
+                    <Grid item xs={0} md={4} />
+                    <Grid item xs={0} md={4} />
+                    <Grid item xs={12} md={4}>
+                        <Card sx={{ maxWidth: 345 }}>
+                            <CardHeader
+                                avatar={
+                                    <Avatar sx={{ bgcolor: "black" }}>
+                                        <GitHubIcon />
+                                    </Avatar>
+                                }
+                                title={<React.Fragment>
+                                    <Link href="https://github.com/AsidStorm/yt-time-sheets-web" target="_blank" rel="nofollow noopener">web</Link> / <Link href="https://github.com/AsidStorm/yt-time-sheets-api" target="_blank" rel="nofollow noopener">api</Link>
+                                </React.Fragment>}
+                                subheader={<React.Fragment>
+                                    При поддержке <Link href="https://udpauto.ru/?utm_source=yt-time-sheets" target="_blank" rel="nofollow noopener">UDP Auto</Link>
+                                </React.Fragment>}
+                            />
+                        </Card>
                     </Grid>
                 </Grid></form>}
             </Container>
