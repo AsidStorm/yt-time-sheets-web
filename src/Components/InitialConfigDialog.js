@@ -4,7 +4,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import AppBar from "@mui/material/AppBar";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import FormGroup from "@mui/material/FormGroup";
@@ -47,7 +47,7 @@ function InitialConfigDialog({state, handleClose, startLoading, endLoading, hand
         <form onSubmit={(e) => handleSubmit(e)}>
         <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
             <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -57,13 +57,13 @@ function InitialConfigDialog({state, handleClose, startLoading, endLoading, hand
                         variant="standard"
                     />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <Alert severity="info">Вы можете найти ID организации в настройках Яндекс.Трекера.<br />Перейти в <Link href="https://tracker.yandex.ru/settings" target="_blank">настройки Яндекс.Трекера</Link> или в <Link href="https://org.cloud.yandex.ru/settings" target="_blank">настройки Cloud организации</Link>.</Alert>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{xs: 12}}>
                     <Divider />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -73,13 +73,13 @@ function InitialConfigDialog({state, handleClose, startLoading, endLoading, hand
                         variant="standard"
                     />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <Alert severity="info">Если в вашей организации для входа используется SSO, заполните это поле, что бы не вставлять его каждый раз при входе.<br />На странице списка федераций, выберите необходимую и скопируйте её идентификатор в это поле.<br /><Link href="https://org.cloud.yandex.ru/federations" target="_blank">Перейти в список федераций</Link>.</Alert>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{xs: 12}}>
                     <Divider />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -89,12 +89,15 @@ function InitialConfigDialog({state, handleClose, startLoading, endLoading, hand
                         variant="standard"
                     />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <Alert severity="info">Для входа с использованием Яндекс.ID необходимо подготовить OAuth Client.<br />Создайте приложение, со следующими правами:<ul>
                         <li>API Яндекс ID<ul>
                             <li>Доступ к портрету пользователя</li>
                             <li>Доступ к адресу электронной почты</li>
                             <li>Доступ к логину, имени и фамилии, полу</li>
+                        </ul></li>
+                        <li>Яндекс.Облако<ul>
+                            <li>Аутентификация в Облаке</li>
                         </ul></li>
                         <li>Яндекс 360 Directory API<ul>
                             <li>Чтение данных о группах</li>
@@ -105,22 +108,21 @@ function InitialConfigDialog({state, handleClose, startLoading, endLoading, hand
                         </ul></li>
                     </ul>В качестве Callback URI, укажите главную страницу данного приложения.<br /><Link href="https://oauth.yandex.ru/" target="_blank">Перейти к созданию приложения</Link>.</Alert>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{xs: 12}}>
                     <Divider />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <FormGroup>
                         <FormControlLabel control={<Checkbox name="allow_manual_input" value="y" />} label="Разрешить выбирать ID федерации и организации при авторизации" />
                     </FormGroup>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <Alert severity="info">Необходимо для работы одного инстанса на несколько организаций или авторизаций. В таком случае поля при павторизации будут предзаполнены, и их можно будет поменять вручную.</Alert>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{xs: 12}}>
                     <Divider />
                 </Grid>
-                <Grid item xs={4} />
-                <Grid item xs={4}>
+                <Grid size={{xs: 4}} offset={{xs: 4}}>
                     <Button fullWidth type="submit">Завершить настройку</Button>
                 </Grid>
             </Grid>

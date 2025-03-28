@@ -2,7 +2,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import React, {useState} from "react";
 import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
@@ -52,26 +52,26 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
         <DialogTitle>Авторизация через SSO</DialogTitle>
         <DialogContent>
             <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <Button fullWidth onClick={() => setMode("STANDARD")}>
                         Стандартная
                     </Button>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <Button fullWidth onClick={() => setMode("HACK")}>
                         Через WEB
                     </Button>
                 </Grid>
-                {mode === "STANDARD" && <Grid item xs={12}>
+                {mode === "STANDARD" && <Grid size={{xs: 12}}>
                     <form onSubmit={handleStandardAuthSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid size={{xs: 12}}>
                             Пользуясь <Link href="https://cloud.yandex.ru/docs/cli/operations/authentication/federated-user" target="_blank">инструкцией</Link> авторизуйтесь с помощью утилиты <strong>yc</strong> в своей федерации.
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{xs: 12}}>
                             Получите iAm токен, и вставьте его в поле ниже.
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{xs: 12}}>
                             <TextField
                                 autoFocus
                                 margin="dense"
@@ -81,7 +81,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                                 variant="standard"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{xs: 12}}>
                             <Button type="submit" fullWidth>
                                 Авторизоваться
                             </Button>
@@ -89,19 +89,19 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                     </Grid>
                     </form>
                 </Grid>}
-                {mode === "HACK" && <Grid item xs={12}>
+                {mode === "HACK" && <Grid size={{xs: 12}}>
                     <form onSubmit={handleHackAuthSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <Grid size={{xs: 12}}>
                                 Введите ID федерации в поле ниже, и нажмите кнопку "Открыть в новом окне".
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{xs: 12}}>
                                 Не закрывайте окно после авторизации, ссылка, на которую вы попали будет необходима на следующем шаге.
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{xs: 12}}>
                                 Не пугайтесь ошибки "Не удается получить доступ к сайту", всё идёт по плану.
                             </Grid>
-                            {(allowManualInput || federationId === "") && <Grid item xs={12}>
+                            {(allowManualInput || federationId === "") && <Grid size={{xs: 12}}>
                                 <TextField
                                     autoFocus
                                     margin="dense"
@@ -112,7 +112,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                                     defaultValue={federationId}
                                 />
                             </Grid>}
-                            {(!allowManualInput && federationId !== "") && <Grid item xs={12}>
+                            {(!allowManualInput && federationId !== "") && <Grid size={{xs: 12}}>
                                 <TextField
                                     autoFocus
                                     margin="dense"
@@ -126,15 +126,15 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                                     }}
                                 />
                             </Grid>}
-                            <Grid item xs={12}>
+                            <Grid size={{xs: 12}}>
                                 <Button type="submit" fullWidth>
                                     Открыть в новом окне
                                 </Button>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{xs: 12}}>
                                 Вставьте URL полученной страницы в поле ниже.
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{xs: 12}}>
                                 <TextField
                                     margin="dense"
                                     label="Callback URL"
@@ -143,7 +143,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                                     variant="standard"
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{xs: 12}}>
                                 <Button type="submit" fullWidth>
                                     Авторизоваться
                                 </Button>

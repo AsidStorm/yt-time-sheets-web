@@ -8,7 +8,7 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Dialog from "@mui/material/Dialog";
 
 function ChangelogDialog({ state, handleClose }) {
@@ -16,7 +16,7 @@ function ChangelogDialog({ state, handleClose }) {
         <DialogTitle>История изменений</DialogTitle>
         <DialogContent>
             <Grid container spacing={2} sx={{paddingTop: 2}}>
-                <Grid item xs={12}><Timeline>
+                <Grid size={{xs: 12}}><Timeline>
                     <TimelineItem>
                         <TimelineOppositeContent color="text.secondary">
                             02.07.2024

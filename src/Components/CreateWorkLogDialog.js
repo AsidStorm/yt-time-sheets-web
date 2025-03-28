@@ -1,6 +1,6 @@
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import FormControl from "@mui/material/FormControl";
 import {DatePicker, TimePicker} from "@mui/x-date-pickers";
 import TextField from "@mui/material/TextField";
@@ -11,9 +11,8 @@ import React, {useEffect, useRef, useState} from "react";
 import CustomAutocomplete from "./CustomAutocomplete";
 import {
     CREATE_WORK_LOG_FORM_TYPE_ADVANCED,
-    DATE_FORMAT, RESULT_GROUP_EPIC, RESULT_GROUP_ISSUE, RESULT_GROUP_ISSUE_TYPE,
-    RESULT_GROUP_PROJECT,
-    RESULT_GROUP_QUEUE, RESULT_GROUP_WORKER,
+    DATE_FORMAT, RESULT_GROUP_EPIC, RESULT_GROUP_ISSUE,
+    RESULT_GROUP_WORKER,
     TASK_SEARCH_TYPE_BASE,
     TASK_SEARCH_TYPE_BOARD,
 } from "../constants";
@@ -53,8 +52,6 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
 
     const [ issuePlaceholder, setIssuePlaceholder ] = useState("");
     const [ issueDate, setIssueDate ] = useState( date );
-
-    const resultGroup = resultGroups[resultGroups.length - 2];
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -144,15 +141,15 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
 
     const taskFilter = () => {
         const taskFilterBase = () => {
-            return <Grid item xs={12}>
+            return <Grid size={{xs: 12}}>
                 <TextField label="Поиск задач" variant="outlined" fullWidth onChange={e => handleTaskSearch(e)} />
             </Grid>
         };
 
         const taskFilterBoards = () => {
-            return <Grid item xs={12}>
+            return <Grid size={{xs: 12}}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <CustomAutocomplete
                             onChange={(e, newValue) => setTaskBoard(newValue ? newValue.value : 0)}
                             value={boards.find(u => u.value === taskBoard) || null}
@@ -160,7 +157,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                             label="Доска"
                         />
                     </Grid>
-                    {sprints.length > 0 && <Grid item xs={12}>
+                    {sprints.length > 0 && <Grid size={{xs: 12}}>
                         <CustomAutocomplete
                             onChange={(e, newValue) => setSprint(newValue ? newValue.value : 0)}
                             value={sprints.find(u => u.value === sprint) || null}
@@ -172,9 +169,9 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
             </Grid>
         };
 
-        return <Grid item xs={12}>
+        return <Grid size={{xs: 12}}>
             <Grid container spacing={2}>
-                {boards.length > 0 && <Grid item xs={12}>
+                {boards.length > 0 && <Grid size={{xs: 12}}>
                     <FormControl fullWidth>
                         <FormLabel>Будем искать задачи</FormLabel>
                         <RadioGroup row
@@ -188,7 +185,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                 </Grid>}
                 {taskSearchType === TASK_SEARCH_TYPE_BASE && taskFilterBase()}
                 {taskSearchType === TASK_SEARCH_TYPE_BOARD && taskFilterBoards()}
-                <Grid item xs={12}>
+                <Grid size={{xs: 12}}>
                     {newIssue.key === "" && <div>
                         {taskSearch.length <= 2 && "Введите 3 символа для поиска задачи"}
                     </div>}
@@ -258,10 +255,10 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
             <DialogTitle>Создание рабочего времени</DialogTitle>
             <DialogContent>
                 <Grid container spacing={2} sx={{paddingTop: 1}}>
-                    {form !== CREATE_WORK_LOG_FORM_TYPE_ADVANCED && <Grid item xs={12}>
+                    {form !== CREATE_WORK_LOG_FORM_TYPE_ADVANCED && <Grid size={{xs: 12}}>
                         <Typography varian="h4">{issueTitle}</Typography>
                     </Grid>}
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{xs: 12, md: 6}}>
                         <FormControl fullWidth>
                             <DatePicker
                                 disabled
@@ -271,7 +268,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{xs: 12, md: 6}}>
                             <FormControl fullWidth>
                                 <TimePicker
                                     label="Время"
@@ -288,7 +285,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                                 />
                             </FormControl>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <FormControl fullWidth>
                             <CustomAutocomplete
                                 onChange={(e, newValue) => setData(prev => ({
@@ -303,7 +300,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                         </FormControl>
                     </Grid>
                     {form === CREATE_WORK_LOG_FORM_TYPE_ADVANCED && taskFilter()}
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <TextField
                             autoFocus
                             margin="dense"
@@ -314,7 +311,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                             defaultValue={duration}
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <TextField
                             label="Комментарий"
                             multiline
@@ -326,12 +323,12 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                             onChange={(e) => setIssuePlaceholder(e.target.value)}
                         />
                     </Grid>
-                    {userIdentity === myUserIdentity && <Grid item xs={12}>
+                    {userIdentity === myUserIdentity && <Grid size={{xs: 12}}>
                         <FormGroup>
                             <FormControlLabel control={<Checkbox />} label="Добавить комментарий к задаче?" checked={withComment} onChange={(e) => setWithComment(e.target.checked)} />
                         </FormGroup>
                     </Grid>}
-                    {(userIdentity === myUserIdentity && withComment) && <Grid item xs={12}>
+                    {(userIdentity === myUserIdentity && withComment) && <Grid size={{xs: 12}}>
                         <TextField
                             label="Комментарий к задаче"
                             multiline
