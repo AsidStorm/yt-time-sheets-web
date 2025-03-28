@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
 import CloseIcon from '@mui/icons-material/Close';
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -377,7 +377,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
         </AppBar>
         <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
             <Grid container spacing={2}>
-                <Grid item xs={12} md={10}>
+                <Grid size={{xs: 12, md: 10}}>
                     <Autocomplete
                         multiple
                         value={users.filter( value => selectedUsers.includes(value.value) )}
@@ -404,7 +404,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         )}
                     />
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid size={{xs: 12, md: 2}}>
                     {groups.length > 0 && <Button variant="outlined" size="large" fullWidth onClick={() => { setGroupsDialogState(true); pushAnalytics('groupsButtonClick', { groupsCount: groups.length }); }} sx={{mb: 1}}>
                         Выбрать группу
                     </Button>}
@@ -412,7 +412,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         Выбрать себя
                     </Button>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{xs: 12}}>
                     <Autocomplete
                         multiple
                         value={queues.filter( value => selectedQueues.includes(value.value) )}
@@ -439,7 +439,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         )}
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{xs: 12}}>
                     <Autocomplete
                         multiple
                         value={issueTypes.filter( value => selectedIssueTypes.includes(value.value) )}
@@ -466,7 +466,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         )}
                     />
                 </Grid>
-                <Grid item xs={12} md={10}>
+                <Grid size={{xs: 12, md: 10}}>
                     <Autocomplete
                         multiple
                         value={projects.filter( value => selectedProjects.includes(value.value) )}
@@ -493,17 +493,17 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         )}
                     />
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid size={{xs: 12, md: 2}}>
                     <Button variant="outlined" size="large" fullWidth onClick={() => setSelectedProjects(projects.map( p => p.value))}>
                         Все проекты
                     </Button>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{xs: 12}}>
                     <FormGroup>
                         <FormControlLabel control={<Checkbox />} label="Задачи, попавшие в статус в определённый месяц" checked={issuesMovedToStatus} onChange={(e) => setIssuesMovedToStatus(e.target.checked)} />
                     </FormGroup>
                 </Grid>
-                {issuesMovedToStatus && <Grid item xs={12} md={6}>
+                {issuesMovedToStatus && <Grid size={{xs: 12, md: 6}}>
                     <Autocomplete
                         multiple
                         value={issueStatuses.filter( value => selectedIssueStatuses.includes(value.value) )}
@@ -530,7 +530,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         )}
                     />
                 </Grid>}
-                {issuesMovedToStatus && <Grid item xs={12} md={6}>
+                {issuesMovedToStatus && <Grid size={{xs: 12, md: 6}}>
                     <FormControl fullWidth>
                         <DesktopDatePicker
                             label="Месяц"
@@ -545,7 +545,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         />
                     </FormControl>
                 </Grid>}
-                {!issuesMovedToStatus && <Grid item xs={12} md={6}>
+                {!issuesMovedToStatus && <Grid item size={{xs: 12, md: 6}}>
                     <FormControl fullWidth>
                         <DesktopDatePicker
                             label="Дата (с)"
@@ -560,7 +560,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         />
                     </FormControl>
                 </Grid>}
-                {!issuesMovedToStatus && <Grid item xs={12} md={6}>
+                {!issuesMovedToStatus && <Grid size={{xs: 12, md: 6}}>
                     <FormControl fullWidth>
                         <DesktopDatePicker
                             label="Дата (по)"
@@ -575,7 +575,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         />
                     </FormControl>
                 </Grid>}
-                {shouldOptimize && <Grid item xs={12}>
+                {shouldOptimize && <Grid size={{xs: 12}}>
                     <FormControl fullWidth>
                         <FormLabel>Отображение даты</FormLabel>
                         <RadioGroup row
@@ -587,12 +587,12 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         </RadioGroup>
                     </FormControl>
                 </Grid>}
-                {shouldOptimize && <Grid item xs={12}>
+                {shouldOptimize && <Grid size={{xs: 12}}>
                     <FormGroup>
                         <FormControlLabel control={<Checkbox />} label="Скрыть детали к дате?" checked={hideDetails} onChange={(e) => setHideDetails(e.target.checked)} />
                     </FormGroup>
                 </Grid>}
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <FormControl fullWidth>
                         <FormLabel>Отображение времени</FormLabel>
                         <RadioGroup row
@@ -605,11 +605,11 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                {timeFormat === TIME_FORMAT_MONEY && <Grid item xs={12} md={6}>
+                {timeFormat === TIME_FORMAT_MONEY && <Grid size={{xs: 12, md: 6}}>
                     <Button fullWidth onClick={() => { setSalaryDialog(true); pushAnalytics('salaryButtonClick')}}>Указать ставки специалистов ({Object.keys(salaries).length})</Button>
                 </Grid>}
 
-                {RESULT_GROUPS.map( (variants, index) => resultGroups[index] ? <Grid item xs={12} key={`RESULT_GROUPS-${index}`}>
+                {RESULT_GROUPS.map( (variants, index) => resultGroups[index] ? <Grid size={{xs: 12}} key={`RESULT_GROUPS-${index}`}>
                     <FormControl>
                         <FormLabel>Группировка {index+1}</FormLabel>
                         <RadioGroup row
@@ -620,7 +620,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         </RadioGroup>
                     </FormControl>
                 </Grid> : null)}
-                {(resultGroups[0] === RESULT_GROUP_WORKER && (!shouldOptimize || dateFormat !== DATE_FORMAT_MONTH)) && <Grid item xs={12}>
+                {(resultGroups[0] === RESULT_GROUP_WORKER && (!shouldOptimize || dateFormat !== DATE_FORMAT_MONTH)) && <Grid size={{xs: 12}}>
                     <FormControl fullWidth>
                         <TimePicker
                             label="Подсветка часов сотрудника, меньше чем"
@@ -637,8 +637,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         />
                     </FormControl>
                 </Grid>}
-                <Grid item xs={4} />
-                <Grid item xs={4}>
+                <Grid size={{xs: 4}} offset={{xs: 4}}>
                     <Button onClick={() => handleApplyClick()} fullWidth>Применить</Button>
                 </Grid>
             </Grid>

@@ -44,7 +44,7 @@ import moment from "moment";
 import CreateWorkLogDialog from "./CreateWorkLogDialog";
 import DeleteWorkLogDialog from "./DeleteWorkLogDialog";
 import UpdateWorkLogDialog from "./UpdateWorkLogDialog";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import DetailsDialog from "./DetailsDialog";
 import RestrictionsDialog from "./RestrictionsDialog";
 import ChartsDialog from "./ChartsDialog";
@@ -1359,17 +1359,17 @@ function ResultTable({workLogs, hideDetails, dateFormat, admin, dates, timeForma
         />
 
         <Grid container spacing={2}>
-            <Grid item xs={12} md={8}>
+            <Grid size={{ xs: 12, md: 8}}>
                 {(readOnly || !admin) && <span>
                     На вашу учётную запись действуют ограничения. <Button onClick={() => setRestrictionsDialog(true)}>Подробнее</Button>
                 </span>}
             </Grid>
 
-            <Grid item xs={12} md={2}>
+            <Grid size={{xs: 12, md: 2}}>
                 <Button fullWidth color="info" variant="outlined" onClick={() => { showCharts(); pushAnalytics("chartsButtonClick"); }}>Графики</Button>
             </Grid>
 
-            <Grid item xs={12} md={2}>
+            <Grid size={{xs: 12, md: 2}}>
                 <Button
                     fullWidth
                     ref={anchorRef}
@@ -1420,7 +1420,7 @@ function ResultTable({workLogs, hideDetails, dateFormat, admin, dates, timeForma
 
 
 
-            <Grid item xs={12}>
+            <Grid size={12}>
                 {useVirtuoso && <Paper style={{ height: 700, width: '100%'}}>
                     <TableVirtuoso
                         context={{ rows }}

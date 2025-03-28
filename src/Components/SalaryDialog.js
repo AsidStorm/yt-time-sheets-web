@@ -1,7 +1,7 @@
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import React, {useEffect, useState} from "react";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -133,7 +133,7 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
         <DialogContent>
             {mode === SALARY_MODE_IMPORT && <form onSubmit={(e) => handleSubmit(e)}>
                 <Grid container spacing={2} sx={{paddingTop: 2}}>
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <TextField
                             label={`CSV (разделитель ";") (пример строчки - userId или userEmail;стоимость специалиста за 1 час)`}
                             multiline
@@ -143,14 +143,14 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                             variant="standard"
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <Button fullWidth type="submit" color="success">Ассоциировать</Button>
                     </Grid>
                 </Grid>
             </form>}
             {mode === SALARY_MODEL_VIEW && <form onSubmit={(e) => handleApplySubmit(e)}>
                 <Grid container spacing={2} sx={{paddingTop: 2}}>
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <TableContainer component={Paper} sx={{maxHeight: 440}}>
                             <Table stickyHeader>
                                 <TableHead>
@@ -181,12 +181,12 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                             </Table>
                         </TableContainer>
                     </Grid>
-                    {false && <Grid item xs={12}>
+                    {false && <Grid size={{xs: 12}}>
                         <FormGroup>
                             <FormControlLabel control={<Checkbox />} label="Распределить неотмеченное время по задачам" checked={spreadUnmarkedTime} onChange={(e) => setSpreadUnmarkedTime(e.target.checked)} />
                         </FormGroup>
                     </Grid>}
-                    {spreadUnmarkedTime && <Grid item xs={12}>
+                    {spreadUnmarkedTime && <Grid size={{xs: 12}}>
                         <FormControl fullWidth>
                             <TimePicker
                                 label="Должно быть рабочих часов"
@@ -198,7 +198,7 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                             />
                         </FormControl>
                     </Grid>}
-                    {false && <Grid item xs={12}>
+                    {false && <Grid size={{xs: 12}}>
                         <TextField
                             margin="dense"
                             label="Мультипликатор стоимости в выходные"
@@ -209,7 +209,7 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                             defaultValue={2}
                         />
                     </Grid>}
-                    {false && <Grid item xs={12}>
+                    {false && <Grid size={{xs: 12}}>
                         <TextField
                             margin="dense"
                             label="Мультипликатор овертайма в будние дни"
@@ -220,10 +220,10 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                             defaultValue={1.5}
                         />
                     </Grid>}
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{xs: 12, md: 6}}>
                         <Button fullWidth onClick={() => handleCancel()} color="warning">Сбросить</Button>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{xs: 12, md: 6}}>
                         <Button fullWidth type="submit" color="success">Подтвердить</Button>
                     </Grid>
                 </Grid>

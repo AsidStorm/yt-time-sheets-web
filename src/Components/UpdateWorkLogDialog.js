@@ -1,6 +1,6 @@
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
@@ -50,7 +50,7 @@ function UpdateWorkLogDialog({state, handleClose, onSubmit, data, title, issueKe
                 </DialogContentText>
 
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <TextField
                             autoFocus
                             margin="dense"
@@ -63,7 +63,7 @@ function UpdateWorkLogDialog({state, handleClose, onSubmit, data, title, issueKe
                     </Grid>
                 </Grid>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={{xs: 12}}>
                         <TextField
                             label="Комментарий"
                             multiline

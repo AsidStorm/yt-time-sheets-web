@@ -1,7 +1,7 @@
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import React, {useEffect, useState} from "react";
@@ -675,8 +675,8 @@ function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dat
         <DialogTitle>Графики</DialogTitle>
         <DialogContent>
             <Grid container spacing={2} sx={{paddingTop: 2}}>
-                {charts.length === 0 && <Grid item xs={12}><Alert severity="warning">Недостаточно данных для построения графиков!</Alert></Grid>}
-                {charts.map(chart => <Grid item xs={12} md={chart.md} style={{height: 500 + `px`, marginBottom: 20 + `px`}} key={chart.label}>
+                {charts.length === 0 && <Grid size={{xs: 12}}><Alert severity="warning">Недостаточно данных для построения графиков!</Alert></Grid>}
+                {charts.map(chart => <Grid size={{xs: 12, md: chart.md}} style={{height: 500 + `px`, marginBottom: 20 + `px`}} key={chart.label}>
                     <Typography sx={{ml: 2, flex: 1}} variant="h5" component="div">
                         {chart.label}
                     </Typography>

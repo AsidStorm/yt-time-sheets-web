@@ -6,7 +6,7 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
@@ -23,8 +23,8 @@ import {
 } from "./constants";
 import Link from "@mui/material/Link";
 import YandexId from "./yandex-id-big.svg"
+import YandexSso from "./yandex-sso.svg";
 import TextField from "@mui/material/TextField";
-import GitHubIcon from '@mui/icons-material/GitHub';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import IconButton from "@mui/material/IconButton";
@@ -33,8 +33,7 @@ import InitialConfigDialog from "./Components/InitialConfigDialog";
 import './App.css';
 import {orgIdOwner, pushAnalytics} from "./helpers";
 import ChangelogDialog from "./Components/ChangelogDialog";
-import {Card, CardHeader} from "@mui/material";
-import Avatar from "@mui/material/Avatar";
+import CopyrightCard from "./Components/CopyrightCard";
 
 function App() {
     const [users, setUsers] = useState([]);
@@ -458,7 +457,7 @@ function App() {
             </AppBar>}
             <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
                 {authorized === AUTHORIZED_STATE_DONE && <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                         {!haveDataToDisplay() && <div>Недостаточно данных для построения аналитики, используйте <Link href="#" onClick={() => setFilterDialogState(true)}>фильтр</Link></div>}
                         {haveDataToDisplay() && <ResultTable
                             hideDetails={hideDetails}
@@ -482,57 +481,29 @@ function App() {
                             highlightTime={highlightTime}
                         />}
                     </Grid>
-                    <Grid item xs={0} md={4} />
-                    <Grid item xs={12} md={4}>
-                        <Card sx={{ maxWidth: 345 }}>
-                            <CardHeader
-                                avatar={
-                                    <Avatar sx={{ bgcolor: "black" }}>
-                                        <GitHubIcon />
-                                    </Avatar>
-                                }
-                                title={<React.Fragment>
-                                    <Link href="https://github.com/AsidStorm/yt-time-sheets-web" target="_blank" rel="nofollow noopener">web</Link> / <Link href="https://github.com/AsidStorm/yt-time-sheets-api" target="_blank" rel="nofollow noopener">api</Link>
-                                </React.Fragment>}
-                                subheader={<React.Fragment>
-                                    При поддержке <Link href="https://udpauto.ru/?utm_source=yt-time-sheets" target="_blank" rel="nofollow noopener">UDP Auto</Link>
-                                </React.Fragment>}
-                            />
-                        </Card>
+                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 4, xl: 2}} offset={{xs: 0, sm: 2, md: 4, lg: 4, xl: 5}}>
+                        <CopyrightCard />
                     </Grid>
                 </Grid>}
                 {authorized === AUTHORIZED_STATE_NONE && <Grid container spacing={2} direction="column"
                                       alignItems="center"
+                                                               alignContent="center"
                                       justifyContent="center">
-                    {OAuthClientId !== '' && <Grid item xs={4}>
+                    {OAuthClientId !== '' && <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
                         <img src={YandexId} style={{cursor: "pointer"}} onClick={() => { pushAnalytics('yandexButtonClick'); redirectToYandexOAuth(); }} />
                     </Grid>}
-                    <Grid item xs={4}>
-                        <Button onClick={() => { setSsoDialog(prev => ({...prev, open: true})); pushAnalytics('ssoButtonClick'); }}>
-                            Войти с помощью SSO
-                        </Button>
+                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
+                        <img src={YandexSso} style={{cursor: "pointer"}} onClick={() => {
+                            setSsoDialog(prev => ({...prev, open: true}));
+                            pushAnalytics('ssoButtonClick');
+                        }}/>
                     </Grid>
-                    <Grid item xs={4}>
-                        <Card sx={{ maxWidth: 345 }}>
-                            <CardHeader
-                                avatar={
-                                    <Avatar sx={{ bgcolor: "black" }}>
-                                        <GitHubIcon />
-                                    </Avatar>
-                                }
-                                title={<React.Fragment>
-                                    <Link href="https://github.com/AsidStorm/yt-time-sheets-web" target="_blank" rel="nofollow noopener">web</Link> / <Link href="https://github.com/AsidStorm/yt-time-sheets-api" target="_blank" rel="nofollow noopener">api</Link>
-                                </React.Fragment>}
-                                subheader={<React.Fragment>
-                                    При поддержке <Link href="https://udpauto.ru/?utm_source=yt-time-sheets" target="_blank" rel="nofollow noopener">UDP Auto</Link>
-                                </React.Fragment>}
-                            />
-                        </Card>
+                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
+                        <CopyrightCard/>
                     </Grid>
                 </Grid>}
                 {authorized === AUTHORIZED_STATE_NO_ORG_ID && <form onSubmit={onOrgSubmit}><Grid container spacing={2}>
-                    <Grid item xs={0} md={4} />
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{xs: 12, sm: 6, md: 4, lg: 4, xl: 4}} offset={{xs: 0, sm: 3, md: 4, lg: 4, xl: 4}}>
                         <TextField
                             autoFocus
                             margin="dense"
@@ -543,39 +514,17 @@ function App() {
                             defaultValue={defaultOrgId}
                         />
                     </Grid>
-                    <Grid item xs={0} md={4} />
-                    <Grid item xs={0} md={3} />
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{xs: 12, sm: 6, md: 6, lg: 6, xl: 6}} offset={{xs: 0, sm: 3, md: 3, lg: 3, xl: 3}}>
                         Чтобы узнать идентификатор организации, перейдите на <Link href="https://tracker.yandex.ru/settings" target="_blank">страницу настроек Tracker</Link> или в <Link href="https://org.cloud.yandex.ru/settings" target="_blank">настройки Cloud организации</Link>. Идентификатор указан в поле <strong>ID организации для API</strong>.
                     </Grid>
-                    <Grid item xs={0} md={3} />
-                    <Grid item xs={0} md={4} />
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 4, xl: 2}} offset={{xs: 0, sm: 2, md: 2, lg: 2, xl: 4}}>
                         <Button fullWidth type="submit">Продолжить</Button>
                     </Grid>
-                    <Grid item xs={0} md={4} />
-                    <Grid item xs={0} md={4} />
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 4, xl: 2}} offset={{xs: 0, sm: 2, md: 0, lg: 0, xl: 0}}>
                         <Button fullWidth onClick={() => exit()}>Отменить</Button>
                     </Grid>
-                    <Grid item xs={0} md={4} />
-                    <Grid item xs={0} md={4} />
-                    <Grid item xs={12} md={4}>
-                        <Card sx={{ maxWidth: 345 }}>
-                            <CardHeader
-                                avatar={
-                                    <Avatar sx={{ bgcolor: "black" }}>
-                                        <GitHubIcon />
-                                    </Avatar>
-                                }
-                                title={<React.Fragment>
-                                    <Link href="https://github.com/AsidStorm/yt-time-sheets-web" target="_blank" rel="nofollow noopener">web</Link> / <Link href="https://github.com/AsidStorm/yt-time-sheets-api" target="_blank" rel="nofollow noopener">api</Link>
-                                </React.Fragment>}
-                                subheader={<React.Fragment>
-                                    При поддержке <Link href="https://udpauto.ru/?utm_source=yt-time-sheets" target="_blank" rel="nofollow noopener">UDP Auto</Link>
-                                </React.Fragment>}
-                            />
-                        </Card>
+                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 4, xl: 2}} offset={{xs: 0, sm: 2, md: 4, lg: 4, xl: 5}}>
+                        <CopyrightCard />
                     </Grid>
                 </Grid></form>}
             </Container>
