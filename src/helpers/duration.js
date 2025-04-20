@@ -1,46 +1,8 @@
-import {TIME_FORMAT_HOURS, TIME_FORMAT_MONEY} from "./constants";
+import {TIME_FORMAT_HOURS, TIME_FORMAT_MONEY} from "../constants";
 
-const replaceCumulative = (str, find, replace) => {
-    for (let i = 0; i < find.length; i++) {
-        str = str.replace(new RegExp(find[i],"g"), replace[i]);
-    }
-
-    return str;
-};
-
-export const pushAnalytics = (...args) => {
-    const payload = ["event", ...args];
-
-    if( !payload[2] ) {
-        payload.push({
-            owner: orgIdOwner()
-        });
-    } else if( !payload[2].owner ) {
-        payload[2].owner = orgIdOwner();
-    }
-
-    window.gtag.apply(this, payload);
-};
-
-export const orgIdOwner = (specifiedOrgId) => {
-    const orgId = specifiedOrgId ? specifiedOrgId : localStorage.getItem("orgId");
-    const stringedOrgId = ("" + orgId).trim();
-
-
-    if (stringedOrgId === "" || !orgId) {
-        return "PUBLIC";
-    }
-
-    return "EXTERNAL";
-};
-
-export const replaceRuDuration = input => {
-    return replaceCumulative(input, ['н', 'д', 'ч', 'м', 'с'], ['w', 'd', 'h', 'm', 's']);
-};
-
-export const extractDuration = duration => {
-    const seconds = duration / 10e8; // Секунд
-    const minutes = Math.ceil(seconds / 60); // Минут
+const extractDuration = duration => {
+    const seconds = duration / 10e8;
+    const minutes = Math.ceil(seconds / 60);
 
     if (minutes >= 60) {
         const hours = Math.floor(minutes / 60);
@@ -50,6 +12,12 @@ export const extractDuration = duration => {
     }
 
     return { hours: 0, minutes, rawMinutes: minutes };
+};
+
+export const extractRawMinutesFromDuration = duration => {
+    const { rawMinutes } = extractDuration(duration);
+
+    return rawMinutes;
 };
 
 export const durationToISO = (duration) => {
@@ -103,17 +71,3 @@ export const humanizeDuration = (duration, timeFormat, details, salaries) => {
 
     return `${rawMinutes} м.`
 };
-
-export const yandexTrackerIssueUrl = issueKey => {
-    return `https://tracker.yandex.ru/${issueKey}`;
-};
-
-export const yandexTrackerQueueUrl = queue => {
-    return `https://tracker.yandex.ru/${queue}`;
-};
-
-export const yandexTrackerProjectUrl = projectId => {
-    return `https://tracker.yandex.ru/pages/projects/${projectId}`;
-};
-
-export const sleep = ms => new Promise(r => setTimeout(r, ms));

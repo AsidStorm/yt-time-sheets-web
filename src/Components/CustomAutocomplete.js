@@ -1,6 +1,5 @@
-import Autocomplete from "@mui/material/Autocomplete";
 import React from "react";
-import TextField from "@mui/material/TextField";
+import { Autocomplete, TextField } from "@mui/material";
 
 function CustomAutocomplete({ options, onChange, value, label, disabled }) {
     return (

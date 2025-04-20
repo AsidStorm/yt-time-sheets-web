@@ -1,8 +1,8 @@
+import React, {useCallback, useEffect, useState, Fragment} from "react";
 import Dialog from "@mui/material/Dialog";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import React, {useCallback, useEffect, useState} from "react";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
@@ -23,24 +23,39 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 import moment from "moment";
 import {
-    RESULT_GROUP_ISSUE,
     RESULT_GROUP_NONE,
-    TIME_FORMAT_HOURS,
-    TIME_FORMAT_MINUTES,
     RESULT_GROUPS,
-    RESULT_GROUPS_TRANSLATIONS,
     RESULT_GROUP_WORKER,
     TIME_FORMAT_MONEY,
     DATE_FORMAT_DATE,
     DATE_FORMAT_MONTH,
     DATE_FORMAT,
+    FILTER_FAST_DATES_TODAY,
+    FILTER_FAST_DATES_LAST_7_DAYS,
+    FILTER_FAST_DATES_LAST_30_DAYS,
+    FILTER_FAST_DATES_LAST_90_DAYS,
+    FILTER_FAST_DATES_LAST_2_DAYS,
+    FILTER_FAST_DATES,
+    TIME_FORMATS, TIME_FORMAT_HOURS, RESULT_GROUP_ISSUE,
 } from "../constants";
 import {post} from "../requests";
 import GroupsDialog from "./GroupsDialog";
-import {pushAnalytics, sleep} from "../helpers";
+import {pushAnalytics, sleep, sliceIntoChunks} from "../helpers";
 import FormGroup from "@mui/material/FormGroup";
 import SalaryDialog from "./SalaryDialog";
 import {useSalaryState} from "../Context/Salary";
+import {Trans, useTranslation} from "react-i18next";
+import {useAtomValue} from "jotai";
+import {
+    groupsAtom,
+    issueStatusesAtom,
+    issueTypesAtom, myUserAtom,
+    projectsAtom,
+    queuesAtom,
+    usersAtom,
+} from "../jotai/atoms";
+import {Stack} from "@mui/material";
+import {useFilterResult, useLoader} from "../hooks";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
 const checkedIcon = <CheckBoxIcon fontSize="small"/>;
@@ -66,7 +81,25 @@ function* generateMoments(start, end, step) {
     }
 }
 
-function FilterDialog({ handleClose, state, onApply, users, queues, startLoading, setLoadingValue, endLoading, showError, groups, myUserIdentity, projects, reload, issueTypes, issueStatuses }) {
+function FilterDialog({ handleClose, state, onApply, showError, reload }) {
+    const { t } = useTranslation();
+
+    const { setFilteredData } = useFilterResult();
+    const { startLoading, endLoading, setLoadingValue } = useLoader();
+
+    const users = useAtomValue(usersAtom);
+    const groups = useAtomValue(groupsAtom);
+    const queues = useAtomValue(queuesAtom);
+    const issueStatuses = useAtomValue(issueStatusesAtom);
+    const issueTypes = useAtomValue(issueTypesAtom);
+    const projects = useAtomValue(projectsAtom);
+    const myUser = useAtomValue(myUserAtom);
+
+    // Специфика работы следующая, всё что происходит здесь - влияет на общий стейт только после нажатия кнопки "Применить"
+    const [ timeFormat, setTimeFormat ] = useState(TIME_FORMAT_HOURS);
+    const [ dateFormat, setDateFormat ] = useState(DATE_FORMAT_DATE);
+    const [ resultGroups, setResultGroups ] = useState([RESULT_GROUP_ISSUE, RESULT_GROUP_NONE]);
+
     const [ selectedUsers, setSelectedUsers ] = useState([]);
     const [ selectedQueues, setSelectedQueues ] = useState([]);
     const [ selectedProjects, setSelectedProjects ] = useState([]);
@@ -74,14 +107,11 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
     const [ selectedIssueStatuses, setSelectedIssueStatuses ] = useState([]);
     const [ dateFrom, setDateFrom ] = useState(moment());
     const [ dateTo, setDateTo ] = useState(moment());
-    const [ timeFormat, setTimeFormat ] = useState(TIME_FORMAT_HOURS);
     const [ salaryDialog, setSalaryDialog ] = useState(false);
 
     const [ salaries ] = useSalaryState();
 
     const [ forceUpdate, setForceUpdate ] = useState(false);
-
-    const [ resultGroups, setResultGroups ] = useState([RESULT_GROUP_ISSUE, RESULT_GROUP_NONE]);
 
     const [ highlightTime, setHighlightTime ] = useState(null);
 
@@ -89,7 +119,6 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
 
     const [ shouldOptimize, setShouldOptimize ] = useState(false);
 
-    const [ dateFormat, setDateFormat ] = useState(DATE_FORMAT_MONTH);
     const [ hideDetails, setHideDetails ] = useState(true);
 
     const [ issuesMovedToStatus, setIssuesMovedToStatus ] = useState(false);
@@ -119,17 +148,6 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
             setShouldOptimize(dates.length > 31);
         }
     }, [dateFrom, dateTo]);
-
-    const sliceIntoChunks = (arr, chunkSize) => {
-        const res = [];
-
-        for (let i = 0; i < arr.length; i += chunkSize) {
-            const chunk = arr.slice(i, i + chunkSize);
-            res.push(chunk);
-        }
-
-        return res;
-    };
 
     const prepareDates = (dates, dateFormat) => {
         const months = [
@@ -176,7 +194,18 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
             const realDates = prepareDates(dates, realDateFormat);
             const realHideDetails = shouldOptimize ? hideDetails : false;
 
-            onApply({ dates: realDates, hideDetails: realHideDetails, workLogs, dateFormat: realDateFormat, selectedProjects, timeFormat, resultGroups, userIdentities: selectedUsers.map(user => String(user)), highlightTime: resultGroups[0] === RESULT_GROUP_WORKER && realDateFormat !== DATE_FORMAT_MONTH ? highlightTime : false});
+            setFilteredData({
+                timeFormat: timeFormat,
+                dateFormat: realDateFormat,
+                resultGroups: resultGroups,
+                workLogs: workLogs,
+                selectedUsers: selectedUsers.map( user => String(user) ),
+                dates: realDates,
+                hideDetails: realHideDetails,
+                highlightTime: resultGroups[0] === RESULT_GROUP_WORKER && realDateFormat !== DATE_FORMAT_MONTH ? highlightTime : false,
+            });
+
+            onApply();
 
             const hlTime = resultGroups[0] === RESULT_GROUP_WORKER && realDateFormat !== DATE_FORMAT_MONTH ? highlightTime.format("HH:mm") : false; // Подсветка времени имеет смысл ТОЛЬКО в том случае, если у нас первый элемент - сотрудник. Дальше могу быть любые группировки - но подсвечивать мы будем сотрудника.
 
@@ -348,13 +377,33 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
         setForceUpdate(!forceUpdate);
     };
 
+    const handleFastDateClick = (value) => {
+        if( value === FILTER_FAST_DATES_TODAY ) {
+            setDateFrom(moment());
+        } else if( value === FILTER_FAST_DATES_LAST_2_DAYS ) {
+            setDateFrom(moment().subtract(1, 'days'));
+        } else if( value === FILTER_FAST_DATES_LAST_7_DAYS ) {
+            setDateFrom(moment().subtract(6, 'days'));
+        } else if( value === FILTER_FAST_DATES_LAST_30_DAYS ) {
+            setDateFrom(moment().subtract(29, 'days'));
+        } else if( value === FILTER_FAST_DATES_LAST_90_DAYS ) {
+            setDateFrom(moment().subtract(89, 'days'));
+        }
+
+        pushAnalytics('fastDateClick', {
+            value
+        });
+
+        setDateTo(moment());
+    };
+
     return <Dialog
         fullScreen
         open={state}
         onClose={handleClose}
         TransitionComponent={Transition}
     >
-        <GroupsDialog state={groupDialogState} groups={groups} handleClose={() => setGroupsDialogState(false)} onSelect={group => handleGroupSelection(group)} />
+        <GroupsDialog state={groupDialogState} handleClose={() => setGroupsDialogState(false)} onSelect={group => handleGroupSelection(group)} />
         <SalaryDialog state={salaryDialog} handleClose={() => setSalaryDialog(false)} showError={showError} users={users} onApply={() => setSalaryDialog(false)} />
 
         <AppBar sx={{ position: 'relative' }}>
@@ -368,16 +417,17 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                     <CloseIcon />
                 </IconButton>
                 <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                    Фильтр
+                    {t('filter:header')}
                 </Typography>
                 <Button color="inherit" onClick={() => handleApplyClick()}>
-                    Применить
+                    {t('common:button.apply')}
                 </Button>
             </Toolbar>
         </AppBar>
+
         <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
             <Grid container spacing={2}>
-                <Grid size={{xs: 12, md: 10}}>
+                <Grid size={{xs: 12, md: 9}}>
                     <Autocomplete
                         multiple
                         value={users.filter( value => selectedUsers.includes(value.value) )}
@@ -400,17 +450,17 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                             </li>
                         )}
                         renderInput={(params) => (
-                            <TextField {...params} label="Пользователи" />
+                            <TextField {...params} label={t('filter:users.label')} />
                         )}
                     />
                 </Grid>
-                <Grid size={{xs: 12, md: 2}}>
+                <Grid size={{xs: 12, md: 3}}>
                     {groups.length > 0 && <Button variant="outlined" size="large" fullWidth onClick={() => { setGroupsDialogState(true); pushAnalytics('groupsButtonClick', { groupsCount: groups.length }); }} sx={{mb: 1}}>
-                        Выбрать группу
+                        <Trans>Выбрать группу</Trans>
                     </Button>}
-                    <Button variant="outlined" size="large" fullWidth onClick={() => setSelectedUsers([myUserIdentity])}>
-                        Выбрать себя
-                    </Button>
+                    {!!myUser.value && <Button variant="outlined" size="large" fullWidth onClick={() => setSelectedUsers([myUser.value])}>
+                        <Trans>Выбрать себя</Trans>
+                    </Button>}
                 </Grid>
                 <Grid size={{xs: 12}}>
                     <Autocomplete
@@ -435,7 +485,7 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                             </li>
                         )}
                         renderInput={(params) => (
-                            <TextField {...params} label="Очереди" />
+                            <TextField {...params} label={t('Очереди')} />
                         )}
                     />
                 </Grid>
@@ -462,11 +512,11 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                             </li>
                         )}
                         renderInput={(params) => (
-                            <TextField {...params} label="Типы задач" />
+                            <TextField {...params} label={t('Типы задач')} />
                         )}
                     />
                 </Grid>
-                <Grid size={{xs: 12, md: 10}}>
+                <Grid size={{xs: 12, md: 9}}>
                     <Autocomplete
                         multiple
                         value={projects.filter( value => selectedProjects.includes(value.value) )}
@@ -489,119 +539,128 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                             </li>
                         )}
                         renderInput={(params) => (
-                            <TextField {...params} label="Проекты" />
+                            <TextField {...params} label={t('Проекты')} />
                         )}
                     />
                 </Grid>
-                <Grid size={{xs: 12, md: 2}}>
+                <Grid size={{xs: 12, md: 3}}>
                     <Button variant="outlined" size="large" fullWidth onClick={() => setSelectedProjects(projects.map( p => p.value))}>
-                        Все проекты
+                        <Trans>Все проекты</Trans>
                     </Button>
                 </Grid>
                 <Grid size={{xs: 12}}>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox />} label="Задачи, попавшие в статус в определённый месяц" checked={issuesMovedToStatus} onChange={(e) => setIssuesMovedToStatus(e.target.checked)} />
+                        <FormControlLabel control={<Checkbox />} label={t('Задачи, попавшие в статус в определённый месяц')} checked={issuesMovedToStatus} onChange={(e) => setIssuesMovedToStatus(e.target.checked)} />
                     </FormGroup>
                 </Grid>
-                {issuesMovedToStatus && <Grid size={{xs: 12, md: 6}}>
-                    <Autocomplete
-                        multiple
-                        value={issueStatuses.filter( value => selectedIssueStatuses.includes(value.value) )}
-                        onChange={(event, newInputValue) => {
-                            setSelectedIssueStatuses(newInputValue.map( type => type.value ));
-                        }}
-                        options={issueStatuses}
-                        disableCloseOnSelect
-                        isOptionEqualToValue={(option, value) => value && value.value === option.value}
-                        getOptionLabel={option => option.label}
-                        renderOption={(props, option, {selected}) => (
-                            <li {...props} key={`filter-issue-status-${option.value}`}>
-                                <Checkbox
-                                    icon={icon}
-                                    checkedIcon={checkedIcon}
-                                    style={{marginRight: 8}}
-                                    checked={selected}
-                                />
-                                {option.label}
-                            </li>
-                        )}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Статус" />
-                        )}
-                    />
-                </Grid>}
-                {issuesMovedToStatus && <Grid size={{xs: 12, md: 6}}>
-                    <FormControl fullWidth>
-                        <DesktopDatePicker
-                            label="Месяц"
-                            inputFormat="MM.YYYY"
-                            value={movedToStatusMonth}
-                            onChange={(newValue) => {
-                                setMovedToStatusMonth(newValue);
+                {issuesMovedToStatus && <Fragment>
+                    <Grid size={{xs: 12, md: 6}}>
+                        <Autocomplete
+                            multiple
+                            value={issueStatuses.filter( value => selectedIssueStatuses.includes(value.value) )}
+                            onChange={(event, newInputValue) => {
+                                setSelectedIssueStatuses(newInputValue.map( type => type.value ));
                             }}
-                            disableFuture
-                            views={['month', 'year']}
-                            renderInput={(params) => <TextField {...params} />}
+                            options={issueStatuses}
+                            disableCloseOnSelect
+                            isOptionEqualToValue={(option, value) => value && value.value === option.value}
+                            getOptionLabel={option => option.label}
+                            renderOption={(props, option, {selected}) => (
+                                <li {...props} key={`filter-issue-status-${option.value}`}>
+                                    <Checkbox
+                                        icon={icon}
+                                        checkedIcon={checkedIcon}
+                                        style={{marginRight: 8}}
+                                        checked={selected}
+                                    />
+                                    {option.label}
+                                </li>
+                            )}
+                            renderInput={(params) => (
+                                <TextField {...params} label={t('Статус')} />
+                            )}
                         />
-                    </FormControl>
-                </Grid>}
-                {!issuesMovedToStatus && <Grid item size={{xs: 12, md: 6}}>
-                    <FormControl fullWidth>
-                        <DesktopDatePicker
-                            label="Дата (с)"
-                            inputFormat="DD.MM.YYYY"
-                            value={dateFrom}
-                            onChange={(newValue) => {
-                                setDateFrom(newValue);
-                            }}
-                            disableFuture
-                            maxDate={dateTo}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </FormControl>
-                </Grid>}
-                {!issuesMovedToStatus && <Grid size={{xs: 12, md: 6}}>
-                    <FormControl fullWidth>
-                        <DesktopDatePicker
-                            label="Дата (по)"
-                            value={dateTo}
-                            inputFormat="DD.MM.YYYY"
-                            onChange={(newValue) => {
-                                setDateTo(newValue);
-                            }}
-                            disableFuture   
-                            minDate={dateFrom}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </FormControl>
-                </Grid>}
+                    </Grid>
+                    <Grid size={{xs: 12, md: 6}}>
+                        <FormControl fullWidth>
+                            <DesktopDatePicker
+                                label={t('Месяц')}
+                                inputFormat="MM.YYYY"
+                                value={movedToStatusMonth}
+                                onChange={(newValue) => {
+                                    setMovedToStatusMonth(newValue);
+                                }}
+                                disableFuture
+                                views={['month', 'year']}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </FormControl>
+                    </Grid>
+                </Fragment>}
+                {!issuesMovedToStatus && <Fragment>
+                    <Grid size={{xs: 12, md: 6}}>
+                        <FormControl fullWidth>
+                            <DesktopDatePicker
+                                label={t('Дата (с)')}
+                                inputFormat="DD.MM.YYYY"
+                                value={dateFrom}
+                                onChange={(newValue) => {
+                                    setDateFrom(newValue);
+                                }}
+                                disableFuture
+                                maxDate={dateTo}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </FormControl>
+                    </Grid>
+                    <Grid size={{xs: 12, md: 6}}>
+                        <FormControl fullWidth>
+                            <DesktopDatePicker
+                                label={t('Дата (по)')}
+                                value={dateTo}
+                                inputFormat="DD.MM.YYYY"
+                                onChange={(newValue) => {
+                                    setDateTo(newValue);
+                                }}
+                                disableFuture
+                                minDate={dateFrom}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </FormControl>
+                    </Grid>
+                    <Grid size={{xs: 12}}>
+                        <Stack direction="row" spacing={2}>
+                            {FILTER_FAST_DATES.map( value => <Button variant="text" key={`fast_date_${value}`} onClick={() => handleFastDateClick(value)} size="small">
+                                {t(`filter:fast_date.values.${value}`)}
+                            </Button>)}
+                        </Stack>
+                    </Grid>
+                </Fragment>}
                 {shouldOptimize && <Grid size={{xs: 12}}>
                     <FormControl fullWidth>
-                        <FormLabel>Отображение даты</FormLabel>
+                        <FormLabel>{t('filter:date_display.label')}</FormLabel>
                         <RadioGroup row
                                     value={dateFormat}
                                     onChange={(e, newValue) => setDateFormat(newValue)}
                         >
-                            <FormControlLabel value={DATE_FORMAT_DATE} control={<Radio/>} label="Дата"/>
-                            <FormControlLabel value={DATE_FORMAT_MONTH} control={<Radio/>} label="Месяц"/>
+                            <FormControlLabel value={DATE_FORMAT_DATE} control={<Radio/>} label={t(`filter:date_display.values.${DATE_FORMAT_DATE}`)}/>
+                            <FormControlLabel value={DATE_FORMAT_MONTH} control={<Radio/>} label={t(`filter:date_display.values.${DATE_FORMAT_MONTH}`)}/>
                         </RadioGroup>
                     </FormControl>
                 </Grid>}
                 {shouldOptimize && <Grid size={{xs: 12}}>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox />} label="Скрыть детали к дате?" checked={hideDetails} onChange={(e) => setHideDetails(e.target.checked)} />
+                        <FormControlLabel control={<Checkbox />} label={t('Скрыть детали к дате?')} checked={hideDetails} onChange={(e) => setHideDetails(e.target.checked)} />
                     </FormGroup>
                 </Grid>}
                 <Grid size={{xs: 12, md: 6}}>
                     <FormControl fullWidth>
-                        <FormLabel>Отображение времени</FormLabel>
+                        <FormLabel>{t('filter:time_format.label')}</FormLabel>
                         <RadioGroup row
                                     value={timeFormat}
                                     onChange={(e, newValue) => setTimeFormat(newValue)}
                         >
-                            <FormControlLabel value={TIME_FORMAT_HOURS} control={<Radio/>} label="Часы"/>
-                            <FormControlLabel value={TIME_FORMAT_MINUTES} control={<Radio/>} label="Минуты"/>
-                            <FormControlLabel value={TIME_FORMAT_MONEY} control={<Radio/>} label="Деньги (Эксперементально)"/>
+                            {TIME_FORMATS.map( format => <FormControlLabel value={format} key={`time_formats-${format}`} control={<Radio/>} label={t(`filter:time_format.values.${format}`)}/>)}
                         </RadioGroup>
                     </FormControl>
                 </Grid>
@@ -609,21 +668,21 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                     <Button fullWidth onClick={() => { setSalaryDialog(true); pushAnalytics('salaryButtonClick')}}>Указать ставки специалистов ({Object.keys(salaries).length})</Button>
                 </Grid>}
 
-                {RESULT_GROUPS.map( (variants, index) => resultGroups[index] ? <Grid size={{xs: 12}} key={`RESULT_GROUPS-${index}`}>
+                {RESULT_GROUPS.map( (variants, index) => resultGroups[index] ? <Grid size={{xs: 12}} key={`result_groups-${index}`}>
                     <FormControl>
                         <FormLabel>Группировка {index+1}</FormLabel>
                         <RadioGroup row
                                     value={resultGroups[index]}
                                     onChange={(e, newValue) => updateResultGroups(newValue, index)}
                         >
-                            {variants.map( value => (value === RESULT_GROUP_NONE || !resultGroups.slice(0, index).includes(value)) ? <FormControlLabel value={value} control={<Radio/>} label={RESULT_GROUPS_TRANSLATIONS[value]} key={`RESULT_GROUPS-${index}-${value}`}/> : null)}
+                            {variants.map( value => (value === RESULT_GROUP_NONE || !resultGroups.slice(0, index).includes(value)) ? <FormControlLabel value={value} control={<Radio/>} label={t(`filter:result_groups.values.${value}`)} key={`RESULT_GROUPS-${index}-${value}`}/> : null)}
                         </RadioGroup>
                     </FormControl>
                 </Grid> : null)}
                 {(resultGroups[0] === RESULT_GROUP_WORKER && (!shouldOptimize || dateFormat !== DATE_FORMAT_MONTH)) && <Grid size={{xs: 12}}>
                     <FormControl fullWidth>
                         <TimePicker
-                            label="Подсветка часов сотрудника, меньше чем"
+                            label={t('Подсветка часов сотрудника, меньше чем')}
                             value={highlightTime}
                             onChange={(newValue) => {
                                 setHighlightTime(newValue);
@@ -637,8 +696,8 @@ function FilterDialog({ handleClose, state, onApply, users, queues, startLoading
                         />
                     </FormControl>
                 </Grid>}
-                <Grid size={{xs: 4}} offset={{xs: 4}}>
-                    <Button onClick={() => handleApplyClick()} fullWidth>Применить</Button>
+                <Grid size={{xs: 12, sm: 6}} offset={{sm: 3}}>
+                    <Button onClick={() => handleApplyClick()} fullWidth variant="outlined">{t('common:button.apply')}</Button>
                 </Grid>
             </Grid>
         </Container>

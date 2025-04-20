@@ -15,111 +15,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import TableContainer from "@mui/material/TableContainer";
 import Link from "@mui/material/Link";
-import {yandexTrackerIssueUrl} from "../helpers";
+import {calculateDetailsCols, rowHaveDetails, yandexTrackerIssueUrl} from "../helpers";
+import {useHumanizeDuration} from "../hooks";
+import {useAtomValue} from "jotai";
+import {dateFormatAtom, myUserAtom, resultGroupsAtom} from "../jotai/atoms";
+import {RowDescription} from "./ResultTable/RowDescription";
+import {ResultDetailsTable} from "./ResultTable/DetailsTable";
+import {useDetailsDialog} from "../hooks/detailsDialog";
 
-function DetailsDialog({state, dateFormat, index, readOnly, handleClose, date, row, rowHaveDetails, rowDescription, humanize, handleWorkLogUpdateClick, handleWorkLogDeleteClick, handleWorkLogCreateClick, extraTitle, resultGroups}) {
-    let cols = 6;
+function DetailsDialog() {
+    const { isOpen, close, index, date, row } = useDetailsDialog();
 
-    if( readOnly ) {
-        cols--;
-    }
-
-    const haveWorkerInChain = resultGroups.includes(RESULT_GROUP_WORKER);
-    const haveIssueInChain = resultGroups.includes(RESULT_GROUP_ISSUE);
-
-    const workerIsLastInChain = resultGroups[resultGroups.length - 2] === RESULT_GROUP_WORKER;
-    const issueLastInChain = resultGroups[resultGroups.length - 2] === RESULT_GROUP_ISSUE;
-
-    if( haveWorkerInChain ) {
-        cols--;
-    }
-
-    if( haveIssueInChain ) {
-        cols--;
-    }
-
-    if( dateFormat === DATE_FORMAT_MONTH ) {
-        cols++;
-    }
-
-    const showWorkerInCaption = haveWorkerInChain && !workerIsLastInChain;
-    const showIssueInCaption = haveIssueInChain && !issueLastInChain;
-
-    const caption = () => { // ISSUE KEY + CREATE BY + FIXATED
-        if( showWorkerInCaption && showIssueInCaption ) {
-            return <caption>
-                <Link href={yandexTrackerIssueUrl(row.extra.issueKey)} target="_blank">{row.extra.issueDisplay}</Link>. Автор: {row.extra.createdByDisplay}
-            </caption>
-        }
-
-        if( showIssueInCaption ) {
-            return <caption>
-                <Link href={yandexTrackerIssueUrl(row.extra.issueKey)} target="_blank">{row.extra.issueDisplay}</Link>
-            </caption>
-        }
-
-        if( showWorkerInCaption ) {
-            return <caption>
-                Автор: {row.extra.createdByDisplay}
-            </caption>
-        }
-
-        return null;
-    };
-
-    return <Dialog onClose={handleClose} open={state} fullWidth maxWidth="lg">
-        <DialogContent sx={{padding: 0 + "!important"}}>
-            {state && <TableContainer component={Paper}>
-                <Table sx={{minWidth: 700}}>
-                    {caption()}
-                    <TableHead>
-                        <TableRow>
-                            <TableCell colSpan={cols}>
-                                <Typography
-                                    variant="h5">{date.title} | {extraTitle}</Typography>
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rowHaveDetails(row, date) && row.byDate[date.index].details.map((detail, j) =>
-                            <TableRow key={`details-row-${index}-${j}`}>
-                                {!haveWorkerInChain && <TableCell>
-                                    {detail.createdByDisplay}
-                                </TableCell>}
-                                {!haveIssueInChain && <TableCell>
-                                    <Link href={yandexTrackerIssueUrl(detail.issueKey)} target="_blank">{detail.issueTitle}</Link>
-                                </TableCell>}
-                                {rowDescription(detail)}
-                                {dateFormat === DATE_FORMAT_MONTH && <TableCell>
-                                    {detail.exactDate}
-                                </TableCell>}
-                                <TableCell sx={{minWidth: 120}}>
-                                    {humanize(detail.value, {[detail.createdById]: detail.value})}
-                                </TableCell>
-                                {!readOnly && <TableCell align="right" sx={{minWidth: 90}}>
-                                    <IconButton size="small" color="warning"
-                                                onClick={() => handleWorkLogUpdateClick(detail, row)}>
-                                        <EditIcon fontSize="inherit"/>
-                                    </IconButton>
-                                    <IconButton size="small" color="error"
-                                                onClick={() => handleWorkLogDeleteClick(detail, row)}>
-                                        <DeleteIcon fontSize="inherit"/>
-                                    </IconButton>
-                                </TableCell>}
-                            </TableRow>)}
-
-                        {!readOnly && <TableRow>
-                            <TableCell align="center"
-                                       colSpan={cols}>
-                                <IconButton size="small" color="success"
-                                            onClick={() => handleWorkLogCreateClick(row, date)}>
-                                    <AddIcon fontSize="inherit"/>
-                                </IconButton>
-                            </TableCell>
-                        </TableRow>}
-                    </TableBody>
-                </Table>
-            </TableContainer>}
+    return <Dialog onClose={close} open={isOpen} fullWidth maxWidth="lg">
+        <DialogContent sx={{p: 0}}>
+            {isOpen && <ResultDetailsTable row={row} date={date} index={index} />}
         </DialogContent>
     </Dialog>
 }

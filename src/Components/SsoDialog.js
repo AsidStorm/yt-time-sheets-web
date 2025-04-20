@@ -6,6 +6,7 @@ import Grid from "@mui/material/Grid2";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
+import {Trans} from "react-i18next";
 
 function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId, allowManualInput }) {
     const [mode, setMode] = useState("NONE");
@@ -28,7 +29,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
 
         if( !callbackUrl ) {
             if( !federationId ) {
-                return showError("Указжите ID федерации");
+                return showError("Укажите ID федерации");
             }
 
             window.open(`https://console.cloud.yandex.ru/federations/${federationId}?redirectUrl=http://127.0.0.1:61759`, '_blank', 'width=800,height=600');
@@ -54,12 +55,12 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
             <Grid container spacing={2}>
                 <Grid size={{xs: 12, md: 6}}>
                     <Button fullWidth onClick={() => setMode("STANDARD")}>
-                        Стандартная
+                        <Trans>Стандартная</Trans>
                     </Button>
                 </Grid>
                 <Grid size={{xs: 12, md: 6}}>
                     <Button fullWidth onClick={() => setMode("HACK")}>
-                        Через WEB
+                        <Trans>Через WEB</Trans>
                     </Button>
                 </Grid>
                 {mode === "STANDARD" && <Grid size={{xs: 12}}>
@@ -69,7 +70,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                             Пользуясь <Link href="https://cloud.yandex.ru/docs/cli/operations/authentication/federated-user" target="_blank">инструкцией</Link> авторизуйтесь с помощью утилиты <strong>yc</strong> в своей федерации.
                         </Grid>
                         <Grid size={{xs: 12}}>
-                            Получите iAm токен, и вставьте его в поле ниже.
+                            <Trans>Получите iAm токен, и вставьте его в поле ниже.</Trans>
                         </Grid>
                         <Grid size={{xs: 12}}>
                             <TextField
@@ -83,7 +84,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                         </Grid>
                         <Grid size={{xs: 12}}>
                             <Button type="submit" fullWidth>
-                                Авторизоваться
+                                <Trans>Авторизоваться</Trans>
                             </Button>
                         </Grid>
                     </Grid>
@@ -96,7 +97,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                                 Введите ID федерации в поле ниже, и нажмите кнопку "Открыть в новом окне".
                             </Grid>
                             <Grid size={{xs: 12}}>
-                                Не закрывайте окно после авторизации, ссылка, на которую вы попали будет необходима на следующем шаге.
+                                <Trans>Не закрывайте окно после авторизации, ссылка, на которую вы попали будет необходима на следующем шаге.</Trans>
                             </Grid>
                             <Grid size={{xs: 12}}>
                                 Не пугайтесь ошибки "Не удается получить доступ к сайту", всё идёт по плану.
@@ -132,7 +133,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                                 </Button>
                             </Grid>
                             <Grid size={{xs: 12}}>
-                                Вставьте URL полученной страницы в поле ниже.
+                                <Trans>Вставьте URL полученной страницы в поле ниже.</Trans>
                             </Grid>
                             <Grid size={{xs: 12}}>
                                 <TextField
@@ -145,7 +146,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                             </Grid>
                             <Grid size={{xs: 12}}>
                                 <Button type="submit" fullWidth>
-                                    Авторизоваться
+                                    <Trans>Авторизоваться</Trans>
                                 </Button>
                             </Grid>
                         </Grid>

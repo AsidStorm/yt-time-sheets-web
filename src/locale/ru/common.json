@@ -1,0 +1,15 @@
+{
+  "button.apply": "Применить",
+  "button.exit": "Выход",
+  "button.continue": "Продолжить",
+  "button.cancel": "Отменить",
+  "button.delete": "Удалить",
+  "button.reload": "Обновить",
+  "button.export": "Экспорт",
+  "button.charts": "Графики",
+  "button.create": "Создать",
+  "button.update": "Изменить",
+  "total": "Итого",
+  "language.russian": "Русский",
+  "language.english": "Английский"
+}

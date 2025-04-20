@@ -1,0 +1,23 @@
+{
+  "header": "Фильтр",
+  "users.label": "Пользователи",
+  "date_display.label": "Отображение даты",
+  "date_display.values.DATE": "Дата",
+  "date_display.values.MONTH": "Месяц",
+  "fast_date.values.TODAY": "Сегодня",
+  "fast_date.values.LAST_2_DAYS": "Последние 2 дня",
+  "fast_date.values.LAST_7_DAYS": "Последние 7 дней",
+  "fast_date.values.LAST_30_DAYS": "Последние 30 дней",
+  "fast_date.values.LAST_90_DAYS": "Последние 90 дней",
+  "time_format.label": "Отображение времени",
+  "time_format.values.HOURS": "Часы",
+  "time_format.values.MINUTES": "Минуты",
+  "time_format.values.MONEY": "Деньги (Эксперементально)",
+  "result_groups.values.NONE": "Нет",
+  "result_groups.values.ISSUE": "Задача",
+  "result_groups.values.WORKER": "Автор",
+  "result_groups.values.QUEUE": "Очередь",
+  "result_groups.values.PROJECT": "Проект",
+  "result_groups.values.ISSUE_TYPE": "Тип задачи",
+  "result_groups.values.EPIC": "Эпик"
+}

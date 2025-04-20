@@ -7,6 +7,7 @@ import React from "react";
 import IconButton from "@mui/material/IconButton";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {yandexTrackerIssueUrl} from "../helpers";
+import {Trans} from "react-i18next";
 
 function TaskSearchDialog({state, handleClose, tasks, onSelect}) {
     const handleOpenInNewTab = (e, issueKey) => {
@@ -17,7 +18,7 @@ function TaskSearchDialog({state, handleClose, tasks, onSelect}) {
     };
 
     return <Dialog onClose={handleClose} open={state}>
-        <DialogTitle>Выберите задачу</DialogTitle>
+        <DialogTitle><Trans>Выберите задачу</Trans></DialogTitle>
         <List sx={{ pt: 0 }}>
             {tasks.map((task) => (
                 <ListItem button onClick={() => onSelect(task)} key={`task-${task.id}`}>

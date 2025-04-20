@@ -5,16 +5,29 @@ import reportWebVitals from './reportWebVitals';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {SalaryProvider} from "./Context/Salary";
+import './i18n';
+
 
 import "moment/locale/ru";
+import { Provider } from 'jotai';
+
+export const Providers = ({ children }) => {
+    return (
+        <Provider>
+            {children}
+        </Provider>
+    )
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <SalaryProvider>
-        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"ru"}>
-            <App/>
-        </LocalizationProvider>
-    </SalaryProvider>
+    <Providers>
+        <SalaryProvider>
+            <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"ru"}>
+                <App/>
+            </LocalizationProvider>
+        </SalaryProvider>
+    </Providers>
 );
 
 // If you want to start measuring performance in your app, pass a function

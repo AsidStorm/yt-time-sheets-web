@@ -1,46 +1,184 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid2";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
 import React, {useEffect, useState} from "react";
+import Grid from "@mui/material/Grid2";
 import {DATE_FORMAT, DATE_FORMAT_DATE, TIME_FORMAT_HOURS, TIME_FORMAT_MINUTES} from "../constants";
-import {humanizeDuration} from "../helpers";
-import Typography from "@mui/material/Typography";
+import {pushAnalytics, yandexTrackerIssueUrl, yandexTrackerProjectUrl, yandexTrackerQueueUrl} from "../helpers";
 import moment from "moment";
 
 import { Chart as ChartJS, registerables } from 'chart.js';
 
 import { Pie, Bar } from 'react-chartjs-2';
-import Alert from "@mui/material/Alert";
+import {TabContext, TabList, TabPanel} from "@mui/lab";
+import {useHumanizeDuration} from "../hooks";
+import {useTranslation} from "react-i18next";
+import {Tab, Alert, Box, Dialog} from "@mui/material";
+import {useAtomValue} from "jotai";
+import {dateFormatAtom, datesAtom} from "../jotai/atoms";
 
 ChartJS.register(...registerables);
 
-function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dates}) {
-    const [ charts, setCharts ] = useState([]);
+const USERS_CATEGORY = 'USERS';
+const QUEUES_CATEGORY = 'QUEUES';
+const ISSUES_CATEGORY = 'ISSUES';
+const ISSUE_TYPES_CATEGORY = 'ISSUE_TYPES';
+const EPICS_CATEGORY = 'EPICS';
+const PROJECTS_CATEGORY = 'PROJECTS';
+
+const BAR_TYPE_PIE = "PIE";
+const BAR_TYPE_BAR_STACKED = "BAR_STACKED";
+
+function ChartsDialog({state, handleClose, workLogs}) {
+    const { t } = useTranslation();
+
+    const dateFormat = useAtomValue(dateFormatAtom);
+    const dates = useAtomValue(datesAtom);
+
+    const [ category, setCategory ] = useState("");
+    const [ subCategory, setSubCategory ] = useState("");
+    const [ categories, setCategories ] = useState([]);
+
+    const humanizeDuration = useHumanizeDuration((timeFormat) => {
+        if( [TIME_FORMAT_HOURS, TIME_FORMAT_MINUTES].includes(timeFormat) ) {
+            return timeFormat;
+        }
+
+        return TIME_FORMAT_HOURS;
+    });
+
+    const categoryValue = category => category.value;
+    const subCategoryValue = (category, chart) => `${category.value}-${chart.value}`;
+
+    const handleSetCategory = (event, newValue) => {
+        setCategory(newValue);
+        const category = categories.find( category => category.value === newValue );
+        setSubCategory(subCategoryValue(category, category.charts[0]));
+
+        pushAnalytics('setupChartsCategory', {
+            category: newValue
+        });
+    };
+
+    const handleSetSubCategory = (event, newValue) => {
+        setSubCategory(newValue);
+
+        pushAnalytics('setupChartsSubCategory', {
+            category: category,
+            subCategory: newValue
+        });
+    };
 
     const durationValueFormatter = value => {
-        const tf = [TIME_FORMAT_HOURS, TIME_FORMAT_MINUTES].includes(timeFormat) ? timeFormat : TIME_FORMAT_HOURS;
-
         if( parseInt(value) === value ) {
-            return humanizeDuration(value, tf);
+            return humanizeDuration(value);
         }
 
         if( parseInt(value.parsed) > 0 ) {
-            return humanizeDuration(value.parsed, tf);
+            return humanizeDuration(value.parsed);
         }
 
         if( parseInt(value.raw) > 0 ) {
-            return humanizeDuration(value.raw, tf);
+            return humanizeDuration(value.raw);
         }
 
-        return humanizeDuration(0, tf);
+        return humanizeDuration(0);
     };
 
-    const prepareCharts = () => {
-        const out = [];
+    const makePieChart = (value, data, clickable) =>   {
+        const options = clickable ? {
+            onClick: (e, elements) => {
+                const { link } = elements[0].element['$context'].raw;
 
+                if(!!link) {
+                    window.open(link);
+                }
+            },
+            onHover: (event, chartElements) => {
+                const haveLink = chartElements && chartElements[0] && chartElements[0].element['$context'].raw && !!chartElements[0].element['$context'].raw.link;
+
+                event.native.target.style.cursor = haveLink ? 'pointer' : 'default';
+            }
+        } : {};
+
+        return {
+            type: BAR_TYPE_PIE,
+            value,
+
+            data: {
+                labels: Object.values(data).map( ({ label }) => label ),
+                datasets: [
+                    {
+                        data: Object.values(data),
+                    },
+                ]
+            },
+
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: "right",
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: durationValueFormatter
+                        }
+                    }
+                },
+                ...options
+            }
+        };
+    }
+
+    const makeStackedBarChart = (value, data) => {
+        return {
+            type: BAR_TYPE_BAR_STACKED,
+            value,
+
+            data: {
+                labels: dates.map( ({title}) => title ),
+                datasets: Object.keys(data).map( key => {
+                    return {
+                        label: data[key].label,
+                        data: Object.values(data[key].data),
+                        stack: "stack-o"
+                    }
+                })
+            },
+
+            options: {
+                maintainAspectRatio: false,
+
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+
+                        ticks: {
+                            callback: function(value) {
+                                return durationValueFormatter(value);
+                            }
+                        }
+                    }
+                },
+
+                plugins: {
+                    legend: {
+                        position: "right",
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: value => {
+                                return value.dataset.label + ": " + durationValueFormatter(value);
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    const prepareCharts = () => {
         const pieChartByUsers = {};
         const pieChartByIssues = {};
         const pieChartByDate = {};
@@ -58,9 +196,10 @@ function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dat
 
         const users = {};
 
+
         const workLogEpic = ({ epicKey, epicDisplay }) => {
             if( epicKey === "" ) {
-                return { epicKey: "NO_EPIC", epicTitle: "Нет" };
+                return { epicKey: "NO_EPIC", epicTitle: "Не указан" };
             }
 
             return { epicKey, epicTitle: epicDisplay };
@@ -68,7 +207,7 @@ function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dat
 
         const workLogProject = ({ projectId, projectName }) => {
             if( projectId === "" || projectId === "0" ) {
-                return { projectId: "-1", projectName: "Нет" };
+                return { projectId: "-1", projectName: "Не указан" };
             }
 
             return { projectId, projectName };
@@ -89,7 +228,7 @@ function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dat
             }
 
             if( !pieChartByProject[projectId] ) {
-                pieChartByProject[projectId] = {id: projectId, label: projectName, value: 0 };
+                pieChartByProject[projectId] = {id: projectId, label: projectName, value: 0, link: projectId === "-1" ? null : yandexTrackerProjectUrl(projectId) };
             }
 
             if( !pieChartByIssueType[log.typeId] ) {
@@ -165,7 +304,8 @@ function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dat
             if( !pieChartByEpic[epicKey] ) {
                 pieChartByEpic[epicKey] = {
                     id: epicKey,
-                    label: epicKey === "NO_EPIC" ? "Нет" : (epicKey + ": " + epicTitle),
+                    label: epicKey === "NO_EPIC" ? "Не указано" : (epicKey + ": " + epicTitle),
+                    link: epicKey === "NO_EPIC" ? null : yandexTrackerIssueUrl(epicKey),
                     value: 0
                 }
             }
@@ -174,6 +314,7 @@ function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dat
                 pieChartByIssues[log.issueKey] = {
                     id: log.issueKey,
                     label: log.issueKey + ": " + log.issueDisplay,
+                    link: yandexTrackerIssueUrl(log.issueKey),
                     value: 0
                 }
             }
@@ -183,7 +324,7 @@ function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dat
             }
 
             if (!pieChartByQueue[log.queue]) {
-                pieChartByQueue[log.queue] = {id: log.queue, label: log.queue, value: 0}
+                pieChartByQueue[log.queue] = {id: log.queue, label: log.queue, value: 0, link: yandexTrackerQueueUrl(log.queue)}
             }
 
             pieChartByUsers[log.createdById].value += log.duration;
@@ -202,501 +343,185 @@ function ChartsDialog({state, dateFormat, handleClose, workLogs, timeFormat, dat
             barChartByIssueTypeAndDate[log.typeId].data[date] += log.duration;
         }
 
-        if( Object.keys(pieChartByUsers).length > 1 ) {
-            out.push({
-                type: "PIE",
-                label: "Итого (Сотрудники)",
-                md: 6,
-                data: {
-                    labels: Object.values(pieChartByUsers).map( v => v.label ),
-                    datasets: [
-                        {
-                            data: Object.values(pieChartByUsers),
-                        },
-                    ]
-                },
+        const nextCategories = {
+            [USERS_CATEGORY]: {
+                value: USERS_CATEGORY,
+                charts: []
+            },
+            [QUEUES_CATEGORY]: {
+                value: QUEUES_CATEGORY,
+                charts: []
+            },
+            [ISSUES_CATEGORY]: {
+                value: ISSUES_CATEGORY,
+                charts: []
+            },
+            [ISSUE_TYPES_CATEGORY]: {
+                value: ISSUE_TYPES_CATEGORY,
+                charts: []
+            },
+            [EPICS_CATEGORY]: {
+                value: EPICS_CATEGORY,
+                charts: []
+            },
+            [PROJECTS_CATEGORY]: {
+                value: PROJECTS_CATEGORY,
+                charts: []
+            }
+        };
 
-                options: {
-                    plugins: {
-                        legend: {
-                            position: "right",
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: durationValueFormatter
-                            }
-                        }
-                    }
-                },
-            });
+        if( Object.keys(pieChartByUsers).length > 1 ) {
+            nextCategories[USERS_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByUsers));
         }
 
         if( Object.keys(pieChartByIssues).length > 1 ) {
-            out.push({
-                type: "PIE",
-                label: "Итого (Задачи)",
-                md: 6,
-                data: {
-                    labels: Object.values(pieChartByIssues).map( v => v.label ),
-                    datasets: [
-                        {
-                            data: Object.values(pieChartByIssues),
-                        },
-                    ]
-                },
-
-                options: {
-                    plugins: {
-                        legend: {
-                            position: "right",
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: durationValueFormatter
-                            }
-                        }
-                    }
-                },
-            });
+            nextCategories[ISSUES_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByIssues, true));
         }
 
         if( Object.keys(pieChartByQueue).length > 1 ) {
-            out.push({
-                type: "PIE",
-                label: "Итого (Очереди)",
-                md: 6,
-                data: {
-                    labels: Object.values(pieChartByQueue).map( v => v.label ),
-                    datasets: [
-                        {
-                            data: Object.values(pieChartByQueue),
-                        },
-                    ]
-                },
-
-                options: {
-                    plugins: {
-                        legend: {
-                            position: "right",
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: durationValueFormatter
-                            }
-                        }
-                    }
-                },
-            });
+            nextCategories[QUEUES_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByQueue, true));
         }
 
         if( Object.keys(pieChartByIssueType).length > 1 ) {
-            out.push({
-                type: "PIE",
-                label: "Итого (Типы задач)",
-                md: 6,
-                data: {
-                    labels: Object.values(pieChartByIssueType).map( v => v.label ),
-                    datasets: [
-                        {
-                            data: Object.values(pieChartByIssueType),
-                        },
-                    ]
-                },
-
-                options: {
-                    plugins: {
-                        legend: {
-                            position: "right",
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: durationValueFormatter
-                            }
-                        }
-                    }
-                },
-            });
+            nextCategories[ISSUE_TYPES_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByIssueType));
         }
 
         if( Object.keys(pieChartByEpic).length > 1 ) {
-            out.push({
-                type: "PIE",
-                label: "Итого (Эпики)",
-                md: 6,
-                data: {
-                    labels: Object.values(pieChartByEpic).map( v => v.label ),
-                    datasets: [
-                        {
-                            data: Object.values(pieChartByEpic),
-                        },
-                    ]
-                },
-
-                options: {
-                    plugins: {
-                        legend: {
-                            position: "right",
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: durationValueFormatter
-                            }
-                        }
-                    }
-                },
-            });
+            nextCategories[EPICS_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByEpic, true));
         }
 
         if( Object.keys(pieChartByProject).length > 1 ) {
-            out.push({
-                type: "PIE",
-                label: "Итого (Проекты)",
-                md: 6,
-                data: {
-                    labels: Object.values(pieChartByProject).map( v => v.label ),
-                    datasets: [
-                        {
-                            data: Object.values(pieChartByProject),
-                        },
-                    ]
-                },
-
-                options: {
-                    plugins: {
-                        legend: {
-                            position: "right",
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: durationValueFormatter
-                            }
-                        }
-                    }
-                },
-            });
+            nextCategories[PROJECTS_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByProject, true));
         }
 
         if( Object.keys(barChartByUsersAndDate).length > 1 || dates.length > 1 ) {
-            out.push({
-                type: "BAR_STACKED",
-                label: "По дням (Сотрудники)",
-
-                md: 12,
-
-                data: {
-                    labels: dates.map( d => d.title ),
-                    datasets: Object.keys(barChartByUsersAndDate).map( key => {
-                        return {
-                            label: users[key],
-                            data: Object.values(barChartByUsersAndDate[key].data),
-                            stack: "stack-o"
-                        }
-                    })
-                },
-
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true,
-                        },
-                        y: {
-                            stacked: true,
-
-                            ticks: {
-                                // Include a dollar sign in the ticks
-                                callback: function(value, index, ticks) {
-                                    return durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    },
-
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: value => {
-                                    return value.dataset.label + ": " + durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            nextCategories[USERS_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByUsersAndDate));
         }
 
         if( Object.keys(barChartByQueueAndDate).length > 1 || dates.length > 1 ) {
-            out.push({
-                type: "BAR_STACKED",
-                label: "По дням (Очереди)",
-
-                md: 12,
-
-                data: {
-                    labels: dates.map( d => d.title),
-                    datasets: Object.keys(barChartByQueueAndDate).map( key => {
-                        return {
-                            label: barChartByQueueAndDate[key].label,
-                            data: Object.values(barChartByQueueAndDate[key].data),
-                            stack: "stack-o"
-                        }
-                    })
-                },
-
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true,
-                        },
-                        y: {
-                            stacked: true,
-
-                            ticks: {
-                                // Include a dollar sign in the ticks
-                                callback: function(value, index, ticks) {
-                                    return durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    },
-
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: value => {
-                                    return value.dataset.label + ": " + durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            nextCategories[QUEUES_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByQueueAndDate));
         }
 
         if( Object.keys(barChartByIssueAndDate).length > 1 || dates.length > 1 ) {
-            out.push({
-                type: "BAR_STACKED",
-                label: "По дням (Задачи)",
-
-                md: 12,
-
-                data: {
-                    labels: dates.map( d => d.title),
-                    datasets: Object.keys(barChartByIssueAndDate).map( key => {
-                        return {
-                            label: barChartByIssueAndDate[key].label,
-                            data: Object.values(barChartByIssueAndDate[key].data),
-                            stack: "stack-o"
-                        }
-                    })
-                },
-
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true,
-                        },
-                        y: {
-                            stacked: true,
-
-                            ticks: {
-                                // Include a dollar sign in the ticks
-                                callback: function(value, index, ticks) {
-                                    return durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    },
-
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: value => {
-                                    return value.dataset.label + ": " + durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            nextCategories[ISSUES_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByIssueAndDate));
         }
 
         if( Object.keys(barChartByProjectAndDate).length > 1 || dates.length > 1 ) {
-            out.push({
-                type: "BAR_STACKED",
-                label: "По дням (Проекты)",
-
-                md: 12,
-
-                data: {
-                    labels: dates.map( d => d.title),
-                    datasets: Object.keys(barChartByProjectAndDate).map( key => {
-                        return {
-                            label: barChartByProjectAndDate[key].label,
-                            data: Object.values(barChartByProjectAndDate[key].data),
-                            stack: "stack-o"
-                        }
-                    })
-                },
-
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true,
-                        },
-                        y: {
-                            stacked: true,
-
-                            ticks: {
-                                // Include a dollar sign in the ticks
-                                callback: function(value, index, ticks) {
-                                    return durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    },
-
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: value => {
-                                    return value.dataset.label + ": " + durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            nextCategories[PROJECTS_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByProjectAndDate));
         }
 
         if( Object.keys(barChartByIssueTypeAndDate).length > 1 || dates.length > 1 ) {
-            out.push({
-                type: "BAR_STACKED",
-                label: "По дням (Типы задач)",
-
-                md: 12,
-
-                data: {
-                    labels: dates.map( d => d.title),
-                    datasets: Object.keys(barChartByIssueTypeAndDate).map( key => {
-                        return {
-                            label: barChartByIssueTypeAndDate[key].label,
-                            data: Object.values(barChartByIssueTypeAndDate[key].data),
-                            stack: "stack-o"
-                        }
-                    })
-                },
-
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true,
-                        },
-                        y: {
-                            stacked: true,
-
-                            ticks: {
-                                // Include a dollar sign in the ticks
-                                callback: function(value, index, ticks) {
-                                    return durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    },
-
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: value => {
-                                    return value.dataset.label + ": " + durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            nextCategories[ISSUE_TYPES_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByIssueTypeAndDate));
         }
 
         if( Object.keys(barChartByEpicAndDate).length > 1 || dates.length > 1 ) {
-            out.push({
-                type: "BAR_STACKED",
-                label: "По дням (Эпики)",
-
-                md: 12,
-
-                data: {
-                    labels: dates.map( d => d.title),
-                    datasets: Object.keys(barChartByEpicAndDate).map( key => {
-                        return {
-                            label: barChartByEpicAndDate[key].label,
-                            data: Object.values(barChartByEpicAndDate[key].data),
-                            stack: "stack-o"
-                        }
-                    })
-                },
-
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true,
-                        },
-                        y: {
-                            stacked: true,
-
-                            ticks: {
-                                // Include a dollar sign in the ticks
-                                callback: function(value, index, ticks) {
-                                    return durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    },
-
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: value => {
-                                    return value.dataset.label + ": " + durationValueFormatter(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            nextCategories[EPICS_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByEpicAndDate));
         }
 
-        setCharts(out);
+        const arrayCategories = Object.values(nextCategories).filter( category => category.charts.length > 0 );
+
+        if( arrayCategories.length > 0 ) {
+            setCategory(categoryValue(arrayCategories[0]));
+            setSubCategory(subCategoryValue(arrayCategories[0], arrayCategories[0].charts[0]));
+        }
+
+        setCategories(arrayCategories);
     };
 
     useEffect(() => {
         prepareCharts();
     }, [workLogs]);
 
+    function Chart({ chart }) {
+        if( chart.type === "PIE" ) {
+            return <Pie
+                data={chart.data}
+                options={chart.options}
+            />
+        }
+
+        if(chart.type === "BAR_STACKED") {
+            return <Bar
+                data={chart.data}
+                options={chart.options}
+            />
+        }
+
+        return <Alert>Неизвестный тип графика [{chart.type}]</Alert>
+    }
+
+    function Charts({category}) {
+        const {charts} = category;
+
+        return <TabContext value={subCategory}>
+            <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
+                <TabList
+                    onChange={handleSetSubCategory}
+                >
+                    {charts.map(chart => {
+                        const key = `categories_${category.value}_sub_category_${chart.type}`;
+                        const value = `${category.value}-${chart.value}`;
+                        const label = t(`charts:categories.${category.value}.sub_categories.${chart.value}.label`);
+
+                        return <Tab key={key} value={value} label={label}/>
+                    })}
+                </TabList>
+            </Box>
+            {charts.map(chart => {
+                return <TabPanel key={`categories_${category.value}_subcategory_${chart.type}_panel`}
+                                 value={category.value + '-' + chart.value} sx={{height: '500px'}}>
+                    <Chart chart={chart}/>
+                </TabPanel>
+            })}
+        </TabContext>
+    }
+
     return <Dialog open={state} onClose={() => handleClose()} fullWidth maxWidth="lg">
-        <DialogTitle>Графики</DialogTitle>
-        <DialogContent>
-            <Grid container spacing={2} sx={{paddingTop: 2}}>
-                {charts.length === 0 && <Grid size={{xs: 12}}><Alert severity="warning">Недостаточно данных для построения графиков!</Alert></Grid>}
-                {charts.map(chart => <Grid size={{xs: 12, md: chart.md}} style={{height: 500 + `px`, marginBottom: 20 + `px`}} key={chart.label}>
-                    <Typography sx={{ml: 2, flex: 1}} variant="h5" component="div">
-                        {chart.label}
-                    </Typography>
+        <Grid container spacing={2}>
+            <TabContext value={category}>
+                <Box sx={{display: 'flex', width: '100%'}}>
+                    <TabList
+                        orientation="vertical"
+                        variant="scrollable"
+                        onChange={handleSetCategory}
+                        sx={{
+                            borderRight: 1,
+                            borderColor: 'divider',
+                            minWidth: 180
+                        }}
+                    >
+                        {categories.map(category => (
+                            <Tab
+                                key={`categories_${category.value}`}
+                                value={category.value}
+                                label={t(`charts:categories.${category.value}.label`)}
+                                sx={{alignItems: 'flex-end'}}
+                            />
+                        ))}
+                    </TabList>
 
-                    {chart.type === "PIE" && <Pie
-                        data={chart.data}
-                        options={chart.options}
-                    />}
-
-                    {chart.type === "BAR_STACKED" && <Bar
-                        data={chart.data}
-                        options={chart.options}
-                    />}
-                </Grid>)}
-            </Grid>
-        </DialogContent>
-
-        <DialogActions>
-            <Button onClick={() => handleClose()} color="warning">Закрыть</Button>
-        </DialogActions>
+                    <Box sx={{flexGrow: 1, width: 'calc(100% - 180px)'}}>
+                        {categories.map(category => (
+                            <TabPanel
+                                key={`categories_tab_${category.value}`}
+                                value={category.value}
+                                sx={{
+                                    width: '100%',
+                                    p: 0,
+                                    height: '100%'
+                                }}
+                            >
+                                <Grid container spacing={2} sx={{width: '100%'}}>
+                                    <Grid item xs={12} sx={{width: '100%'}}>
+                                        <Charts category={category}/>
+                                    </Grid>
+                                </Grid>
+                            </TabPanel>
+                        ))}
+                    </Box>
+                </Box>
+            </TabContext>
+        </Grid>
     </Dialog>
 }
 

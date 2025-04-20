@@ -1,0 +1,6 @@
+{
+  "variants.AS_IS.label": "Стандартный",
+  "variants.ONE_ROW.label": "В одну строчку (по датам)",
+  "variants.ONE_ROW_WITH_DATE.label": "В одну строчку (с датой)",
+  "variants.SHORT.label": "Короткий"
+}

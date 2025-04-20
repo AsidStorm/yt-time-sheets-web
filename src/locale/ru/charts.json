@@ -1,0 +1,20 @@
+{
+  "categories.USERS.label": "Пользователи",
+  "categories.USERS.sub_categories.BASIC_PIE.label": "Итого",
+  "categories.USERS.sub_categories.BASIC_BAR_STACKED.label": "По датам",
+  "categories.ISSUES.label": "Задачи",
+  "categories.ISSUES.sub_categories.BASIC_PIE.label": "Итого",
+  "categories.ISSUES.sub_categories.BASIC_BAR_STACKED.label": "По датам",
+  "categories.ISSUE_TYPES.label": "Типы задач",
+  "categories.ISSUE_TYPES.sub_categories.BASIC_PIE.label": "Итого",
+  "categories.ISSUE_TYPES.sub_categories.BASIC_BAR_STACKED.label": "По датам",
+  "categories.PROJECTS.label": "Проекты",
+  "categories.PROJECTS.sub_categories.BASIC_PIE.label": "Итого",
+  "categories.PROJECTS.sub_categories.BASIC_BAR_STACKED.label": "По датам",
+  "categories.EPICS.label": "Эпики",
+  "categories.EPICS.sub_categories.BASIC_PIE.label": "Итого",
+  "categories.EPICS.sub_categories.BASIC_BAR_STACKED.label": "По датам",
+  "categories.QUEUES.label": "Очереди",
+  "categories.QUEUES.sub_categories.BASIC_PIE.label": "Итого",
+  "categories.QUEUES.sub_categories.BASIC_BAR_STACKED.label": "По датам"
+}

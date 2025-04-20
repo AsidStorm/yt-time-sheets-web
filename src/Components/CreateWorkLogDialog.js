@@ -10,7 +10,7 @@ import Dialog from "@mui/material/Dialog";
 import React, {useEffect, useRef, useState} from "react";
 import CustomAutocomplete from "./CustomAutocomplete";
 import {
-    CREATE_WORK_LOG_FORM_TYPE_ADVANCED,
+    CREATE_WORK_LOG_FORM_TYPE_ADVANCED, CREATE_WORK_LOG_FORM_TYPE_BASIC,
     DATE_FORMAT, RESULT_GROUP_EPIC, RESULT_GROUP_ISSUE,
     RESULT_GROUP_WORKER,
     TASK_SEARCH_TYPE_BASE,
@@ -25,12 +25,33 @@ import Radio from "@mui/material/Radio";
 import TaskSearchDialog from "./TaskSearchDialog";
 import Link from "@mui/material/Link";
 import moment from "moment";
-import {pushAnalytics, replaceRuDuration} from "../helpers";
+import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
 import FormGroup from "@mui/material/FormGroup";
 import Checkbox from "@mui/material/Checkbox";
 import {renderTimeViewClock} from "@mui/x-date-pickers/timeViewRenderers";
+import {Trans, useTranslation} from "react-i18next";
+import {useAtomValue, useSetAtom} from "jotai";
+import {usersAtom, boardsAtom, resultGroupsAtom, myUserAtom, selectedUsersAtom, workLogsAtom} from "../jotai/atoms";
+import {useCreateWorkLogDialog, useLoader} from "../hooks";
+import {useAtom} from "jotai/index";
 
-function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, users, showError, admin, showSuccess, startLoading, endLoading, myUserIdentity, resultGroups, boards }) {
+function CreateWorkLogDialog({ setData,  showError, showSuccess }) {
+    const { t } = useTranslation();
+
+    const { startLoading, endLoading } = useLoader();
+    const { close, isOpen, createdById, issueKey, issueTitle, duration, comment, date: rawDate } = useCreateWorkLogDialog();
+
+    const users = useAtomValue(usersAtom);
+    const boards = useAtomValue(boardsAtom);
+    const resultGroups = useAtomValue(resultGroupsAtom);
+    const myUser = useAtomValue(myUserAtom);
+    const selectedUsers = useAtomValue(selectedUsersAtom);
+    const setWorkLogs = useSetAtom(workLogsAtom);
+
+    const userIdentity = resultGroups.includes(RESULT_GROUP_WORKER) || !myUser.isAdmin ? myUser.value : createdById;
+    const form = resultGroups.includes(RESULT_GROUP_ISSUE) ? CREATE_WORK_LOG_FORM_TYPE_BASIC : CREATE_WORK_LOG_FORM_TYPE_ADVANCED;
+    const date = rawDate && rawDate.includes[0] ? rawDate.includes[0] : moment();
+
     const [ taskSearchType, setTaskSearchType ] = useState(TASK_SEARCH_TYPE_BASE);
     const [ taskSearchDialogState, setTaskSearchDialogState ] = useState(false);
     const [ tasks, setTasks ] = useState([]);
@@ -46,10 +67,6 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
 
     const [ withComment, setWithComment ] = useState(false);
 
-    const { form, date: rawDate, duration, comment, userIdentity, issueTitle, issueKey } = data;
-
-    const date = rawDate.includes[0];
-
     const [ issuePlaceholder, setIssuePlaceholder ] = useState("");
     const [ issueDate, setIssueDate ] = useState( date );
 
@@ -61,12 +78,12 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
         const realIssueKey = resultGroups.includes(RESULT_GROUP_ISSUE) || resultGroups.includes(RESULT_GROUP_EPIC) ? issueKey : newIssue.key;
 
         if( !realIssueKey ) {
-            return showError("Пожалуйста, выберите задачу");
+            return showError(t('notifications:please_choose_issue'));
         }
 
         const request = {
             userIdentity: String(userIdentity),
-            myUser: userIdentity === myUserIdentity,
+            myUser: userIdentity === myUser.value,
             issueKey: realIssueKey,
             duration: replaceRuDuration(data.get("duration")),
             comment: data.get("comment"),
@@ -84,13 +101,23 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
         }
 
         if( request.duration.includes('-') ) {
-            return showError("Нельзя указывать отрицательное время");
+            return showError(t('notifications:unable_to_use_negative_time'));
         }
 
         startLoading();
 
         post("/api/v1/work_logs", request).then( response => {
-            onSubmit(response.data);
+            const workLog = response.data;
+
+            if( selectedUsers.length > 0 && !selectedUsers.includes(String(workLog.createdById)) ) {
+                showSuccess("Рабочее время добавлено, но из-за настроек фильтра не может быть показано.");
+            } else {
+                showSuccess("Рабочее время добавлено");
+                setWorkLogs(prev => [...prev, workLog]);
+            }
+
+            close();
+
             pushAnalytics('workLogCreated', {
                 withComment: withComment
             });
@@ -124,8 +151,8 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
     }, [taskSearch]);
 
     useEffect(() => {
-        if( data.date && data.date.includes && data.date.includes[0] ) {
-            const realDate = data.date.includes[0];
+        if( rawDate && rawDate.includes && rawDate.includes[0] ) {
+            const realDate = rawDate.includes[0];
             const nowDate = moment();
 
             realDate.set('hour', nowDate.hour());
@@ -133,11 +160,11 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
 
             setIssueDate(realDate);
         }
-    }, [data]);
+    }, [rawDate]);
 
     useEffect(() => {
-        setIssuePlaceholder(data.comment);
-    }, [state]);
+        setIssuePlaceholder(comment);
+    }, [isOpen]);
 
     const taskFilter = () => {
         const taskFilterBase = () => {
@@ -191,7 +218,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                     </div>}
                     {newIssue.key !== "" && <div>
                         Выбрана задача:<br />
-                        <Link href={`https://tracker.yandex.ru/${newIssue.key}`} target="_blank">
+                        <Link href={yandexTrackerIssueUrl(newIssue.key)} target="_blank" rel="nofollow noreferer">
                             {newIssue.title}
                         </Link>
                     </div>}
@@ -235,16 +262,16 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
     }, [taskBoard]);
 
     useEffect(() => {
-        if( !state ) {
+        if( !isOpen ) {
             setNewIssue({ key: "", title: ""});
             setTaskBoard(0);
             setSprints([]);
             setSprint(0);
             setTaskSearchType(TASK_SEARCH_TYPE_BASE);
         }
-    }, [state]);
+    }, [isOpen]);
 
-    return <Dialog open={state} onClose={() => handleClose()} maxWidth="md" fullWidth>
+    return <Dialog open={isOpen} onClose={() => close()} maxWidth="md" fullWidth>
         <TaskSearchDialog state={taskSearchDialogState} handleClose={() => setTaskSearchDialogState(false)} tasks={tasks}
                           onSelect={task => {
                               setTaskSearchDialogState(false);
@@ -252,11 +279,11 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                           }} />
 
         <form onSubmit={(e) => handleSubmit(e)}>
-            <DialogTitle>Создание рабочего времени</DialogTitle>
+            <DialogTitle><Trans>Создание рабочего времени</Trans></DialogTitle>
             <DialogContent>
                 <Grid container spacing={2} sx={{paddingTop: 1}}>
                     {form !== CREATE_WORK_LOG_FORM_TYPE_ADVANCED && <Grid size={{xs: 12}}>
-                        <Typography varian="h4">{issueTitle}</Typography>
+                        <Typography varian="h4"><Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noreferer">{issueTitle}</Link></Typography>
                     </Grid>}
                     <Grid size={{xs: 12, md: 6}}>
                         <FormControl fullWidth>
@@ -292,7 +319,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                                     ...prev,
                                     userIdentity: newValue ? newValue.value : ""
                                 }))}
-                                disabled={resultGroups.includes(RESULT_GROUP_WORKER) || admin === false}
+                                disabled={resultGroups.includes(RESULT_GROUP_WORKER) || myUser.isAdmin === false}
                                 value={users.find(u => u.value === userIdentity) || null}
                                 options={users}
                                 label="Пользователь"
@@ -323,12 +350,12 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                             onChange={(e) => setIssuePlaceholder(e.target.value)}
                         />
                     </Grid>
-                    {userIdentity === myUserIdentity && <Grid size={{xs: 12}}>
+                    {userIdentity === myUser.value && !myUser.isReadOnly && <Grid size={{xs: 12}}>
                         <FormGroup>
                             <FormControlLabel control={<Checkbox />} label="Добавить комментарий к задаче?" checked={withComment} onChange={(e) => setWithComment(e.target.checked)} />
                         </FormGroup>
                     </Grid>}
-                    {(userIdentity === myUserIdentity && withComment) && <Grid size={{xs: 12}}>
+                    {(userIdentity === myUser.value && withComment) && <Grid size={{xs: 12}}>
                         <TextField
                             label="Комментарий к задаче"
                             multiline
@@ -344,8 +371,8 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={() => handleClose()} color="warning">Отмена</Button>
-                <Button type="submit" color="success">Создать</Button>
+                <Button onClick={() => close()} color="warning">{t('common:button.cancel')}</Button>
+                <Button type="submit" color="success">{t('common:button.create')}</Button>
             </DialogActions>
         </form>
     </Dialog>
