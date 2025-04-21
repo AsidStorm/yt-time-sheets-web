@@ -1,31 +1,23 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import Typography from "@mui/material/Typography";
-import TableBody from "@mui/material/TableBody";
+import React from "react";
+import {Paper, Table, TableHead, TableRow, TableCell, Typography, TableBody, Link, IconButton} from "@mui/material";
+import {useAtomValue} from "jotai";
 import {calculateDetailsCols, rowHaveDetails, yandexTrackerIssueUrl} from "../../helpers";
-import Link from "@mui/material/Link";
 import {RowDescription} from "./RowDescription";
 import {DATE_FORMAT_MONTH, RESULT_GROUP_ISSUE, RESULT_GROUP_WORKER} from "../../constants";
-import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import TableContainer from "@mui/material/TableContainer";
-import React from "react";
 import {useCreateWorkLogDialog, useDeleteWorkLogDialog, useHumanizeDuration, useUpdateWorkLogDialog} from "../../hooks";
-import {useAtomValue} from "jotai/index";
 import {dateFormatAtom, myUserAtom, resultGroupsAtom} from "../../jotai/atoms";
 import {RowTooltipTitle} from "./RowTooltipTitle";
 
-export function ResultDetailsTable({ index, row, date }) {
+export function ResultDetailsTable({index, row, date}) {
     const humanize = useHumanizeDuration();
 
-    const { open: openWorkLogDeleteDialog } = useDeleteWorkLogDialog();
-    const { open: openWorkLogCreateDialog } = useCreateWorkLogDialog();
-    const { open: openWorkLogUpdateDialog } = useUpdateWorkLogDialog();
+    const {open: openWorkLogDeleteDialog} = useDeleteWorkLogDialog();
+    const {open: openWorkLogCreateDialog} = useCreateWorkLogDialog();
+    const {open: openWorkLogUpdateDialog} = useUpdateWorkLogDialog();
 
     const dateFormat = useAtomValue(dateFormatAtom);
     const resultGroups = useAtomValue(resultGroupsAtom);
@@ -42,20 +34,22 @@ export function ResultDetailsTable({ index, row, date }) {
 
     const cols = calculateDetailsCols(myUser.isReadOnly, haveWorkerInChain, haveIssueInChain, haveIssueInChain, dateFormat);
 
-    function Caption({ showWorkerInCaption, showIssueInCaption, issueKey, issueDisplay, createdByDisplay }) {
-        if( showWorkerInCaption && showIssueInCaption ) {
+    function Caption({showWorkerInCaption, showIssueInCaption, issueKey, issueDisplay, createdByDisplay}) {
+        if (showWorkerInCaption && showIssueInCaption) {
             return <caption>
-                <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noreferer">{issueDisplay}</Link>. Автор: {createdByDisplay}
+                <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank"
+                      rel="nofollow noreferer">{issueDisplay}</Link>. Автор: {createdByDisplay}
             </caption>
         }
 
-        if( showIssueInCaption ) {
+        if (showIssueInCaption) {
             return <caption>
-                <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noreferer">{issueDisplay}</Link>
+                <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank"
+                      rel="nofollow noreferer">{issueDisplay}</Link>
             </caption>
         }
 
-        if( showWorkerInCaption ) {
+        if (showWorkerInCaption) {
             return <caption>
                 Автор: {createdByDisplay}
             </caption>
@@ -66,12 +60,14 @@ export function ResultDetailsTable({ index, row, date }) {
 
     return <TableContainer component={Paper}>
         <Table sx={{minWidth: 700}}>
-            <Caption createdByDisplay={row.extra.createdByDisplay} issueKey={row.extra.issueKey} issueDisplay={row.extra.issueDisplay} showWorkerInCaption={showWorkerInCaption} showIssueInCaption={showIssueInCaption}/>
+            <Caption createdByDisplay={row.extra.createdByDisplay} issueKey={row.extra.issueKey}
+                     issueDisplay={row.extra.issueDisplay} showWorkerInCaption={showWorkerInCaption}
+                     showIssueInCaption={showIssueInCaption}/>
             <TableHead>
                 <TableRow>
                     <TableCell colSpan={cols}>
                         <Typography
-                            variant="h5">{date.title} | <RowTooltipTitle row={row} /></Typography>
+                            variant="h5">{date.title} | <RowTooltipTitle row={row}/></Typography>
                     </TableCell>
                 </TableRow>
             </TableHead>
@@ -82,9 +78,10 @@ export function ResultDetailsTable({ index, row, date }) {
                             {detail.createdByDisplay}
                         </TableCell>}
                         {!haveIssueInChain && <TableCell>
-                            <Link href={yandexTrackerIssueUrl(detail.issueKey)} target="_blank">{detail.issueTitle}</Link>
+                            <Link href={yandexTrackerIssueUrl(detail.issueKey)}
+                                  target="_blank">{detail.issueTitle}</Link>
                         </TableCell>}
-                        <RowDescription row={detail} />
+                        <RowDescription row={detail}/>
                         {dateFormat === DATE_FORMAT_MONTH && <TableCell>
                             {detail.exactDate}
                         </TableCell>}

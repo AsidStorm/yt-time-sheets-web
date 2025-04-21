@@ -5,7 +5,7 @@ import {queuesMapAtom} from "./queues";
 import {dateFormatAtom} from "./dateFormat";
 import {resultGroupsAtom} from "./resultGroups";
 
-export const resultRowsAtom = atom( get => {
+export const resultRowsAtom = atom(get => {
     return processRows(
         get(workLogsAtom),
         get(queuesMapAtom),

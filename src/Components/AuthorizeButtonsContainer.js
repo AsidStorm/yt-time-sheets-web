@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Grid from "@mui/material/Grid2";
+import {Grid2 as Grid} from "@mui/material";
 import {pushAnalytics} from "../helpers";
 import YandexSso from "../assets/yandex-sso.svg";
 import YandexId from "../assets/yandex-id-big.svg";
@@ -8,7 +8,14 @@ import SsoDialog from "./SsoDialog";
 import {AUTHORIZED_STATE_DONE, AUTHORIZED_STATE_NO_ORG_ID} from "../constants";
 import DonateCard from "./DonateCard";
 
-export function AuthorizeButtonsContainer({ OAuthClientId, allowManualInput, federationId, defaultOrgId, showError, setAuthorized }) {
+export function AuthorizeButtonsContainer({
+                                              OAuthClientId,
+                                              allowManualInput,
+                                              federationId,
+                                              defaultOrgId,
+                                              showError,
+                                              setAuthorized
+                                          }) {
     const [ssoDialog, setSsoDialog] = useState({
         open: false
     });
@@ -16,7 +23,7 @@ export function AuthorizeButtonsContainer({ OAuthClientId, allowManualInput, fed
     const handleIAmToken = (iAmToken) => {
         localStorage.setItem("iAmToken", iAmToken);
 
-        if( !allowManualInput && defaultOrgId !== "" ) {
+        if (!allowManualInput && defaultOrgId !== "") {
             setAuthorized(AUTHORIZED_STATE_DONE);
         } else {
             setAuthorized(AUTHORIZED_STATE_NO_ORG_ID);
@@ -33,7 +40,7 @@ export function AuthorizeButtonsContainer({ OAuthClientId, allowManualInput, fed
     };
 
     return <Grid container spacing={2} direction="column"
-          alignItems="center" alignContent="center" justifyContent="center">
+                 alignItems="center" alignContent="center" justifyContent="center">
         <SsoDialog
             showError={showError}
             state={ssoDialog.open}
@@ -44,7 +51,10 @@ export function AuthorizeButtonsContainer({ OAuthClientId, allowManualInput, fed
         />
 
         {OAuthClientId !== '' && <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
-            <img src={YandexId} style={{cursor: "pointer"}} onClick={() => { pushAnalytics('yandexButtonClick'); redirectToYandexOAuth(); }} />
+            <img src={YandexId} style={{cursor: "pointer"}} onClick={() => {
+                pushAnalytics('yandexButtonClick');
+                redirectToYandexOAuth();
+            }}/>
         </Grid>}
         <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
             <img src={YandexSso} style={{cursor: "pointer"}} onClick={() => {

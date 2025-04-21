@@ -1,5 +1,4 @@
 import React, {useEffect, useMemo, useState} from "react";
-import moment from "moment";
 import createTheme from "@mui/material/styles/createTheme";
 import CssBaseline from "@mui/material/CssBaseline";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -39,7 +38,6 @@ import {
     issueStatusesMapAtom,
     haveWorkLogsAtom, myUserAtom,
 } from "./jotai/atoms";
-import {InputLabel, Select, FormControl, MenuItem} from "@mui/material";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer";
 import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorContainer";

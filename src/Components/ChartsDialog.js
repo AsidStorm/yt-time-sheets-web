@@ -4,9 +4,9 @@ import {DATE_FORMAT, DATE_FORMAT_DATE, TIME_FORMAT_HOURS, TIME_FORMAT_MINUTES} f
 import {pushAnalytics, yandexTrackerIssueUrl, yandexTrackerProjectUrl, yandexTrackerQueueUrl} from "../helpers";
 import moment from "moment";
 
-import { Chart as ChartJS, registerables } from 'chart.js';
+import {Chart as ChartJS, registerables} from 'chart.js';
 
-import { Pie, Bar } from 'react-chartjs-2';
+import {Pie, Bar} from 'react-chartjs-2';
 import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {useHumanizeDuration} from "../hooks";
 import {useTranslation} from "react-i18next";
@@ -27,17 +27,17 @@ const BAR_TYPE_PIE = "PIE";
 const BAR_TYPE_BAR_STACKED = "BAR_STACKED";
 
 function ChartsDialog({state, handleClose, workLogs}) {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const dateFormat = useAtomValue(dateFormatAtom);
     const dates = useAtomValue(datesAtom);
 
-    const [ category, setCategory ] = useState("");
-    const [ subCategory, setSubCategory ] = useState("");
-    const [ categories, setCategories ] = useState([]);
+    const [category, setCategory] = useState("");
+    const [subCategory, setSubCategory] = useState("");
+    const [categories, setCategories] = useState([]);
 
     const humanizeDuration = useHumanizeDuration((timeFormat) => {
-        if( [TIME_FORMAT_HOURS, TIME_FORMAT_MINUTES].includes(timeFormat) ) {
+        if ([TIME_FORMAT_HOURS, TIME_FORMAT_MINUTES].includes(timeFormat)) {
             return timeFormat;
         }
 
@@ -49,7 +49,7 @@ function ChartsDialog({state, handleClose, workLogs}) {
 
     const handleSetCategory = (event, newValue) => {
         setCategory(newValue);
-        const category = categories.find( category => category.value === newValue );
+        const category = categories.find(category => category.value === newValue);
         setSubCategory(subCategoryValue(category, category.charts[0]));
 
         pushAnalytics('setupChartsCategory', {
@@ -67,27 +67,27 @@ function ChartsDialog({state, handleClose, workLogs}) {
     };
 
     const durationValueFormatter = value => {
-        if( parseInt(value) === value ) {
+        if (parseInt(value) === value) {
             return humanizeDuration(value);
         }
 
-        if( parseInt(value.parsed) > 0 ) {
+        if (parseInt(value.parsed) > 0) {
             return humanizeDuration(value.parsed);
         }
 
-        if( parseInt(value.raw) > 0 ) {
+        if (parseInt(value.raw) > 0) {
             return humanizeDuration(value.raw);
         }
 
         return humanizeDuration(0);
     };
 
-    const makePieChart = (value, data, clickable) =>   {
+    const makePieChart = (value, data, clickable) => {
         const options = clickable ? {
             onClick: (e, elements) => {
-                const { link } = elements[0].element['$context'].raw;
+                const {link} = elements[0].element['$context'].raw;
 
-                if(!!link) {
+                if (!!link) {
                     window.open(link);
                 }
             },
@@ -103,7 +103,7 @@ function ChartsDialog({state, handleClose, workLogs}) {
             value,
 
             data: {
-                labels: Object.values(data).map( ({ label }) => label ),
+                labels: Object.values(data).map(({label}) => label),
                 datasets: [
                     {
                         data: Object.values(data),
@@ -134,8 +134,8 @@ function ChartsDialog({state, handleClose, workLogs}) {
             value,
 
             data: {
-                labels: dates.map( ({title}) => title ),
-                datasets: Object.keys(data).map( key => {
+                labels: dates.map(({title}) => title),
+                datasets: Object.keys(data).map(key => {
                     return {
                         label: data[key].label,
                         data: Object.values(data[key].data),
@@ -155,7 +155,7 @@ function ChartsDialog({state, handleClose, workLogs}) {
                         stacked: true,
 
                         ticks: {
-                            callback: function(value) {
+                            callback: function (value) {
                                 return durationValueFormatter(value);
                             }
                         }
@@ -197,29 +197,29 @@ function ChartsDialog({state, handleClose, workLogs}) {
         const users = {};
 
 
-        const workLogEpic = ({ epicKey, epicDisplay }) => {
-            if( epicKey === "" ) {
-                return { epicKey: "NO_EPIC", epicTitle: "Не указан" };
+        const workLogEpic = ({epicKey, epicDisplay}) => {
+            if (epicKey === "") {
+                return {epicKey: "NO_EPIC", epicTitle: "Не указан"};
             }
 
-            return { epicKey, epicTitle: epicDisplay };
+            return {epicKey, epicTitle: epicDisplay};
         };
 
-        const workLogProject = ({ projectId, projectName }) => {
-            if( projectId === "" || projectId === "0" ) {
-                return { projectId: "-1", projectName: "Не указан" };
+        const workLogProject = ({projectId, projectName}) => {
+            if (projectId === "" || projectId === "0") {
+                return {projectId: "-1", projectName: "Не указан"};
             }
 
-            return { projectId, projectName };
+            return {projectId, projectName};
         };
 
         for (const log of workLogs) {
             const date = dateFormat === DATE_FORMAT_DATE ? moment(log.createdAt).format(DATE_FORMAT) : moment(log.createdAt).format("MM.YYYY");
 
-            const { projectId, projectName } = workLogProject(log);
-            const { epicKey, epicTitle } = workLogEpic(log);
+            const {projectId, projectName} = workLogProject(log);
+            const {epicKey, epicTitle} = workLogEpic(log);
 
-            if( !users[log.createdById] ) {
+            if (!users[log.createdById]) {
                 users[log.createdById] = log.createByDisplay;
             }
 
@@ -227,81 +227,86 @@ function ChartsDialog({state, handleClose, workLogs}) {
                 pieChartByUsers[log.createdById] = {id: log.createdById, label: log.createByDisplay, value: 0}
             }
 
-            if( !pieChartByProject[projectId] ) {
-                pieChartByProject[projectId] = {id: projectId, label: projectName, value: 0, link: projectId === "-1" ? null : yandexTrackerProjectUrl(projectId) };
+            if (!pieChartByProject[projectId]) {
+                pieChartByProject[projectId] = {
+                    id: projectId,
+                    label: projectName,
+                    value: 0,
+                    link: projectId === "-1" ? null : yandexTrackerProjectUrl(projectId)
+                };
             }
 
-            if( !pieChartByIssueType[log.typeId] ) {
-                pieChartByIssueType[log.typeId] = {id: log.typeId, label: log.typeDisplay, value: 0 };
+            if (!pieChartByIssueType[log.typeId]) {
+                pieChartByIssueType[log.typeId] = {id: log.typeId, label: log.typeDisplay, value: 0};
             }
 
-            if( !barChartByUsersAndDate[log.createdById] ) {
+            if (!barChartByUsersAndDate[log.createdById]) {
                 barChartByUsersAndDate[log.createdById] = {
                     label: log.createByDisplay,
                     data: {}
                 };
 
-                for( const originalDate of dates ) {
+                for (const originalDate of dates) {
                     barChartByUsersAndDate[log.createdById].data[originalDate.index] = 0;
                 }
             }
 
-            if( !barChartByProjectAndDate[projectId] ) {
+            if (!barChartByProjectAndDate[projectId]) {
                 barChartByProjectAndDate[projectId] = {
                     label: projectName,
                     data: {}
                 };
 
-                for( const originalDate of dates ) {
+                for (const originalDate of dates) {
                     barChartByProjectAndDate[projectId].data[originalDate.index] = 0;
                 }
             }
 
-            if( !barChartByQueueAndDate[log.queue] ) {
+            if (!barChartByQueueAndDate[log.queue]) {
                 barChartByQueueAndDate[log.queue] = {
                     label: log.queue,
                     data: {}
                 };
 
-                for( const originalDate of dates ) {
+                for (const originalDate of dates) {
                     barChartByQueueAndDate[log.queue].data[originalDate.index] = 0;
                 }
             }
 
-            if( !barChartByIssueAndDate[log.issueKey] ) {
+            if (!barChartByIssueAndDate[log.issueKey]) {
                 barChartByIssueAndDate[log.issueKey] = {
                     label: log.issueKey + ": " + log.issueDisplay,
                     data: {}
                 };
 
-                for( const originalDate of dates ) {
+                for (const originalDate of dates) {
                     barChartByIssueAndDate[log.issueKey].data[originalDate.index] = 0;
                 }
             }
 
-            if( !barChartByEpicAndDate[epicKey] ) {
+            if (!barChartByEpicAndDate[epicKey]) {
                 barChartByEpicAndDate[epicKey] = {
                     label: epicKey === "NO_EPIC" ? "Нет" : (epicKey + ": " + epicTitle),
                     data: {}
                 };
 
-                for( const originalDate of dates ) {
+                for (const originalDate of dates) {
                     barChartByEpicAndDate[epicKey].data[originalDate.index] = 0;
                 }
             }
 
-            if( !barChartByIssueTypeAndDate[log.typeId] ) {
+            if (!barChartByIssueTypeAndDate[log.typeId]) {
                 barChartByIssueTypeAndDate[log.typeId] = {
                     label: log.typeDisplay,
                     data: {}
                 };
 
-                for( const originalDate of dates ) {
+                for (const originalDate of dates) {
                     barChartByIssueTypeAndDate[log.typeId].data[originalDate.index] = 0;
                 }
             }
 
-            if( !pieChartByEpic[epicKey] ) {
+            if (!pieChartByEpic[epicKey]) {
                 pieChartByEpic[epicKey] = {
                     id: epicKey,
                     label: epicKey === "NO_EPIC" ? "Не указано" : (epicKey + ": " + epicTitle),
@@ -324,7 +329,12 @@ function ChartsDialog({state, handleClose, workLogs}) {
             }
 
             if (!pieChartByQueue[log.queue]) {
-                pieChartByQueue[log.queue] = {id: log.queue, label: log.queue, value: 0, link: yandexTrackerQueueUrl(log.queue)}
+                pieChartByQueue[log.queue] = {
+                    id: log.queue,
+                    label: log.queue,
+                    value: 0,
+                    link: yandexTrackerQueueUrl(log.queue)
+                }
             }
 
             pieChartByUsers[log.createdById].value += log.duration;
@@ -370,57 +380,57 @@ function ChartsDialog({state, handleClose, workLogs}) {
             }
         };
 
-        if( Object.keys(pieChartByUsers).length > 1 ) {
+        if (Object.keys(pieChartByUsers).length > 1) {
             nextCategories[USERS_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByUsers));
         }
 
-        if( Object.keys(pieChartByIssues).length > 1 ) {
+        if (Object.keys(pieChartByIssues).length > 1) {
             nextCategories[ISSUES_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByIssues, true));
         }
 
-        if( Object.keys(pieChartByQueue).length > 1 ) {
+        if (Object.keys(pieChartByQueue).length > 1) {
             nextCategories[QUEUES_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByQueue, true));
         }
 
-        if( Object.keys(pieChartByIssueType).length > 1 ) {
+        if (Object.keys(pieChartByIssueType).length > 1) {
             nextCategories[ISSUE_TYPES_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByIssueType));
         }
 
-        if( Object.keys(pieChartByEpic).length > 1 ) {
+        if (Object.keys(pieChartByEpic).length > 1) {
             nextCategories[EPICS_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByEpic, true));
         }
 
-        if( Object.keys(pieChartByProject).length > 1 ) {
+        if (Object.keys(pieChartByProject).length > 1) {
             nextCategories[PROJECTS_CATEGORY].charts.push(makePieChart('BASIC_PIE', pieChartByProject, true));
         }
 
-        if( Object.keys(barChartByUsersAndDate).length > 1 || dates.length > 1 ) {
+        if (Object.keys(barChartByUsersAndDate).length > 1 || dates.length > 1) {
             nextCategories[USERS_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByUsersAndDate));
         }
 
-        if( Object.keys(barChartByQueueAndDate).length > 1 || dates.length > 1 ) {
+        if (Object.keys(barChartByQueueAndDate).length > 1 || dates.length > 1) {
             nextCategories[QUEUES_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByQueueAndDate));
         }
 
-        if( Object.keys(barChartByIssueAndDate).length > 1 || dates.length > 1 ) {
+        if (Object.keys(barChartByIssueAndDate).length > 1 || dates.length > 1) {
             nextCategories[ISSUES_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByIssueAndDate));
         }
 
-        if( Object.keys(barChartByProjectAndDate).length > 1 || dates.length > 1 ) {
+        if (Object.keys(barChartByProjectAndDate).length > 1 || dates.length > 1) {
             nextCategories[PROJECTS_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByProjectAndDate));
         }
 
-        if( Object.keys(barChartByIssueTypeAndDate).length > 1 || dates.length > 1 ) {
+        if (Object.keys(barChartByIssueTypeAndDate).length > 1 || dates.length > 1) {
             nextCategories[ISSUE_TYPES_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByIssueTypeAndDate));
         }
 
-        if( Object.keys(barChartByEpicAndDate).length > 1 || dates.length > 1 ) {
+        if (Object.keys(barChartByEpicAndDate).length > 1 || dates.length > 1) {
             nextCategories[EPICS_CATEGORY].charts.push(makeStackedBarChart('BASIC_BAR_STACKED', barChartByEpicAndDate));
         }
 
-        const arrayCategories = Object.values(nextCategories).filter( category => category.charts.length > 0 );
+        const arrayCategories = Object.values(nextCategories).filter(category => category.charts.length > 0);
 
-        if( arrayCategories.length > 0 ) {
+        if (arrayCategories.length > 0) {
             setCategory(categoryValue(arrayCategories[0]));
             setSubCategory(subCategoryValue(arrayCategories[0], arrayCategories[0].charts[0]));
         }
@@ -432,15 +442,15 @@ function ChartsDialog({state, handleClose, workLogs}) {
         prepareCharts();
     }, [workLogs]);
 
-    function Chart({ chart }) {
-        if( chart.type === "PIE" ) {
+    function Chart({chart}) {
+        if (chart.type === "PIE") {
             return <Pie
                 data={chart.data}
                 options={chart.options}
             />
         }
 
-        if(chart.type === "BAR_STACKED") {
+        if (chart.type === "BAR_STACKED") {
             return <Bar
                 data={chart.data}
                 options={chart.options}

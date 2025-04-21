@@ -4,3 +4,4 @@ export * from './createWorkLogDialog';
 export * from './updateWorkLogDialog';
 export * from './filterResult';
 export * from './loader';
+export * from './detailsDialog';

@@ -8,10 +8,19 @@ import {workLogsAtom} from "../jotai/atoms";
 import {useDeleteWorkLogDialog, useHumanizeDuration, useLoader} from "../hooks";
 
 function DeleteWorkLogDialog({showSuccess, showError}) {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
-    const { startLoading, endLoading } = useLoader();
-    const { close, isOpen, workLogId, issueKey, createdById, createdByDisplay, issueTitle, value } = useDeleteWorkLogDialog();
+    const {startLoading, endLoading} = useLoader();
+    const {
+        close,
+        isOpen,
+        workLogId,
+        issueKey,
+        createdById,
+        createdByDisplay,
+        issueTitle,
+        value
+    } = useDeleteWorkLogDialog();
     const humanize = useHumanizeDuration();
 
     const setWorkLogs = useSetAtom(workLogsAtom);
@@ -27,14 +36,14 @@ function DeleteWorkLogDialog({showSuccess, showError}) {
         }).then(() => {
             showSuccess(t('notifications:work_log_deleted'));
 
-            setWorkLogs(prev => prev.filter( log => {
+            setWorkLogs(prev => prev.filter(log => {
                 return log.workLogId !== workLogId;
             }));
 
             pushAnalytics('workLogDeleted');
 
             close();
-        }).catch( showError ).finally(endLoading);
+        }).catch(showError).finally(endLoading);
     };
 
     return <Dialog open={isOpen} onClose={() => close()}>
@@ -47,7 +56,8 @@ function DeleteWorkLogDialog({showSuccess, showError}) {
                         i18nKey='components:delete_work_log_dialog.description_text'
                         values={{createdByDisplay, value: humanize(value, {[createdById]: value}), issueTitle}}
                         components={{
-                            issue: <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noopener"/>
+                            issue: <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank"
+                                         rel="nofollow noopener"/>
                         }}
                     />
                 </DialogContentText>
