@@ -1,6 +1,6 @@
+import React, { Fragment } from "react";
 import {Card, CardHeader, Avatar, Link} from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import React, { Fragment } from "react";
 import {Trans, useTranslation} from "react-i18next";
 import {pushAnalytics} from "../helpers";
 

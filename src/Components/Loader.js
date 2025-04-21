@@ -1,8 +1,5 @@
-import CircularProgress from '@mui/material/CircularProgress';
 import React from "react";
-import Backdrop from "@mui/material/Backdrop";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import {Backdrop, Box, Typography, CircularProgress} from '@mui/material';
 import {useLoader} from "../hooks";
 
 function CircularProgressWithLabel(

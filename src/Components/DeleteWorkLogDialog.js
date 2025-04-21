@@ -1,9 +1,9 @@
-import React, {Fragment} from "react";
+import React from "react";
 import {Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Link} from "@mui/material";
+import {Trans, useTranslation} from "react-i18next";
+import {useSetAtom} from "jotai";
 import {remove} from "../requests";
 import {pushAnalytics, yandexTrackerIssueUrl} from "../helpers";
-import {useTranslation} from "react-i18next";
-import {useSetAtom} from "jotai";
 import {workLogsAtom} from "../jotai/atoms";
 import {useDeleteWorkLogDialog, useHumanizeDuration, useLoader} from "../hooks";
 
@@ -15,12 +15,6 @@ function DeleteWorkLogDialog({showSuccess, showError}) {
     const humanize = useHumanizeDuration();
 
     const setWorkLogs = useSetAtom(workLogsAtom);
-
-    const title = () => {
-        return <Fragment>
-            {createdByDisplay}, <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noreferrer">{issueTitle}</Link>: {humanize(value, {[createdById]: value})}
-        </Fragment>
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -49,7 +43,13 @@ function DeleteWorkLogDialog({showSuccess, showError}) {
             <DialogContent>
                 <DialogContentText>
                     {t('components:delete_work_log_dialog.text')}<br/>
-                    {title()}
+                    <Trans
+                        i18nKey='components:delete_work_log_dialog.description_text'
+                        values={{createdByDisplay, value: humanize(value, {[createdById]: value}), issueTitle}}
+                        components={{
+                            issue: <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noopener"/>
+                        }}
+                    />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

@@ -1,37 +1,29 @@
-import {Card, CardHeader} from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-import CakeIcon from '@mui/icons-material/Cake';
 import React, {useState} from "react";
-import Link from "@mui/material/Link";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import DialogContentText from "@mui/material/DialogContentText";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
+import {Card, CardHeader, Avatar, Link, Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText, Typography, Tooltip} from "@mui/material";
+import CakeIcon from '@mui/icons-material/Cake';
 import {pushAnalytics} from "../helpers";
-import { Trans } from 'react-i18next';
+import {Trans, useTranslation} from 'react-i18next';
 
 
 function DonateCard() {
+    const {t} = useTranslation();
+
     const url = process.env.REACT_APP_DONATE_URL;
     const [infoDialog, setInfoDialog] = useState(false);
 
     return <Card>
         <Dialog open={infoDialog} onClose={() => setInfoDialog(false)} fullWidth maxWidth="sm">
-            <DialogTitle>Спасибо что вы с нами =)</DialogTitle>
+            <DialogTitle>{t('components:donate_card.dialog.title')}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
                     <Typography>
                         Yandex Tracker Time Sheets был запущен <Tooltip title={"Если быть точными, то 28 октября 2022 года"}><Typography component="span" sx={{ textDecoration: 'underline' }}>в октябре 2022 года</Typography></Tooltip> и с тех пор постоянно развивается благодаря вашим отзывам и предложениям.
                     </Typography>
                     <Typography>
-                        Мы рады, что вы активно им пользуетесь, и благодарим каждого за доверие и участие.
+                        {t('components:donate_card.dialog.row_2')}
                     </Typography>
                     <Typography>
-                        Портал был и останется бесплатным, а мы продолжим выпускать обновления! 🚀
+                        {t('components:donate_card.dialog.row_3')}
                     </Typography>
                 </DialogContentText>
             </DialogContent>

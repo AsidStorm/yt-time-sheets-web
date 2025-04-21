@@ -1,25 +1,38 @@
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid2";
-import TextField from "@mui/material/TextField";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import React, {Fragment} from "react";
-import DialogContentText from "@mui/material/DialogContentText";
+import React from "react";
+import {
+    DialogTitle,
+    DialogContent,
+    Grid2 as Grid,
+    TextField,
+    DialogActions,
+    Button,
+    Dialog,
+    DialogContentText,
+    Link
+} from "@mui/material";
+import {Trans, useTranslation} from "react-i18next";
 import {patch} from "../requests";
 import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
-import {Trans, useTranslation} from "react-i18next";
 import {useHumanizeDuration, useLoader, useUpdateWorkLogDialog} from "../hooks";
-import Link from "@mui/material/Link";
 
 function UpdateWorkLogDialog({onSubmit, showError, showSuccess}) {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const humanize = useHumanizeDuration();
-    const { isOpen, close, comment, duration, issueKey, workLogId, createdByDisplay, issueTitle, createdById, value } = useUpdateWorkLogDialog();
+    const {
+        isOpen,
+        close,
+        comment,
+        duration,
+        issueKey,
+        workLogId,
+        createdByDisplay,
+        issueTitle,
+        createdById,
+        value
+    } = useUpdateWorkLogDialog();
 
-    const { startLoading, endLoading } = useLoader();
+    const {startLoading, endLoading} = useLoader();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,7 +42,7 @@ function UpdateWorkLogDialog({onSubmit, showError, showSuccess}) {
         const comment = data.get("comment");
         const duration = replaceRuDuration(data.get("duration"));
 
-        if( duration.includes('-') ) {
+        if (duration.includes('-')) {
             return showError(t('Нельзя указывать отрицательное время'));
         }
 
@@ -45,22 +58,22 @@ function UpdateWorkLogDialog({onSubmit, showError, showSuccess}) {
             onSubmit(response.data);
 
             pushAnalytics('workLogUpdated');
-        }).catch( showError ).finally( endLoading );
+        }).catch(showError).finally(endLoading);
     };
-
-    function Title() {
-        return <Fragment>
-            {createdByDisplay}, <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noopener">{issueTitle}</Link>: {humanize(value, {[createdById]: value})}
-        </Fragment>
-    }
 
     return <Dialog open={isOpen} onClose={() => close()}>
         <form onSubmit={(e) => handleSubmit(e)}>
-            <DialogTitle><Trans>Изменение рабочего времени</Trans></DialogTitle>
+            <DialogTitle>{t('components:update_work_log_dialog.title')}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    <Trans>Вы уверены, что хотите изменить эту запись о времени?</Trans><br/>
-                    <Title />
+                    {t('components:update_work_log_dialog.text')}<br/>
+                    <Trans
+                        i18nKey='components:update_work_log_dialog.description_text'
+                        values={{createdByDisplay, value: humanize(value, {[createdById]: value}), issueTitle}}
+                        components={{
+                            issue: <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noopener"/>
+                        }}
+                    />
                 </DialogContentText>
 
                 <Grid container spacing={2}>
@@ -68,7 +81,7 @@ function UpdateWorkLogDialog({onSubmit, showError, showSuccess}) {
                         <TextField
                             autoFocus
                             margin="dense"
-                            label={t('Новое время')}
+                            label={t('components:update_work_log_dialog.fields.duration.label')}
                             fullWidth
                             name="duration"
                             variant="standard"
@@ -79,7 +92,7 @@ function UpdateWorkLogDialog({onSubmit, showError, showSuccess}) {
                 <Grid container spacing={2}>
                     <Grid size={{xs: 12}}>
                         <TextField
-                            label={t('Комментарий')}
+                            label={t('components:update_work_log_dialog.fields.comment.label')}
                             multiline
                             fullWidth
                             rows={5}

@@ -1,15 +1,18 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
 import React from "react";
-import IconButton from "@mui/material/IconButton";
+import {
+    Dialog,
+    DialogTitle,
+    List,
+    ListItem,
+    ListItemText,
+    IconButton
+} from "@mui/material";
+import {useTranslation} from "react-i18next";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {yandexTrackerIssueUrl} from "../helpers";
-import {Trans} from "react-i18next";
 
 function TaskSearchDialog({state, handleClose, tasks, onSelect}) {
+    const {t} = useTranslation();
     const handleOpenInNewTab = (e, issueKey) => {
         e.preventDefault();
         e.stopPropagation();
@@ -18,13 +21,13 @@ function TaskSearchDialog({state, handleClose, tasks, onSelect}) {
     };
 
     return <Dialog onClose={handleClose} open={state}>
-        <DialogTitle><Trans>Выберите задачу</Trans></DialogTitle>
-        <List sx={{ pt: 0 }}>
+        <DialogTitle>{t('components:task_search_dialog.title')}</DialogTitle>
+        <List sx={{pt: 0}}>
             {tasks.map((task) => (
                 <ListItem button onClick={() => onSelect(task)} key={`task-${task.id}`}>
-                    <ListItemText primary={task.attributes.summary} secondary={task.id} />
+                    <ListItemText primary={task.attributes.summary} secondary={task.id}/>
                     <IconButton onClick={(e) => handleOpenInNewTab(e, task.id)}>
-                        <OpenInNewIcon />
+                        <OpenInNewIcon/>
                     </IconButton>
                 </ListItem>
             ))}

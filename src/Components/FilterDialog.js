@@ -1,26 +1,30 @@
 import React, {useCallback, useEffect, useState, Fragment} from "react";
-import Dialog from "@mui/material/Dialog";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Slide from "@mui/material/Slide";
+import {
+    Dialog,
+    AppBar,
+    Toolbar,
+    IconButton,
+    Typography,
+    Button,
+    Slide,
+    Container,
+    Grid2 as Grid,
+    Checkbox,
+    TextField,
+    Autocomplete,
+    FormControl,
+    FormLabel,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    FormGroup,
+    Stack
+} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid2";
-import Checkbox from "@mui/material/Checkbox";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
 import {DesktopDatePicker, TimePicker} from "@mui/x-date-pickers";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Radio from "@mui/material/Radio";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import {renderTimeViewClock} from '@mui/x-date-pickers/timeViewRenderers';
 import moment from "moment";
 import {
     RESULT_GROUP_NONE,
@@ -41,10 +45,9 @@ import {
 import {post} from "../requests";
 import GroupsDialog from "./GroupsDialog";
 import {pushAnalytics, sleep, sliceIntoChunks} from "../helpers";
-import FormGroup from "@mui/material/FormGroup";
 import SalaryDialog from "./SalaryDialog";
 import {useSalaryState} from "../Context/Salary";
-import {Trans, useTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import {useAtomValue} from "jotai";
 import {
     groupsAtom,
@@ -54,7 +57,6 @@ import {
     queuesAtom,
     usersAtom,
 } from "../jotai/atoms";
-import {Stack} from "@mui/material";
 import {useFilterResult, useLoader} from "../hooks";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
@@ -72,7 +74,7 @@ function* generateMoments(start, end, step) {
 
         variableMoment.add(step);
         if (variableMoment >= end) {
-            if( !variableMoment.isAfter(end) ) {
+            if (!variableMoment.isAfter(end)) {
                 yield variableMoment.clone();
             }
 
@@ -81,11 +83,11 @@ function* generateMoments(start, end, step) {
     }
 }
 
-function FilterDialog({ handleClose, state, onApply, showError, reload }) {
-    const { t } = useTranslation();
+function FilterDialog({handleClose, state, onApply, showError, reload}) {
+    const {t} = useTranslation();
 
-    const { setFilteredData } = useFilterResult();
-    const { startLoading, endLoading, setLoadingValue } = useLoader();
+    const {setFilteredData} = useFilterResult();
+    const {startLoading, endLoading, setLoadingValue} = useLoader();
 
     const users = useAtomValue(usersAtom);
     const groups = useAtomValue(groupsAtom);
@@ -96,36 +98,36 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
     const myUser = useAtomValue(myUserAtom);
 
     // Специфика работы следующая, всё что происходит здесь - влияет на общий стейт только после нажатия кнопки "Применить"
-    const [ timeFormat, setTimeFormat ] = useState(TIME_FORMAT_HOURS);
-    const [ dateFormat, setDateFormat ] = useState(DATE_FORMAT_DATE);
-    const [ resultGroups, setResultGroups ] = useState([RESULT_GROUP_ISSUE, RESULT_GROUP_NONE]);
+    const [timeFormat, setTimeFormat] = useState(TIME_FORMAT_HOURS);
+    const [dateFormat, setDateFormat] = useState(DATE_FORMAT_DATE);
+    const [resultGroups, setResultGroups] = useState([RESULT_GROUP_ISSUE, RESULT_GROUP_NONE]);
 
-    const [ selectedUsers, setSelectedUsers ] = useState([]);
-    const [ selectedQueues, setSelectedQueues ] = useState([]);
-    const [ selectedProjects, setSelectedProjects ] = useState([]);
-    const [ selectedIssueTypes, setSelectedIssueTypes ] = useState([]);
-    const [ selectedIssueStatuses, setSelectedIssueStatuses ] = useState([]);
-    const [ dateFrom, setDateFrom ] = useState(moment());
-    const [ dateTo, setDateTo ] = useState(moment());
-    const [ salaryDialog, setSalaryDialog ] = useState(false);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectedQueues, setSelectedQueues] = useState([]);
+    const [selectedProjects, setSelectedProjects] = useState([]);
+    const [selectedIssueTypes, setSelectedIssueTypes] = useState([]);
+    const [selectedIssueStatuses, setSelectedIssueStatuses] = useState([]);
+    const [dateFrom, setDateFrom] = useState(moment());
+    const [dateTo, setDateTo] = useState(moment());
+    const [salaryDialog, setSalaryDialog] = useState(false);
 
-    const [ salaries ] = useSalaryState();
+    const [salaries] = useSalaryState();
 
-    const [ forceUpdate, setForceUpdate ] = useState(false);
+    const [forceUpdate, setForceUpdate] = useState(false);
 
-    const [ highlightTime, setHighlightTime ] = useState(null);
+    const [highlightTime, setHighlightTime] = useState(null);
 
-    const [ groupDialogState, setGroupsDialogState ] = useState(false);
+    const [groupDialogState, setGroupsDialogState] = useState(false);
 
-    const [ shouldOptimize, setShouldOptimize ] = useState(false);
+    const [shouldOptimize, setShouldOptimize] = useState(false);
 
-    const [ hideDetails, setHideDetails ] = useState(true);
+    const [hideDetails, setHideDetails] = useState(true);
 
-    const [ issuesMovedToStatus, setIssuesMovedToStatus ] = useState(false);
-    const [ movedToStatusMonth, setMovedToStatusMonth ] = useState(moment());
+    const [issuesMovedToStatus, setIssuesMovedToStatus] = useState(false);
+    const [movedToStatusMonth, setMovedToStatusMonth] = useState(moment());
 
     useEffect(() => {
-        if( reload ) {
+        if (reload) {
             handleApplyClick();
         }
     }, [reload]);
@@ -136,13 +138,13 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
         date.set('hour', 0);
         date.set('minute', 0);
 
-        if( highlightTime === null ) {
+        if (highlightTime === null) {
             setHighlightTime(date);
         }
     }, []);
 
-    useEffect( () => {
-        if( dateFrom.isValid() && dateTo.isValid() ) {
+    useEffect(() => {
+        if (dateFrom.isValid() && dateTo.isValid()) {
             const dates = [...generateMoments(dateFrom, dateTo, moment.duration({days: 1}))];
 
             setShouldOptimize(dates.length > 31);
@@ -154,14 +156,14 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
         ];
 
-        if( dateFormat === DATE_FORMAT_MONTH ) {
+        if (dateFormat === DATE_FORMAT_MONTH) {
             const out = [];
 
             let month = -1;
             let index = -1;
 
-            for( const date of dates ) { // TODO: Add Year
-                if( month !== date.format("MM.YYYY") ) {
+            for (const date of dates) { // TODO: Add Year
+                if (month !== date.format("MM.YYYY")) {
                     index++;
                     month = date.format("MM.YYYY");
                     out.push({
@@ -172,17 +174,17 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                     });
                 }
 
-                out[index].includes.push( date );
+                out[index].includes.push(date);
             }
 
             return out;
         }
 
-        return dates.map( date => ({
+        return dates.map(date => ({
             title: date.format(DATE_FORMAT),
             index: date.format(DATE_FORMAT),
             grouped: false,
-            includes: [ date ]
+            includes: [date]
         }));
     };
 
@@ -190,7 +192,7 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
         const process = ({workLogs, dateFrom, dateTo}) => {
             const dates = [...generateMoments(moment(dateFrom), moment(dateTo), moment.duration({days: 1}))];
 
-            const realDateFormat = issuesMovedToStatus ? DATE_FORMAT_MONTH : ( shouldOptimize ? dateFormat : DATE_FORMAT_DATE );
+            const realDateFormat = issuesMovedToStatus ? DATE_FORMAT_MONTH : (shouldOptimize ? dateFormat : DATE_FORMAT_DATE);
             const realDates = prepareDates(dates, realDateFormat);
             const realHideDetails = shouldOptimize ? hideDetails : false;
 
@@ -199,7 +201,7 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                 dateFormat: realDateFormat,
                 resultGroups: resultGroups,
                 workLogs: workLogs,
-                selectedUsers: selectedUsers.map( user => String(user) ),
+                selectedUsers: selectedUsers.map(user => String(user)),
                 dates: realDates,
                 hideDetails: realHideDetails,
                 highlightTime: resultGroups[0] === RESULT_GROUP_WORKER && realDateFormat !== DATE_FORMAT_MONTH ? highlightTime : false,
@@ -232,7 +234,7 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
             });
         };
 
-        if( issuesMovedToStatus ) {
+        if (issuesMovedToStatus) {
             startLoading();
 
             post("/api/v1/result_v2", {
@@ -243,13 +245,13 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                 month: parseInt(movedToStatusMonth.format("MM")),
                 year: parseInt(movedToStatusMonth.format("YYYY")),
                 statuses: selectedIssueStatuses
-            }).then( process ).catch( showError ).finally( () => endLoading() );
+            }).then(process).catch(showError).finally(() => endLoading());
 
             return;
         }
 
-        if( !dateFrom.isValid() || !dateTo.isValid() ) {
-            return showError("Даты заполнены некорректно");
+        if (!dateFrom.isValid() || !dateTo.isValid()) {
+            return showError(t('notifications:invalid_filter_dates'));
         }
 
         startLoading();
@@ -271,7 +273,7 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
             const total = chunks.length;
             let loaded = 0;
 
-            if( chunks.length !== 1 ) {
+            if (chunks.length !== 1) {
                 setLoadingValue(0);
             }
 
@@ -285,32 +287,31 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
             const loadChunks = async chunks => {
                 const failedChunks = [];
 
-                for( const chunk of chunks ) {
+                for (const chunk of chunks) {
                     try {
                         filter.dateFrom = chunk[0].format();
-                        filter.dateTo = chunk[chunk.length-1].format();
+                        filter.dateTo = chunk[chunk.length - 1].format();
 
-                        const { workLogs } = await fetchData(filter);
+                        const {workLogs} = await fetchData(filter);
                         loaded++;
 
-                        if( chunks.length !== 1 ) {
+                        if (chunks.length !== 1) {
                             setLoadingValue(parseInt(100 / (total / loaded)));
                         }
 
                         out.push(...workLogs);
                         await sleep(250);
-                    }
-                    catch( e ) {
+                    } catch (e) {
                         failedChunks.push(chunk);
                     }
                 }
 
-                return { failedChunks };
+                return {failedChunks};
             };
 
-            const { failedChunks } = await loadChunks(chunks);
+            const {failedChunks} = await loadChunks(chunks);
 
-            if( failedChunks.length > 0 ) {
+            if (failedChunks.length > 0) {
                 await loadChunks(failedChunks);
             }
 
@@ -323,51 +324,51 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
 
         const chunks = sliceIntoChunks(dates, selectedUsers.length !== 0 && selectedUsers.length < 10 ? 20 : 10);
 
-        fetchChunks(chunks).then( process ).catch( showError ).finally( () => endLoading() );
+        fetchChunks(chunks).then(process).catch(showError).finally(() => endLoading());
     }, [dateFrom, dateTo, shouldOptimize, dateFormat, hideDetails, selectedProjects, selectedUsers, selectedQueues, highlightTime, timeFormat, selectedIssueTypes, movedToStatusMonth, selectedIssueStatuses, issuesMovedToStatus, resultGroups]);
 
     const handleGroupSelection = group => {
-        setSelectedUsers( group.members.map(memberId => parseInt(memberId)) );
+        setSelectedUsers(group.members.map(memberId => parseInt(memberId)));
         setGroupsDialogState(false);
 
         pushAnalytics('groupSelected');
     };
 
     const updateResultGroups = (newValue, index) => {
-        setResultGroups( prev => {
+        setResultGroups(prev => {
             prev[index] = newValue;
 
-            if( newValue === RESULT_GROUP_NONE) {
+            if (newValue === RESULT_GROUP_NONE) {
                 // Всё что после RESULT_GROUP_NONE - режем
-                prev = prev.slice(0, index+1);
+                prev = prev.slice(0, index + 1);
             } else {
                 // Если мы поменяли что-то в середине, надо посмотреть остаток. Если там что-то есть - режем на базе него
                 const before = [];
 
                 let keyFound = false;
 
-                for( const key in prev ) {
-                    if( !prev.hasOwnProperty(key) ) {
+                for (const key in prev) {
+                    if (!prev.hasOwnProperty(key)) {
                         continue;
                     }
 
-                    if( !keyFound ) {
+                    if (!keyFound) {
                         before.push(prev[key]);
                     } else {
-                        if( before.includes(prev[key]) ) {
+                        if (before.includes(prev[key])) {
                             prev = prev.slice(0, parseInt(key));
 
                             break;
                         }
                     }
 
-                    if( parseInt(key) === index ) {
+                    if (parseInt(key) === index) {
                         keyFound = true;
                     }
                 }
             }
 
-            if( prev[prev.length-1] !== RESULT_GROUP_NONE ) {
+            if (prev[prev.length - 1] !== RESULT_GROUP_NONE) {
                 prev.push(RESULT_GROUP_NONE);
             }
 
@@ -378,15 +379,15 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
     };
 
     const handleFastDateClick = (value) => {
-        if( value === FILTER_FAST_DATES_TODAY ) {
+        if (value === FILTER_FAST_DATES_TODAY) {
             setDateFrom(moment());
-        } else if( value === FILTER_FAST_DATES_LAST_2_DAYS ) {
+        } else if (value === FILTER_FAST_DATES_LAST_2_DAYS) {
             setDateFrom(moment().subtract(1, 'days'));
-        } else if( value === FILTER_FAST_DATES_LAST_7_DAYS ) {
+        } else if (value === FILTER_FAST_DATES_LAST_7_DAYS) {
             setDateFrom(moment().subtract(6, 'days'));
-        } else if( value === FILTER_FAST_DATES_LAST_30_DAYS ) {
+        } else if (value === FILTER_FAST_DATES_LAST_30_DAYS) {
             setDateFrom(moment().subtract(29, 'days'));
-        } else if( value === FILTER_FAST_DATES_LAST_90_DAYS ) {
+        } else if (value === FILTER_FAST_DATES_LAST_90_DAYS) {
             setDateFrom(moment().subtract(89, 'days'));
         }
 
@@ -403,10 +404,12 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
         onClose={handleClose}
         TransitionComponent={Transition}
     >
-        <GroupsDialog state={groupDialogState} handleClose={() => setGroupsDialogState(false)} onSelect={group => handleGroupSelection(group)} />
-        <SalaryDialog state={salaryDialog} handleClose={() => setSalaryDialog(false)} showError={showError} users={users} onApply={() => setSalaryDialog(false)} />
+        <GroupsDialog state={groupDialogState} handleClose={() => setGroupsDialogState(false)}
+                      onSelect={group => handleGroupSelection(group)}/>
+        <SalaryDialog state={salaryDialog} handleClose={() => setSalaryDialog(false)} showError={showError}
+                      users={users} onApply={() => setSalaryDialog(false)}/>
 
-        <AppBar sx={{ position: 'relative' }}>
+        <AppBar sx={{position: 'relative'}}>
             <Toolbar>
                 <IconButton
                     edge="start"
@@ -414,9 +417,9 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                     onClick={handleClose}
                     aria-label="close"
                 >
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
-                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                <Typography sx={{ml: 2, flex: 1}} variant="h6" component="div">
                     {t('filter:header')}
                 </Typography>
                 <Button color="inherit" onClick={() => handleApplyClick()}>
@@ -430,9 +433,9 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                 <Grid size={{xs: 12, md: 9}}>
                     <Autocomplete
                         multiple
-                        value={users.filter( value => selectedUsers.includes(value.value) )}
+                        value={users.filter(value => selectedUsers.includes(value.value))}
                         onChange={(event, newInputValue) => {
-                            setSelectedUsers(newInputValue.map( user => user.value ));
+                            setSelectedUsers(newInputValue.map(user => user.value));
                         }}
                         options={users}
                         disableCloseOnSelect
@@ -450,24 +453,28 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                             </li>
                         )}
                         renderInput={(params) => (
-                            <TextField {...params} label={t('filter:users.label')} />
+                            <TextField {...params} label={t('filter:users.label')}/>
                         )}
                     />
                 </Grid>
                 <Grid size={{xs: 12, md: 3}}>
-                    {groups.length > 0 && <Button variant="outlined" size="large" fullWidth onClick={() => { setGroupsDialogState(true); pushAnalytics('groupsButtonClick', { groupsCount: groups.length }); }} sx={{mb: 1}}>
-                        <Trans>Выбрать группу</Trans>
+                    {groups.length > 0 && <Button variant="outlined" size="large" fullWidth onClick={() => {
+                        setGroupsDialogState(true);
+                        pushAnalytics('groupsButtonClick', {groupsCount: groups.length});
+                    }} sx={{mb: 1}}>
+                        {t('common:button.choose_group')}
                     </Button>}
-                    {!!myUser.value && <Button variant="outlined" size="large" fullWidth onClick={() => setSelectedUsers([myUser.value])}>
-                        <Trans>Выбрать себя</Trans>
+                    {!!myUser.value && <Button variant="outlined" size="large" fullWidth
+                                               onClick={() => setSelectedUsers([myUser.value])}>
+                        {t('common:button.choose_myself')}
                     </Button>}
                 </Grid>
                 <Grid size={{xs: 12}}>
                     <Autocomplete
                         multiple
-                        value={queues.filter( value => selectedQueues.includes(value.value) )}
+                        value={queues.filter(value => selectedQueues.includes(value.value))}
                         onChange={(event, newInputValue) => {
-                            setSelectedQueues(newInputValue.map( queue => queue.value ));
+                            setSelectedQueues(newInputValue.map(queue => queue.value));
                         }}
                         options={queues}
                         disableCloseOnSelect
@@ -485,16 +492,16 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                             </li>
                         )}
                         renderInput={(params) => (
-                            <TextField {...params} label={t('Очереди')} />
+                            <TextField {...params} label={t('filter:queues.label')}/>
                         )}
                     />
                 </Grid>
                 <Grid size={{xs: 12}}>
                     <Autocomplete
                         multiple
-                        value={issueTypes.filter( value => selectedIssueTypes.includes(value.value) )}
+                        value={issueTypes.filter(value => selectedIssueTypes.includes(value.value))}
                         onChange={(event, newInputValue) => {
-                            setSelectedIssueTypes(newInputValue.map( type => type.value ));
+                            setSelectedIssueTypes(newInputValue.map(type => type.value));
                         }}
                         options={issueTypes}
                         disableCloseOnSelect
@@ -512,16 +519,16 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                             </li>
                         )}
                         renderInput={(params) => (
-                            <TextField {...params} label={t('Типы задач')} />
+                            <TextField {...params} label={t('filter:issue_types.label')}/>
                         )}
                     />
                 </Grid>
                 <Grid size={{xs: 12, md: 9}}>
                     <Autocomplete
                         multiple
-                        value={projects.filter( value => selectedProjects.includes(value.value) )}
+                        value={projects.filter(value => selectedProjects.includes(value.value))}
                         onChange={(event, newInputValue) => {
-                            setSelectedProjects(newInputValue.map( queue => queue.value ));
+                            setSelectedProjects(newInputValue.map(queue => queue.value));
                         }}
                         options={projects}
                         disableCloseOnSelect
@@ -539,27 +546,30 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                             </li>
                         )}
                         renderInput={(params) => (
-                            <TextField {...params} label={t('Проекты')} />
+                            <TextField {...params} label={t('filter:projects.label')}/>
                         )}
                     />
                 </Grid>
                 <Grid size={{xs: 12, md: 3}}>
-                    <Button variant="outlined" size="large" fullWidth onClick={() => setSelectedProjects(projects.map( p => p.value))}>
-                        <Trans>Все проекты</Trans>
+                    <Button variant="outlined" size="large" fullWidth
+                            onClick={() => setSelectedProjects(projects.map(p => p.value))}>
+                        {t('common:button.all_projects')}
                     </Button>
                 </Grid>
                 <Grid size={{xs: 12}}>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox />} label={t('Задачи, попавшие в статус в определённый месяц')} checked={issuesMovedToStatus} onChange={(e) => setIssuesMovedToStatus(e.target.checked)} />
+                        <FormControlLabel control={<Checkbox/>} label={t('filter:issues_moved_to_status.label')}
+                                          checked={issuesMovedToStatus}
+                                          onChange={(e) => setIssuesMovedToStatus(e.target.checked)}/>
                     </FormGroup>
                 </Grid>
                 {issuesMovedToStatus && <Fragment>
                     <Grid size={{xs: 12, md: 6}}>
                         <Autocomplete
                             multiple
-                            value={issueStatuses.filter( value => selectedIssueStatuses.includes(value.value) )}
+                            value={issueStatuses.filter(value => selectedIssueStatuses.includes(value.value))}
                             onChange={(event, newInputValue) => {
-                                setSelectedIssueStatuses(newInputValue.map( type => type.value ));
+                                setSelectedIssueStatuses(newInputValue.map(type => type.value));
                             }}
                             options={issueStatuses}
                             disableCloseOnSelect
@@ -577,14 +587,14 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                                 </li>
                             )}
                             renderInput={(params) => (
-                                <TextField {...params} label={t('Статус')} />
+                                <TextField {...params} label={t('filter:status.label')}/>
                             )}
                         />
                     </Grid>
                     <Grid size={{xs: 12, md: 6}}>
                         <FormControl fullWidth>
                             <DesktopDatePicker
-                                label={t('Месяц')}
+                                label={t('filter:month.label')}
                                 inputFormat="MM.YYYY"
                                 value={movedToStatusMonth}
                                 onChange={(newValue) => {
@@ -601,7 +611,7 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                     <Grid size={{xs: 12, md: 6}}>
                         <FormControl fullWidth>
                             <DesktopDatePicker
-                                label={t('Дата (с)')}
+                                label={t('filter:date_from.label')}
                                 inputFormat="DD.MM.YYYY"
                                 value={dateFrom}
                                 onChange={(newValue) => {
@@ -616,7 +626,7 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                     <Grid size={{xs: 12, md: 6}}>
                         <FormControl fullWidth>
                             <DesktopDatePicker
-                                label={t('Дата (по)')}
+                                label={t('filter:date_to.label')}
                                 value={dateTo}
                                 inputFormat="DD.MM.YYYY"
                                 onChange={(newValue) => {
@@ -630,7 +640,9 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                     </Grid>
                     <Grid size={{xs: 12}}>
                         <Stack direction="row" spacing={2}>
-                            {FILTER_FAST_DATES.map( value => <Button variant="text" key={`fast_date_${value}`} onClick={() => handleFastDateClick(value)} size="small">
+                            {FILTER_FAST_DATES.map(value => <Button variant="text" key={`fast_date_${value}`}
+                                                                    onClick={() => handleFastDateClick(value)}
+                                                                    size="small">
                                 {t(`filter:fast_date.values.${value}`)}
                             </Button>)}
                         </Stack>
@@ -643,14 +655,17 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                                     value={dateFormat}
                                     onChange={(e, newValue) => setDateFormat(newValue)}
                         >
-                            <FormControlLabel value={DATE_FORMAT_DATE} control={<Radio/>} label={t(`filter:date_display.values.${DATE_FORMAT_DATE}`)}/>
-                            <FormControlLabel value={DATE_FORMAT_MONTH} control={<Radio/>} label={t(`filter:date_display.values.${DATE_FORMAT_MONTH}`)}/>
+                            <FormControlLabel value={DATE_FORMAT_DATE} control={<Radio/>}
+                                              label={t(`filter:date_display.values.${DATE_FORMAT_DATE}`)}/>
+                            <FormControlLabel value={DATE_FORMAT_MONTH} control={<Radio/>}
+                                              label={t(`filter:date_display.values.${DATE_FORMAT_MONTH}`)}/>
                         </RadioGroup>
                     </FormControl>
                 </Grid>}
                 {shouldOptimize && <Grid size={{xs: 12}}>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox />} label={t('Скрыть детали к дате?')} checked={hideDetails} onChange={(e) => setHideDetails(e.target.checked)} />
+                        <FormControlLabel control={<Checkbox/>} label={t('filter:hide_details.label')}
+                                          checked={hideDetails} onChange={(e) => setHideDetails(e.target.checked)}/>
                     </FormGroup>
                 </Grid>}
                 <Grid size={{xs: 12, md: 6}}>
@@ -660,44 +675,55 @@ function FilterDialog({ handleClose, state, onApply, showError, reload }) {
                                     value={timeFormat}
                                     onChange={(e, newValue) => setTimeFormat(newValue)}
                         >
-                            {TIME_FORMATS.map( format => <FormControlLabel value={format} key={`time_formats-${format}`} control={<Radio/>} label={t(`filter:time_format.values.${format}`)}/>)}
+                            {TIME_FORMATS.map(format => <FormControlLabel value={format} key={`time_formats-${format}`}
+                                                                          control={<Radio/>}
+                                                                          label={t(`filter:time_format.values.${format}`)}/>)}
                         </RadioGroup>
                     </FormControl>
                 </Grid>
                 {timeFormat === TIME_FORMAT_MONEY && <Grid size={{xs: 12, md: 6}}>
-                    <Button fullWidth onClick={() => { setSalaryDialog(true); pushAnalytics('salaryButtonClick')}}>Указать ставки специалистов ({Object.keys(salaries).length})</Button>
+                    <Button fullWidth onClick={() => {
+                        setSalaryDialog(true);
+                        pushAnalytics('salaryButtonClick')
+                    }}>{t('filter:button.salaries')}</Button>
                 </Grid>}
 
-                {RESULT_GROUPS.map( (variants, index) => resultGroups[index] ? <Grid size={{xs: 12}} key={`result_groups-${index}`}>
-                    <FormControl>
-                        <FormLabel>Группировка {index+1}</FormLabel>
-                        <RadioGroup row
-                                    value={resultGroups[index]}
-                                    onChange={(e, newValue) => updateResultGroups(newValue, index)}
-                        >
-                            {variants.map( value => (value === RESULT_GROUP_NONE || !resultGroups.slice(0, index).includes(value)) ? <FormControlLabel value={value} control={<Radio/>} label={t(`filter:result_groups.values.${value}`)} key={`RESULT_GROUPS-${index}-${value}`}/> : null)}
-                        </RadioGroup>
-                    </FormControl>
-                </Grid> : null)}
-                {(resultGroups[0] === RESULT_GROUP_WORKER && (!shouldOptimize || dateFormat !== DATE_FORMAT_MONTH)) && <Grid size={{xs: 12}}>
-                    <FormControl fullWidth>
-                        <TimePicker
-                            label={t('Подсветка часов сотрудника, меньше чем')}
-                            value={highlightTime}
-                            onChange={(newValue) => {
-                                setHighlightTime(newValue);
-                            }}
-                            viewRenderers={{
-                                hours: renderTimeViewClock,
-                                minutes: renderTimeViewClock,
-                                seconds: renderTimeViewClock,
-                            }}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </FormControl>
-                </Grid>}
+                {RESULT_GROUPS.map((variants, index) => resultGroups[index] ?
+                    <Grid size={{xs: 12}} key={`result_groups-${index}`}>
+                        <FormControl>
+                            <FormLabel>{t('filter:result_groups.label', {index: index + 1})}</FormLabel>
+                            <RadioGroup row
+                                        value={resultGroups[index]}
+                                        onChange={(e, newValue) => updateResultGroups(newValue, index)}
+                            >
+                                {variants.map(value => (value === RESULT_GROUP_NONE || !resultGroups.slice(0, index).includes(value)) ?
+                                    <FormControlLabel value={value} control={<Radio/>}
+                                                      label={t(`filter:result_groups.values.${value}`)}
+                                                      key={`RESULT_GROUPS-${index}-${value}`}/> : null)}
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid> : null)}
+                {(resultGroups[0] === RESULT_GROUP_WORKER && (!shouldOptimize || dateFormat !== DATE_FORMAT_MONTH)) &&
+                    <Grid size={{xs: 12}}>
+                        <FormControl fullWidth>
+                            <TimePicker
+                                label={t('filter:highlight_time.label')}
+                                value={highlightTime}
+                                onChange={(newValue) => {
+                                    setHighlightTime(newValue);
+                                }}
+                                viewRenderers={{
+                                    hours: renderTimeViewClock,
+                                    minutes: renderTimeViewClock,
+                                    seconds: renderTimeViewClock,
+                                }}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </FormControl>
+                    </Grid>}
                 <Grid size={{xs: 12, sm: 6}} offset={{sm: 3}}>
-                    <Button onClick={() => handleApplyClick()} fullWidth variant="outlined">{t('common:button.apply')}</Button>
+                    <Button onClick={() => handleApplyClick()} fullWidth
+                            variant="outlined">{t('common:button.apply')}</Button>
                 </Grid>
             </Grid>
         </Container>

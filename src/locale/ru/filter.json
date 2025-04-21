@@ -1,6 +1,16 @@
 {
   "header": "Фильтр",
   "users.label": "Пользователи",
+  "queues.label": "Очереди",
+  "issue_types.label": "Типы задач",
+  "projects.label": "Проекты",
+  "issues_moved_to_status.label": "Задачи, попавшие в статус в определённый месяц",
+  "status.label": "Статус",
+  "month.label": "Месяц",
+  "date_from.label": "Дата (с)",
+  "date_to.label": "Дата (по)",
+  "hide_details.label": "Скрыть детали к дате?",
+  "highlight_time.label": "Подсветка часов сотрудника, меньше чем",
   "date_display.label": "Отображение даты",
   "date_display.values.DATE": "Дата",
   "date_display.values.MONTH": "Месяц",
@@ -13,11 +23,13 @@
   "time_format.values.HOURS": "Часы",
   "time_format.values.MINUTES": "Минуты",
   "time_format.values.MONEY": "Деньги (Эксперементально)",
+  "button.salaries": "Указать ставки специалистов",
   "result_groups.values.NONE": "Нет",
   "result_groups.values.ISSUE": "Задача",
   "result_groups.values.WORKER": "Автор",
   "result_groups.values.QUEUE": "Очередь",
   "result_groups.values.PROJECT": "Проект",
   "result_groups.values.ISSUE_TYPE": "Тип задачи",
-  "result_groups.values.EPIC": "Эпик"
+  "result_groups.values.EPIC": "Эпик",
+  "result_groups.label": "Группировка {{ index }}"
 }

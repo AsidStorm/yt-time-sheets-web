@@ -1,13 +1,11 @@
-import IconButton from "@mui/material/IconButton";
 import React, {Fragment, useState} from "react";
-import {Avatar, Menu, MenuItem} from "@mui/material";
-import Tooltip from "@mui/material/Tooltip";
+import {Avatar, Menu, MenuItem, IconButton, Tooltip} from "@mui/material";
 import {useTranslation} from "react-i18next";
-import { deepPurple } from '@mui/material/colors';
+import {deepPurple} from '@mui/material/colors';
 
 
 export function LanguageSelector() {
-    const { t, i18n } = useTranslation();
+    const {t, i18n} = useTranslation();
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -25,7 +23,7 @@ export function LanguageSelector() {
     };
 
     return <Fragment>
-        <Tooltip title={`Выбор языка`}>
+        <Tooltip title={t('components:language_selector.tooltip.title')}>
             <IconButton
                 color="inherit"
                 id="demo-positioned-button"
@@ -34,7 +32,12 @@ export function LanguageSelector() {
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
             >
-                <Avatar sx={{ bgcolor: deepPurple[100], width: 24, height: 24, fontSize: '13px' }}>{i18n.language.toUpperCase()}</Avatar>
+                <Avatar sx={{
+                    bgcolor: deepPurple[100],
+                    width: 24,
+                    height: 24,
+                    fontSize: '13px'
+                }}>{i18n.language.toUpperCase()}</Avatar>
             </IconButton>
         </Tooltip>
         <Menu

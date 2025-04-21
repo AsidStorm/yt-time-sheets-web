@@ -1,14 +1,10 @@
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
 import React, {useState} from "react";
-import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid2";
-import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
-import {Trans} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
+import {DialogTitle, Dialog, DialogContent, Grid2 as Grid, Button, Link, TextField} from "@mui/material";
 
-function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId, allowManualInput }) {
+function SsoDialog({state, handleClose, handleIAmToken, showError, federationId, allowManualInput}) {
+    const {t} = useTranslation();
+
     const [mode, setMode] = useState("NONE");
 
     const handleStandardAuthSubmit = (e) => {
@@ -27,9 +23,9 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
         const federationId = data.get("federationId") || "";
         let callbackUrl = data.get("callbackUrl") || "";
 
-        if( !callbackUrl ) {
-            if( !federationId ) {
-                return showError("Укажите ID федерации");
+        if (!callbackUrl) {
+            if (!federationId) {
+                return showError(t('notifications:setup_federation_id'));
             }
 
             window.open(`https://console.cloud.yandex.ru/federations/${federationId}?redirectUrl=http://127.0.0.1:61759`, '_blank', 'width=800,height=600');
@@ -37,76 +33,84 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
             return;
         }
 
-        if( callbackUrl.indexOf("http://") < 0 || callbackUrl.indexOf("https://") < 0 ) {
+        if (callbackUrl.indexOf("http://") < 0 || callbackUrl.indexOf("https://") < 0) {
             callbackUrl = `http://${callbackUrl}`;
         }
 
         const url = new URL(callbackUrl);
         const params = Object.fromEntries((new URLSearchParams(url.search)).entries());
 
-        if( params.token ) {
+        if (params.token) {
             handleIAmToken(params.token);
         }
     };
 
     return <Dialog onClose={handleClose} open={state} maxWidth="md" fullWidth>
-        <DialogTitle>Авторизация через SSO</DialogTitle>
+        <DialogTitle>{t('components:sso_dialog.title')}</DialogTitle>
         <DialogContent>
             <Grid container spacing={2}>
                 <Grid size={{xs: 12, md: 6}}>
                     <Button fullWidth onClick={() => setMode("STANDARD")}>
-                        <Trans>Стандартная</Trans>
+                        {t('components:sso_dialog.mode.standard')}
                     </Button>
                 </Grid>
                 <Grid size={{xs: 12, md: 6}}>
                     <Button fullWidth onClick={() => setMode("HACK")}>
-                        <Trans>Через WEB</Trans>
+                        {t('components:sso_dialog.mode.web')}
                     </Button>
                 </Grid>
                 {mode === "STANDARD" && <Grid size={{xs: 12}}>
                     <form onSubmit={handleStandardAuthSubmit}>
-                    <Grid container spacing={2}>
-                        <Grid size={{xs: 12}}>
-                            Пользуясь <Link href="https://cloud.yandex.ru/docs/cli/operations/authentication/federated-user" target="_blank">инструкцией</Link> авторизуйтесь с помощью утилиты <strong>yc</strong> в своей федерации.
+                        <Grid container spacing={2}>
+                            <Grid size={{xs: 12}}>
+                                <Trans
+                                    i18nKey='components:sso_dialog.mode.standard.description_row_1'
+                                    components={{
+                                        instruction: <Link
+                                            href="https://cloud.yandex.ru/docs/cli/operations/authentication/federated-user"
+                                            target="_blank" rel="nofollow noopener"/>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid size={{xs: 12}}>
+                                {t('components:sso_dialog.mode.standard.description_row_2')}
+                            </Grid>
+                            <Grid size={{xs: 12}}>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    label={t('components:sso_dialog.fields.i_am_token.label')}
+                                    fullWidth
+                                    name="iAmToken"
+                                    variant="standard"
+                                />
+                            </Grid>
+                            <Grid size={{xs: 12}}>
+                                <Button type="submit" fullWidth>
+                                    {t('common:button.authorize')}
+                                </Button>
+                            </Grid>
                         </Grid>
-                        <Grid size={{xs: 12}}>
-                            <Trans>Получите iAm токен, и вставьте его в поле ниже.</Trans>
-                        </Grid>
-                        <Grid size={{xs: 12}}>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                label="iAm токен"
-                                fullWidth
-                                name="iAmToken"
-                                variant="standard"
-                            />
-                        </Grid>
-                        <Grid size={{xs: 12}}>
-                            <Button type="submit" fullWidth>
-                                <Trans>Авторизоваться</Trans>
-                            </Button>
-                        </Grid>
-                    </Grid>
                     </form>
                 </Grid>}
+
                 {mode === "HACK" && <Grid size={{xs: 12}}>
                     <form onSubmit={handleHackAuthSubmit}>
                         <Grid container spacing={2}>
                             <Grid size={{xs: 12}}>
-                                Введите ID федерации в поле ниже, и нажмите кнопку "Открыть в новом окне".
+                                {t('components:sso_dialog.mode.web.description_row_1')}
                             </Grid>
                             <Grid size={{xs: 12}}>
-                                <Trans>Не закрывайте окно после авторизации, ссылка, на которую вы попали будет необходима на следующем шаге.</Trans>
+                                {t('components:sso_dialog.mode.web.description_row_2')}
                             </Grid>
                             <Grid size={{xs: 12}}>
-                                Не пугайтесь ошибки "Не удается получить доступ к сайту", всё идёт по плану.
+                                {t('components:sso_dialog.mode.web.description_row_3')}
                             </Grid>
                             {(allowManualInput || federationId === "") && <Grid size={{xs: 12}}>
                                 <TextField
                                     autoFocus
                                     margin="dense"
-                                    label="ID федерации"
+                                    label={t('components:sso_dialog.fields.federation_id.label')}
                                     fullWidth
                                     name="federationId"
                                     variant="standard"
@@ -117,7 +121,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                                 <TextField
                                     autoFocus
                                     margin="dense"
-                                    label="ID федерации"
+                                    label={t('components:sso_dialog.fields.federation_id.label')}
                                     fullWidth
                                     name="federationId"
                                     variant="standard"
@@ -129,16 +133,16 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                             </Grid>}
                             <Grid size={{xs: 12}}>
                                 <Button type="submit" fullWidth>
-                                    Открыть в новом окне
+                                    {t('common:button.open_in_new_window')}
                                 </Button>
                             </Grid>
                             <Grid size={{xs: 12}}>
-                                <Trans>Вставьте URL полученной страницы в поле ниже.</Trans>
+                                {t('components:sso_dialog.mode.web.description_row_4')}
                             </Grid>
                             <Grid size={{xs: 12}}>
                                 <TextField
                                     margin="dense"
-                                    label="Callback URL"
+                                    label={t('components:sso_dialog.fields.callback_url.label')}
                                     fullWidth
                                     name="callbackUrl"
                                     variant="standard"
@@ -146,7 +150,7 @@ function SsoDialog({ state, handleClose, handleIAmToken, showError, federationId
                             </Grid>
                             <Grid size={{xs: 12}}>
                                 <Button type="submit" fullWidth>
-                                    <Trans>Авторизоваться</Trans>
+                                    {t('common:button.authorize')}
                                 </Button>
                             </Grid>
                         </Grid>

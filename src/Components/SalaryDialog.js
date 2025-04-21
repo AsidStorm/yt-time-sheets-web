@@ -1,39 +1,44 @@
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
 import React, {useEffect, useState} from "react";
-import Grid from "@mui/material/Grid2";
-import DialogContent from "@mui/material/DialogContent";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableContainer from "@mui/material/TableContainer";
-import TableCell from "@mui/material/TableCell";
-import TableBody from "@mui/material/TableBody";
-import FormControl from "@mui/material/FormControl";
+import {
+    Dialog,
+    DialogTitle,
+    Grid2 as Grid,
+    DialogContent,
+    TextField,
+    Button,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableContainer,
+    TableCell,
+    TableBody,
+    FormControl,
+    Checkbox,
+    FormControlLabel,
+    FormGroup
+} from "@mui/material";
 import {TimePicker} from "@mui/x-date-pickers";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import FormGroup from "@mui/material/FormGroup";
+import {useTranslation} from "react-i18next";
 import {useSalaryState} from "../Context/Salary";
 
 const SALARY_MODE_IMPORT = "IMPORT";
 const SALARY_MODEL_VIEW = "VIEW";
 
 function SalaryDialog({state, handleClose, showError, users, onApply}) {
-    const [ mode, setMode ] = useState(SALARY_MODE_IMPORT);
-    const [ salaries, setSalaries ] = useState({});
-    const [ isSimple, setIsSimple ] = useState(false);
+    const {t} = useTranslation();
 
-    const [ globalSalaries, setGlobalSalaries ] = useSalaryState();
+    const [mode, setMode] = useState(SALARY_MODE_IMPORT);
+    const [salaries, setSalaries] = useState({});
+    const [isSimple, setIsSimple] = useState(false);
 
-    const [ spreadUnmarkedTime, setSpreadUnmarkedTime ] = useState(false);
-    const [ mustWorkedTime, setMustWorkedTime ] = useState( null );
+    const [globalSalaries, setGlobalSalaries] = useSalaryState();
+
+    const [spreadUnmarkedTime, setSpreadUnmarkedTime] = useState(false);
+    const [mustWorkedTime, setMustWorkedTime] = useState(null);
 
     useEffect(() => {
-        if( Object.keys(salaries).length > 0 ) {
+        if (Object.keys(salaries).length > 0) {
             setMode(SALARY_MODEL_VIEW);
         }
     }, [state]);
@@ -46,7 +51,7 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
         const csv = data.get("csv").trim();
         const rows = csv.split("\n");
 
-        if( csv === "" || rows.length === 0 ) {
+        if (csv === "" || rows.length === 0) {
             return showError("Введите данные");
         }
 
@@ -54,28 +59,26 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
 
         setIsSimple(isSimple);
 
-        const out = {
-
-        };
+        const out = {};
 
         const mapping = [];
 
-        if( !isSimple ) {
+        if (!isSimple) {
             const headers = rows.shift().split(";");
 
             headers.shift();
 
-            for( const header of headers ) {
+            for (const header of headers) {
                 mapping.push(header);
             }
         }
 
-        for( const row of rows ) {
-            if( isSimple ) {
-                const [ userIdOrEmail, salary ] = row.split(";");
+        for (const row of rows) {
+            if (isSimple) {
+                const [userIdOrEmail, salary] = row.split(";");
 
-                for( const user of users ) {
-                    if( parseInt(user.value) === parseInt(userIdOrEmail) || user.email === userIdOrEmail ) {
+                for (const user of users) {
+                    if (parseInt(user.value) === parseInt(userIdOrEmail) || user.email === userIdOrEmail) {
                         out[parseInt(user.value)] = {
                             "*": parseInt(salary)
                         };
@@ -87,16 +90,16 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
 
                 const salary = {};
 
-                for( const key in mapping ) {
-                    if( !mapping.hasOwnProperty(key) ) {
+                for (const key in mapping) {
+                    if (!mapping.hasOwnProperty(key)) {
                         continue;
                     }
 
                     salary[mapping[key]] = fields[key];
                 }
 
-                for( const user of users ) {
-                    if( parseInt(user.value) === parseInt(userIdOrEmail) || user.email === userIdOrEmail ) {
+                for (const user of users) {
+                    if (parseInt(user.value) === parseInt(userIdOrEmail) || user.email === userIdOrEmail) {
                         out[parseInt(user.value)] = salary;
                     }
                 }
@@ -108,7 +111,7 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
     };
 
     const userLabel = userId => {
-        const user = users.find( u => parseInt(u.value) === parseInt(userId) );
+        const user = users.find(u => parseInt(u.value) === parseInt(userId));
         return user.label;
     };
 
@@ -129,13 +132,13 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
     };
 
     return <Dialog open={state} onClose={() => handleClose()} maxWidth="lg" fullWidth>
-        <DialogTitle>Заработная плата</DialogTitle>
+        <DialogTitle>{t('components:salary_dialog.title')}</DialogTitle>
         <DialogContent>
             {mode === SALARY_MODE_IMPORT && <form onSubmit={(e) => handleSubmit(e)}>
                 <Grid container spacing={2} sx={{paddingTop: 2}}>
                     <Grid size={{xs: 12}}>
                         <TextField
-                            label={`CSV (разделитель ";") (пример строчки - userId или userEmail;стоимость специалиста за 1 час)`}
+                            label={t('components:salary_dialog.fields.csv.label')}
                             multiline
                             fullWidth
                             rows={5}
@@ -144,7 +147,7 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                         />
                     </Grid>
                     <Grid size={{xs: 12}}>
-                        <Button fullWidth type="submit" color="success">Ассоциировать</Button>
+                        <Button fullWidth type="submit" color="success">{t('common:button.associate')}</Button>
                     </Grid>
                 </Grid>
             </form>}
@@ -156,23 +159,25 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell colSpan={2}>
-                                            Сотрудник
+                                            {t('components:salary_dialog.table.header.user')}
                                         </TableCell>
                                         {isSimple && <TableCell align={`right`}>
-                                            Зарплата
+                                            {t('components:salary_dialog.table.header.salary')}
                                         </TableCell>}
-                                        {!isSimple && Object.keys(salaries[Object.keys(salaries)[0]]).map( value => <TableCell key={`salary-header-${value}`} align={`right`}>
-                                            {value}
-                                        </TableCell>)}
+                                        {!isSimple && Object.keys(salaries[Object.keys(salaries)[0]]).map(value =>
+                                            <TableCell key={`salary-header-${value}`} align={`right`}>
+                                                {value}
+                                            </TableCell>)}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {Object.keys(salaries).map(key => <TableRow key={key}>
                                         <TableCell>{key}</TableCell>
                                         <TableCell>{userLabel(key)}</TableCell>
-                                        {!isSimple && Object.keys(salaries[Object.keys(salaries)[0]]).map( value => <TableCell key={`salary-header-${key}-${value}`} align={`right`}>
-                                            {salaries[key][value]}
-                                        </TableCell>)}
+                                        {!isSimple && Object.keys(salaries[Object.keys(salaries)[0]]).map(value =>
+                                            <TableCell key={`salary-header-${key}-${value}`} align={`right`}>
+                                                {salaries[key][value]}
+                                            </TableCell>)}
                                         {isSimple && <TableCell align={`right`}>
                                             {salaries[key]['*']}
                                         </TableCell>}
@@ -183,13 +188,15 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                     </Grid>
                     {false && <Grid size={{xs: 12}}>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox />} label="Распределить неотмеченное время по задачам" checked={spreadUnmarkedTime} onChange={(e) => setSpreadUnmarkedTime(e.target.checked)} />
+                            <FormControlLabel control={<Checkbox/>} label="Распределить неотмеченное время по задачам"
+                                              checked={spreadUnmarkedTime}
+                                              onChange={(e) => setSpreadUnmarkedTime(e.target.checked)}/>
                         </FormGroup>
                     </Grid>}
                     {spreadUnmarkedTime && <Grid size={{xs: 12}}>
                         <FormControl fullWidth>
                             <TimePicker
-                                label="Должно быть рабочих часов"
+                                label={t('components:salary_dialog.fields.must_worked_time.label')}
                                 value={mustWorkedTime}
                                 onChange={(newValue) => {
                                     setMustWorkedTime(newValue);
@@ -221,10 +228,11 @@ function SalaryDialog({state, handleClose, showError, users, onApply}) {
                         />
                     </Grid>}
                     <Grid size={{xs: 12, md: 6}}>
-                        <Button fullWidth onClick={() => handleCancel()} color="warning">Сбросить</Button>
+                        <Button fullWidth onClick={() => handleCancel()}
+                                color="warning">{t('common:button.reset')}</Button>
                     </Grid>
                     <Grid size={{xs: 12, md: 6}}>
-                        <Button fullWidth type="submit" color="success">Подтвердить</Button>
+                        <Button fullWidth type="submit" color="success">{t('common:button.apply')}</Button>
                     </Grid>
                 </Grid>
             </form>}

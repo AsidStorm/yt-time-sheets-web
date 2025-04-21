@@ -1,6 +1,6 @@
+import React, {useEffect, useState} from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
-import React, {useEffect, useState} from "react";
 import Grid from "@mui/material/Grid2";
 import Container from "@mui/material/Container";
 import {
@@ -21,6 +21,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Link from "@mui/material/Link";
 import {useAtomValue} from "jotai";
 import {timeFormatAtom} from "../jotai/atoms";
+import {useTranslation} from "react-i18next";
 ChartJS.register(...registerables);
 
 const numberValueFormatter = value => value;
@@ -85,7 +86,7 @@ const buildComparison = (valueFormatter) => (data, userValue) => {
     return null;
 };
 
-const generateTotalTimeBox = (row, rows) => {
+const generateTotalTimeBox = ({row, rows}) => {
     const calculateTotalByRow = row => {
         let total = 0;
 
@@ -130,7 +131,7 @@ const generateTotalTimeBox = (row, rows) => {
     return {
         index: "total-time-box",
         title: humanizeDuration(total, TIME_FORMAT_HOURS),
-        subheader: "Всего затрачено",
+        subheader: "insights_dialog.boxes.total_time.sub_header",
         comparison: buildComparison(durationValueFormatter)(comparison, total),
         icon: <AccessTimeIcon />
     };
@@ -144,7 +145,7 @@ const generateTotalUsersBox = (row) => {
     return {
         index: "total-users-box",
         title: Object.keys(row.byCreatedBy).length,
-        subheader: "Всего пользователей",
+        subheader: "insights_dialog.boxes.total_users.sub_header",
         icon: <PeopleIcon />
     };
 }
@@ -164,7 +165,7 @@ const generateAvgTimeByUserBox = (row) => {
     return {
         index: "avg-time-by-user-box",
         title: humanizeDuration(parseInt(total / Object.keys(row.byCreatedBy).length), TIME_FORMAT_HOURS),
-        subheader: "В среднем затрачено пользователем",
+        subheader: "insights_dialog.boxes.avg_time_by_user.sub_header",
         icon: <AccessTimeIcon />
     };
 }
@@ -223,7 +224,7 @@ const generateTotalIssuesBox = (row, rows) => {
     return {
         index: "total-issues-box",
         title: total,
-        subheader: "Всего задач",
+        subheader: "insights_dialog.boxes.total_issues.sub_header",
         comparison: buildComparison(numberValueFormatter)(comparison, total),
         icon: <OutlinedFlagIcon />
     }
@@ -252,7 +253,7 @@ const generateAvgTimeByIssueBox = (row) => {
     return {
         index: "avg-time-by-issue-box",
         title: humanizeDuration(parseInt(totalTime / totalIssues), TIME_FORMAT_HOURS),
-        subheader: "В среднем на задачу",
+        subheader: "insights_dialog.boxes.avg_time_by_issue.sub_header",
         icon: <OutlinedFlagIcon />
     }
 };
@@ -279,7 +280,7 @@ const generateIssuesChart = (row) => {
 
     return {
         type: "PIE",
-        label: "Задачи",
+        label: "insights_dialog.charts.issues.label",
         data: {
             labels: Object.values(timeByIssues).map( v => v.label ),
             datasets: [
@@ -334,7 +335,7 @@ const generateQueuesChart = (row) => {
 
     return {
         type: "PIE",
-        label: "Очереди",
+        label: "insights_dialog.charts.queues.label",
         data: {
             labels: Object.values(timeByQueues).map( v => v.label ),
             datasets: [
@@ -389,8 +390,7 @@ const generateUsersChart = (row) => {
 
     return {
         type: "PIE",
-        label: "Пользователи",
-        md: 6,
+        label: "insights_dialog.charts.users.label",
         data: {
             labels: Object.values(timeByUsers).map( v => v.label ),
             datasets: [
@@ -432,6 +432,8 @@ const durationValueFormatter = value => {
 };
 
 function InsightsDialog({ state, handleClose, row, rows }) {
+    const { t, i18n } = useTranslation();
+
     const timeFormat = useAtomValue(timeFormatAtom);
 
     const [ boxes, setBoxes ] = useState([]);
@@ -439,8 +441,6 @@ function InsightsDialog({ state, handleClose, row, rows }) {
 
     useEffect(() => {
         if( !row || Object.keys(row).length === 0 ) return;
-
-        const { parameters: {resultGroup} } = row;
 
         const boxes = [
             generateTotalTimeBox,
@@ -460,7 +460,7 @@ function InsightsDialog({ state, handleClose, row, rows }) {
         const nextCharts = [];
 
         for( const box of boxes ) {
-            const generated = box(row, rows);
+            const generated = box({ row, rows });
 
             if( generated !== null ) {
                 nextBoxes.push( generated );
@@ -488,7 +488,7 @@ function InsightsDialog({ state, handleClose, row, rows }) {
     }, [row]);
 
     return <Dialog open={state} onClose={() => handleClose()} fullWidth maxWidth="lg">
-        <DialogTitle>Инсайты</DialogTitle>
+        <DialogTitle>{t('components:insights_dialog.title')}</DialogTitle>
         {state && <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
             <Grid container spacing={2}>
                 {boxes.map( box => {
@@ -501,7 +501,7 @@ function InsightsDialog({ state, handleClose, row, rows }) {
                                     </Avatar>
                                 }
                                 title={box.title}
-                                subheader={box.subheader}
+                                subheader={t(`components:${box.subheader}`)}
                             />
                             {box.comparison && <CardContent>
                                 <Typography sx={{ color: 'text.secondary' }}>
@@ -514,7 +514,7 @@ function InsightsDialog({ state, handleClose, row, rows }) {
                 {charts.map( chart => {
                     return <Grid size={{ xs: 12, md: 4}} key={chart.index}>
                         <Card variant="outlined">
-                            <CardHeader title={chart.label} />
+                            <CardHeader title={t(`components:${chart.label}`)} />
                             {chart.type === 'PIE' && <Pie
                                 data={chart.data}
                                 options={chart.options}

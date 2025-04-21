@@ -9,7 +9,17 @@
   "button.charts": "Графики",
   "button.create": "Создать",
   "button.update": "Изменить",
+  "button.authorize": "Авторизоваться",
+  "button.open_in_new_window": "Открыть в новом окне",
+  "button.associate": "Ассоциировать",
+  "button.reset": "Сбросить",
+  "button.finish_setup": "Завершить настройку",
+  "button.choose_myself": "Выбрать себя",
+  "button.choose_group": "Выбрать группу",
+  "button.all_projects": "Все проекты",
+
   "total": "Итого",
+
   "language.russian": "Русский",
   "language.english": "Английский"
 }

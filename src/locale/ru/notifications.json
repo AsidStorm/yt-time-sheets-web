@@ -1,5 +1,9 @@
 {
   "please_choose_issue": "Пожалуйста, выберите задачу",
   "unable_to_use_negative_time": "Нельзя указывать отрицательное время",
-  "work_log_deleted": "Запись успешно удалена"
+  "work_log_deleted": "Запись успешно удалена",
+  "setup_federation_id": "Укажите ID федерации",
+  "enter_organization_id": "Введите ID Организации",
+  "unable_to_authorize": "Не удалось авторизоваться. Проверьте данные.",
+  "invalid_filter_dates": "Даты заполнены некорректно"
 }
