@@ -31,7 +31,7 @@ import TaskSearchDialog from "./TaskSearchDialog";
 import moment from "moment";
 import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
 import {renderTimeViewClock} from "@mui/x-date-pickers/timeViewRenderers";
-import {Trans, useTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import {useAtomValue, useSetAtom} from "jotai";
 import {usersAtom, boardsAtom, resultGroupsAtom, myUserAtom, selectedUsersAtom, workLogsAtom} from "../jotai/atoms";
 import {useCreateWorkLogDialog, useLoader} from "../hooks";
@@ -58,7 +58,26 @@ function CreateWorkLogDialog({setData, showError, showSuccess}) {
     const selectedUsers = useAtomValue(selectedUsersAtom);
     const setWorkLogs = useSetAtom(workLogsAtom);
 
-    const userIdentity = resultGroups.includes(RESULT_GROUP_WORKER) || !myUser.isAdmin ? myUser.value : createdById;
+    const [ userIdentity, setUserIdentity ] = useState(null);
+
+    useEffect(() => {
+        if( resultGroups.includes(RESULT_GROUP_WORKER) ) {
+            if( myUser.isAdmin ) {
+                if( createdById ) {
+                    setUserIdentity(createdById);
+                    return;
+                }
+            }
+        }
+
+        if( createdById ) {
+            setUserIdentity(createdById);
+            return;
+        }
+
+        setUserIdentity(myUser.value);
+    }, [createdById, myUser, resultGroups]);
+
     const form = resultGroups.includes(RESULT_GROUP_ISSUE) ? CREATE_WORK_LOG_FORM_TYPE_BASIC : CREATE_WORK_LOG_FORM_TYPE_ADVANCED;
     const date = rawDate && rawDate.includes[0] ? rawDate.includes[0] : moment();
 
@@ -331,12 +350,9 @@ function CreateWorkLogDialog({setData, showError, showSuccess}) {
                     <Grid size={{xs: 12}}>
                         <FormControl fullWidth>
                             <CustomAutocomplete
-                                onChange={(e, newValue) => setData(prev => ({
-                                    ...prev,
-                                    userIdentity: newValue ? newValue.value : ""
-                                }))}
-                                disabled={resultGroups.includes(RESULT_GROUP_WORKER) || myUser.isAdmin === false}
-                                value={users.find(u => u.value === userIdentity) || null}
+                                onChange={(e, newValue) => setUserIdentity(newValue ? newValue.value : null)}
+                                disabled={resultGroups.includes(RESULT_GROUP_WORKER) || !myUser.isAdmin}
+                                value={users.find(u => String(u.value) === String(userIdentity)) || null}
                                 options={users}
                                 label={t('components:create_work_log_dialog.fields.user.label')}
                             />

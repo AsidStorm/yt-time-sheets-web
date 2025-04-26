@@ -1,0 +1,28 @@
+{
+  "button.apply": "Apply",
+  "button.exit": "Exit",
+  "button.continue": "Continue",
+  "button.cancel": "Cancel",
+  "button.delete": "Delete",
+  "button.reload": "Reload",
+  "button.export": "Export",
+  "button.charts": "Charts",
+  "button.create": "Create",
+  "button.update": "Update",
+  "button.authorize": "Authorize",
+  "button.open_in_new_window": "Open in new window",
+  "button.associate": "Associate",
+  "button.reset": "Reset",
+  "button.finish_setup": "Finish",
+  "button.choose_myself": "Select yourself",
+  "button.choose_group": "Select group",
+  "button.all_projects": "All projects",
+  "button.filter": "Filter",
+  "button.thanks": "Thanks",
+
+  "total": "Total",
+  "no_time": "---",
+
+  "language.russian": "Russian",
+  "language.english": "English"
+}

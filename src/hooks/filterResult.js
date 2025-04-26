@@ -6,7 +6,8 @@ import {
     selectedUsersAtom,
     timeFormatAtom,
     workLogsAtom,
-    hideDetailsAtom
+    hideDetailsAtom,
+    highlightTimeAtom,
 } from "../jotai/atoms";
 
 export function useFilterResult() {
@@ -17,7 +18,7 @@ export function useFilterResult() {
     const setSelectedUsers = useSetAtom(selectedUsersAtom);
     const setDates = useSetAtom(datesAtom);
     const setHideDetails = useSetAtom(hideDetailsAtom);
-    const setHighlightTime = useSetAtom(hideDetailsAtom);
+    const setHighlightTime = useSetAtom(highlightTimeAtom);
 
     return {
         setFilteredData: ({ timeFormat, dateFormat, resultGroups, workLogs, selectedUsers, dates, hideDetails, highlightTime }) => {

@@ -100,7 +100,7 @@ function ResultTable({showError, showSuccess}) {
     const rows = useAtomValue(resultRowsAtom);
     const myUser = useAtomValue(myUserAtom);
     const dates = useAtomValue(datesAtom);
-    const [workLogs, setWorkLogs] = useAtom(workLogsAtom);
+    const workLogs = useAtomValue(workLogsAtom);
 
     const [insightRow, setInsightRow] = useState({});
     const [insightDialog, setInsightDialog] = useState(false);
@@ -123,33 +123,6 @@ function ResultTable({showError, showSuccess}) {
         issueTitle: ""
     });
 
-    const [updateWorkLogData, setUpdateWorkLogData] = useState({
-        open: false,
-        issueKey: "",
-        workLogId: 0,
-        title: "",
-        duration: "",
-        comment: ""
-    });
-
-    const handleWorkLogUpdateClose = () => {
-        setUpdateWorkLogData(prev => ({...prev, open: false}));
-    };
-
-    const handleUpdateWorkLogSubmit = workLog => {
-        setWorkLogs(prev => prev.map(log => {
-            if (log.workLogId === workLog.workLogId) {
-                workLog.projectId = log.projectId;
-
-                return workLog;
-            }
-
-            return log;
-        }));
-
-        handleWorkLogUpdateClose();
-    };
-
     useEffect(() => {
         setUseVirtuoso(rows.length > VIRTUOSO_MIN_LENGTH);
     }, [rows]);
@@ -166,7 +139,7 @@ function ResultTable({showError, showSuccess}) {
         <RestrictionsDialog state={restrictionsDialog} handleClose={() => setRestrictionsDialog(false)}/>
         <CreateWorkLogDialog setData={setCreateWorkLogData} showError={showError} showSuccess={showSuccess}/>
         <DeleteWorkLogDialog showError={showError} showSuccess={showSuccess}/>
-        <UpdateWorkLogDialog showError={showError} showSuccess={showSuccess} onSubmit={handleUpdateWorkLogSubmit}/>
+        <UpdateWorkLogDialog showError={showError} showSuccess={showSuccess} />
 
         <DetailsDialog/>
 

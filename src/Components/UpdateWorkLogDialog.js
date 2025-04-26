@@ -14,9 +14,13 @@ import {Trans, useTranslation} from "react-i18next";
 import {patch} from "../requests";
 import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
 import {useHumanizeDuration, useLoader, useUpdateWorkLogDialog} from "../hooks";
+import {useSetAtom} from "jotai/index";
+import {workLogsAtom} from "../jotai/atoms";
 
-function UpdateWorkLogDialog({onSubmit, showError, showSuccess}) {
+function UpdateWorkLogDialog({showError, showSuccess}) {
     const {t} = useTranslation();
+
+    const setWorkLogs = useSetAtom(workLogsAtom);
 
     const humanize = useHumanizeDuration();
     const {
@@ -43,7 +47,7 @@ function UpdateWorkLogDialog({onSubmit, showError, showSuccess}) {
         const duration = replaceRuDuration(data.get("duration"));
 
         if (duration.includes('-')) {
-            return showError(t('Нельзя указывать отрицательное время'));
+            return showError(t('notifications:unable_to_set_negative_time'));
         }
 
         startLoading();
@@ -54,10 +58,21 @@ function UpdateWorkLogDialog({onSubmit, showError, showSuccess}) {
             duration,
             comment,
         }).then(response => {
-            showSuccess(t('Затраченное время успешно изменено'));
-            onSubmit(response.data);
+            showSuccess(t('notifications:work_log_updated'));
+
+            const workLog = response.data;
+
+            setWorkLogs(prev => prev.map(log => {
+                if (log.workLogId === workLog.workLogId) {
+                    return workLog;
+                }
+
+                return log;
+            }));
 
             pushAnalytics('workLogUpdated');
+
+            close();
         }).catch(showError).finally(endLoading);
     };
 

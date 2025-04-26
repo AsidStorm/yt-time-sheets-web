@@ -1,0 +1,20 @@
+{
+  "categories.USERS.label": "Users",
+  "categories.USERS.sub_categories.BASIC_PIE.label": "Total",
+  "categories.USERS.sub_categories.BASIC_BAR_STACKED.label": "By dates",
+  "categories.ISSUES.label": "Issues",
+  "categories.ISSUES.sub_categories.BASIC_PIE.label": "Total",
+  "categories.ISSUES.sub_categories.BASIC_BAR_STACKED.label": "By dates",
+  "categories.ISSUE_TYPES.label": "Issue types",
+  "categories.ISSUE_TYPES.sub_categories.BASIC_PIE.label": "Total",
+  "categories.ISSUE_TYPES.sub_categories.BASIC_BAR_STACKED.label": "By dates",
+  "categories.PROJECTS.label": "Projects",
+  "categories.PROJECTS.sub_categories.BASIC_PIE.label": "Total",
+  "categories.PROJECTS.sub_categories.BASIC_BAR_STACKED.label": "By dates",
+  "categories.EPICS.label": "Epics",
+  "categories.EPICS.sub_categories.BASIC_PIE.label": "Total",
+  "categories.EPICS.sub_categories.BASIC_BAR_STACKED.label": "By dates",
+  "categories.QUEUES.label": "Queues",
+  "categories.QUEUES.sub_categories.BASIC_PIE.label": "Total",
+  "categories.QUEUES.sub_categories.BASIC_BAR_STACKED.label": "By dates"
+}

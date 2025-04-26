@@ -7,6 +7,13 @@ import copyrightRu from "./locale/ru/copyright.json";
 import chartsRu from "./locale/ru/charts.json";
 import notificationsRu from "./locale/ru/notifications.json";
 import componentsRu from "./locale/ru/components.json";
+import commonEn from "./locale/en/common.json";
+import filterEn from "./locale/en/filter.json";
+import exportEn from "./locale/en/export.json";
+import copyrightEn from "./locale/en/copyright.json";
+import chartsEn from "./locale/en/charts.json";
+import notificationsEn from "./locale/en/notifications.json";
+import componentsEn from "./locale/en/components.json";
 import {LOCALE_RU} from "./constants";
 
 const resources = {
@@ -20,7 +27,13 @@ const resources = {
         components: componentsRu,
     },
     en: {
-
+        common: commonEn,
+        filter: filterEn,
+        export: exportEn,
+        copyright: copyrightEn,
+        charts: chartsEn,
+        notifications: notificationsEn,
+        components: componentsEn,
     }
 };
 
