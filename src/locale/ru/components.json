@@ -110,6 +110,9 @@
   "details_table.title": "{{title}} | <tooltip />",
 
   "row_title.insights_tooltip": "Инсайты",
-  "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}"
+  "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}",
+
+  "app.welcome": "Добро пожаловать, {{userLabel}}",
+  "app.not_enough_data": "Недостаточно данных для построения аналитики, используйте <filterLink>фильтр</filterLink>"
 
 }

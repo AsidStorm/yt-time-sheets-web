@@ -23,7 +23,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import IconButton from "@mui/material/IconButton";
 import InitialConfigDialog from "./Components/InitialConfigDialog";
 import './App.css';
-import {makeObjectFromArray, pushAnalytics} from "./helpers";
+import {makeObjectFromArray, pushAnalytics, yandexTrackerIssueUrl} from "./helpers";
 import ChangelogDialog from "./Components/ChangelogDialog";
 import CopyrightCard from "./Components/CopyrightCard";
 import DonateCard from "./Components/DonateCard";
@@ -318,7 +318,7 @@ function App() {
                         {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
                     </IconButton>
                     <Typography variant="h6" color="inherit" noWrap sx={{flexGrow: 1, display: {xs: 'none', md: 'block'}}}>
-                        Добро пожаловать, {myUser.label}
+                        {t('components:app.welcome', { userLabel: myUser.label })}
                     </Typography>
                     <nav>
                         {filtered && <Link
@@ -337,7 +337,7 @@ function App() {
                             onClick={() => {setFilterDialogState(true); pushAnalytics('filterButtonClick'); }}
                             sx={{ my: 1, mx: 1.5 }}
                         >
-                            <Trans>Фильтр</Trans>
+                            {t('common:button.filter')}
                         </Link>
                         <Link
                             variant="button"
@@ -354,7 +354,12 @@ function App() {
             <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
                 {authorized === AUTHORIZED_STATE_DONE && <Grid container spacing={2}>
                     <Grid size={12}>
-                        {!haveDataToDisplay && <div><Trans>Недостаточно данных для построения аналитики, используйте <Link href="#" onClick={() => setFilterDialogState(true)}>фильтр</Link></Trans></div>}
+                        {!haveDataToDisplay && <div><Trans
+                            i18nKey='components:app.not_enough_data'
+                            components={{
+                                filterLink: <Link href="#" onClick={() => setFilterDialogState(true)} />
+                            }}
+                        /></div>}
                         {haveDataToDisplay && <ResultTable
                             showError={showError}
                             showSuccess={showSuccess}
