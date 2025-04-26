@@ -13,6 +13,7 @@ import {
 import Link from "@mui/material/Link";
 import {yandexTrackerIssueUrl, yandexTrackerProjectUrl, yandexTrackerQueueUrl} from "../../helpers";
 import {makeStyles} from "@mui/styles";
+import {useTranslation} from "react-i18next";
 
 const useStyles = makeStyles({
     table: {
@@ -37,6 +38,8 @@ const useStyles = makeStyles({
 });
 
 export function ResultTableRowTitle({ row, setInsightRow, setInsightDialog }) {
+    const {t} = useTranslation();
+
     const classes = useStyles();
 
     const { title, depth } = row;
@@ -51,7 +54,7 @@ export function ResultTableRowTitle({ row, setInsightRow, setInsightDialog }) {
 
     const { parameters: { resultGroup, key } } = row;
 
-    const insights = (row) => row.isMaxDepth ? <Tooltip title={"Insights"}>
+    const insights = (row) => row.isMaxDepth ? <Tooltip title={t('components:row_title.insights_tooltip')}>
         <IconButton size="small" onClick={() => { setInsightRow(row); setInsightDialog(true); }}>
             <AnalyticsIcon />
         </IconButton>
@@ -62,7 +65,7 @@ export function ResultTableRowTitle({ row, setInsightRow, setInsightDialog }) {
 
         if( epicKey !== "" ) {
             return <TableCell className={classes.sticky} component="th" scope="row">
-                {insights(row)}{prefix}<Tooltip title={`${epicKey}: ${epicDisplay}`}>
+                {insights(row)}{prefix}<Tooltip title={t('components:row_title.epic_tooltip', {epicKey, epicDisplay})}>
                 <Link href={yandexTrackerIssueUrl(epicKey)} target="_blank">{epicKey}</Link>
             </Tooltip> / <Link href={yandexTrackerIssueUrl(key)} target="_blank">{title}</Link>
             </TableCell>

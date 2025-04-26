@@ -5,5 +5,10 @@
   "setup_federation_id": "Укажите ID федерации",
   "enter_organization_id": "Введите ID Организации",
   "unable_to_authorize": "Не удалось авторизоваться. Проверьте данные.",
-  "invalid_filter_dates": "Даты заполнены некорректно"
+  "invalid_filter_dates": "Даты заполнены некорректно",
+  "work_log_created": "Рабочее время добавлено",
+  "work_log_created_with_restrictions": "Рабочее время добавлено, но из-за настроек фильтра не может быть показано.",
+  "minimum_search_term_is_3_symbols": "Введите 3 символа для поиска задачи",
+  "issues_not_found": "Задач не найдено",
+  "no_sprints_found_on_board": "Указанная доска не содержит спринтов. Выберите другую."
 }

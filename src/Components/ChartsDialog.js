@@ -52,7 +52,7 @@ function ChartsDialog({state, handleClose, workLogs}) {
         const category = categories.find(category => category.value === newValue);
         setSubCategory(subCategoryValue(category, category.charts[0]));
 
-        pushAnalytics('setupChartsCategory', {
+        pushAnalytics('chartsCategoryClick', {
             category: newValue
         });
     };
@@ -60,7 +60,7 @@ function ChartsDialog({state, handleClose, workLogs}) {
     const handleSetSubCategory = (event, newValue) => {
         setSubCategory(newValue);
 
-        pushAnalytics('setupChartsSubCategory', {
+        pushAnalytics('chartsSubCategoryClick', {
             category: category,
             subCategory: newValue
         });

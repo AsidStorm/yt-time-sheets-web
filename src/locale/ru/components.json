@@ -87,5 +87,29 @@
 
   "donate_card.dialog.title": "Спасибо что вы с нами =)",
   "donate_card.dialog.row_2": "Мы рады, что вы активно им пользуетесь, и благодарим каждого за доверие и участие.",
-  "donate_card.dialog.row_3": "Портал был и останется бесплатным, а мы продолжим выпускать обновления! \uD83D\uDE80"
+  "donate_card.dialog.row_3": "Портал был и останется бесплатным, а мы продолжим выпускать обновления! \uD83D\uDE80",
+
+  "create_work_log_dialog.title": "Создание рабочего времени",
+  "create_work_log_dialog.fields.search.label": "Поиск задач",
+  "create_work_log_dialog.fields.board.label": "Доска",
+  "create_work_log_dialog.fields.date.label": "Доска",
+  "create_work_log_dialog.fields.time.label": "Время",
+  "create_work_log_dialog.fields.user.label": "Пользователь",
+  "create_work_log_dialog.fields.duration.label": "Затрачено времени",
+  "create_work_log_dialog.fields.comment.label": "Комментарий",
+  "create_work_log_dialog.fields.with_comment.label": "Добавить комментарий к задаче?",
+  "create_work_log_dialog.fields.issue_comment.label": "Комментарий к задаче",
+  "create_work_log_dialog.fields.sprint.label": "Спринт",
+  "create_work_log_dialog.fields.search_type.values.BASE": "По фильтру",
+  "create_work_log_dialog.fields.search_type.values.BOARD": "На досках",
+  "create_work_log_dialog.selected_issue": "Выбрана задача:",
+  "create_work_log_dialog.sprint_name": "{{name}} (с {{startDate}} по {{endDate}})",
+
+  "details_table.caption_issue_with_user": "<issueLink>{{issueDisplay}}</issueLink>. Автор: {{createdByDisplay}}",
+  "details_table.caption_only_author": "Автор: {{createdByDisplay}}" ,
+  "details_table.title": "{{title}} | <tooltip />",
+
+  "row_title.insights_tooltip": "Инсайты",
+  "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}"
+
 }

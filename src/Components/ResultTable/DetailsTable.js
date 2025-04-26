@@ -11,8 +11,11 @@ import TableContainer from "@mui/material/TableContainer";
 import {useCreateWorkLogDialog, useDeleteWorkLogDialog, useHumanizeDuration, useUpdateWorkLogDialog} from "../../hooks";
 import {dateFormatAtom, myUserAtom, resultGroupsAtom} from "../../jotai/atoms";
 import {RowTooltipTitle} from "./RowTooltipTitle";
+import {Trans, useTranslation} from "react-i18next";
 
 export function ResultDetailsTable({index, row, date}) {
+    const {t} = useTranslation();
+
     const humanize = useHumanizeDuration();
 
     const {open: openWorkLogDeleteDialog} = useDeleteWorkLogDialog();
@@ -37,8 +40,13 @@ export function ResultDetailsTable({index, row, date}) {
     function Caption({showWorkerInCaption, showIssueInCaption, issueKey, issueDisplay, createdByDisplay}) {
         if (showWorkerInCaption && showIssueInCaption) {
             return <caption>
-                <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank"
-                      rel="nofollow noreferer">{issueDisplay}</Link>. Автор: {createdByDisplay}
+                <Trans
+                    i18nKey='components:details_table.caption_issue_with_user'
+                    values={{issueDisplay, createdByDisplay}}
+                    components={{
+                        issueLink: <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank" rel="nofollow noreferer" />
+                    }}
+                />
             </caption>
         }
 
@@ -51,7 +59,7 @@ export function ResultDetailsTable({index, row, date}) {
 
         if (showWorkerInCaption) {
             return <caption>
-                Автор: {createdByDisplay}
+                {t('components:details_table.caption_only_author', {createdByDisplay})}
             </caption>
         }
 
@@ -66,8 +74,15 @@ export function ResultDetailsTable({index, row, date}) {
             <TableHead>
                 <TableRow>
                     <TableCell colSpan={cols}>
-                        <Typography
-                            variant="h5">{date.title} | <RowTooltipTitle row={row}/></Typography>
+                        <Typography variant="h5">
+                            <Trans
+                                i18nKey='components:details_table.title'
+                                values={{title: date.title}}
+                                components={{
+                                    tooltip: <RowTooltipTitle row={row} />
+                                }}
+                            />
+                        </Typography>
                     </TableCell>
                 </TableRow>
             </TableHead>

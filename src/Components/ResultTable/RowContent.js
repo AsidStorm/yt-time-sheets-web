@@ -9,6 +9,7 @@ import {RESULT_GROUP_WORKER} from "../../constants";
 import {ResultTableRowTitle} from "./RowTitle";
 import {useHumanizeDuration, useDetailsDialog} from "../../hooks";
 import {datesAtom, resultRowsAtom, hideDetailsAtom, highlightTimeAtom} from "../../jotai/atoms";
+import {useTranslation} from "react-i18next";
 
 const HtmlTooltip = styled(({className, ...props}) => (
     <Tooltip {...props} classes={{popper: className}}/>
@@ -20,6 +21,8 @@ const HtmlTooltip = styled(({className, ...props}) => (
 }));
 
 export function ResultTableRowContent({index, row, setInsightRow, setInsightDialog}) {
+    const {t} = useTranslation();
+
     const humanize = useHumanizeDuration();
 
     const rows = useAtomValue(resultRowsAtom);
@@ -66,7 +69,7 @@ export function ResultTableRowContent({index, row, setInsightRow, setInsightDial
                                       key={`table-cell-${index}-${date.index}-${row.title}`}>
             {!isLastRow(index) && row.isMaxDepth && <CellTooltip row={row} date={date}/>}
             {(isLastRow(index) || !row.isMaxDepth) && <Button disabled={true} sx={{color: "black !important"}}>
-                {rowDateExists(row, date) && row.byDate[date.index].value > 0 ? humanize(row.byDate[date.index].value, row.byDate[date.index].byCreatedBy) : "---"}
+                {rowDateExists(row, date) && row.byDate[date.index].value > 0 ? humanize(row.byDate[date.index].value, row.byDate[date.index].byCreatedBy) : t('common:no_time')}
             </Button>}
         </TableCell>)}
 
