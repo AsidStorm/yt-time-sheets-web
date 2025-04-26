@@ -7,3 +7,4 @@ export * from './makeObjectFromArray';
 export * from './duration';
 export * from './resultTable';
 export * from './sliceIntoChunks';
+export * from './createFilterFunction';
