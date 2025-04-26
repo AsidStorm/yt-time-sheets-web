@@ -5,10 +5,9 @@ import {styled} from "@mui/material/styles";
 import {useAtomValue} from "jotai";
 import {daySx, isLastRowCaller, rowDateExists} from "../../helpers";
 import {ResultDetailsTable} from "./DetailsTable";
-import {RESULT_GROUP_WORKER} from "../../constants";
 import {ResultTableRowTitle} from "./RowTitle";
 import {useHumanizeDuration, useDetailsDialog} from "../../hooks";
-import {datesAtom, resultRowsAtom, hideDetailsAtom, highlightTimeAtom} from "../../jotai/atoms";
+import {datesAtom, resultRowsAtom, hideDetailsAtom} from "../../jotai/atoms";
 import {useTranslation} from "react-i18next";
 
 const HtmlTooltip = styled(({className, ...props}) => (
@@ -28,8 +27,6 @@ export function ResultTableRowContent({index, row, setInsightRow, setInsightDial
     const rows = useAtomValue(resultRowsAtom);
     const dates = useAtomValue(datesAtom);
     const hideDetails = useAtomValue(hideDetailsAtom);
-
-    const highlightTime = useAtomValue(highlightTimeAtom);
 
     const {open: openDetailsDialog} = useDetailsDialog();
 
@@ -59,13 +56,11 @@ export function ResultTableRowContent({index, row, setInsightRow, setInsightDial
         </HtmlTooltip>
     }
 
-    const highlightLessThanMinutes = highlightTime !== false && row.parameters && row.parameters.resultGroup === RESULT_GROUP_WORKER ? highlightTime.minute() + (highlightTime.hour() * 60) : 0;
-
     return <Fragment>
         <ResultTableRowTitle row={row} setInsightRow={setInsightRow} setInsightDialog={setInsightDialog}/>
 
         {dates.map(date => <TableCell align="center"
-                                      sx={daySx(date, isLastRow(index), rowDateExists(row, date) ? rowDateExists(row, date) && row.byDate[date.index].value : 0, highlightLessThanMinutes)}
+                                      sx={daySx(date, isLastRow(index), rowDateExists(row, date) ? row.byDate[date.index].isUnexpectedDuration : false)}
                                       key={`table-cell-${index}-${date.index}-${row.title}`}>
             {!isLastRow(index) && row.isMaxDepth && <CellTooltip row={row} date={date}/>}
             {(isLastRow(index) || !row.isMaxDepth) && <Button disabled={true} sx={{color: "black !important"}}>

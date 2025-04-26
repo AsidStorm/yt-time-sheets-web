@@ -19,3 +19,4 @@ export * from './dates';
 export * from './hideDetails';
 export * from './highlightTime';
 export * from './message';
+export * from './salary';

@@ -5,9 +5,10 @@ import {
     RESULT_GROUP_ISSUE_TYPE, RESULT_GROUP_NONE,
     RESULT_GROUP_PROJECT,
     RESULT_GROUP_QUEUE,
-    RESULT_GROUP_WORKER
+    RESULT_GROUP_WORKER, WEEKEND_WEEK_DAYS
 } from "../constants";
 import moment from "moment/moment";
+import {extractRawMinutesFromDuration} from "./duration";
 
 const flatten = (groups, depth) => {
     const flat = [];
@@ -51,7 +52,9 @@ const groupParametersCaller = (queuesMap) => (workLog, resultGroup) => {
     return { key: workLog.issueKey, title: `${workLog.issueKey}: ${workLog.issueDisplay}` };
 };
 
-export const processRows = (workLogs, queuesMap, dateFormat, resultGroups) => {
+export const processRows = (workLogs, queuesMap, dateFormat, resultGroups, highlightTime, dates) => {
+    console.log( dates );
+
     const totalRow = {
         title: "Итого",
         byDate: {},
@@ -140,8 +143,8 @@ export const processRows = (workLogs, queuesMap, dateFormat, resultGroups) => {
                     byDate: {},
                     value: 0,
                     byCreatedBy: {},
-                    depth: depth,
-                    isMaxDepth: isMaxDepth,
+                    depth,
+                    isMaxDepth,
                     sub: {}
                 };
             }
@@ -183,7 +186,7 @@ export const processRows = (workLogs, queuesMap, dateFormat, resultGroups) => {
                     value: workLog.duration,
 
                     queue: workLog.queue,
-                    queueName: queue ? queue.title : "!" + workLog.queue + "!",
+                    queueName: queue ? queue.title : workLog.queue,
 
                     exactDate: moment(workLog.createdAt).format(DATE_FORMAT),
 
@@ -196,8 +199,33 @@ export const processRows = (workLogs, queuesMap, dateFormat, resultGroups) => {
         }
     }
 
+    const badTimeDuration = highlightTime !== false ? highlightTime.minute() + (highlightTime.hour() * 60) : 0;
+
     const out = flatten(groups, 0);
     out.push(totalRow);
 
-    return out;
+    return out.map( row => {
+        // Добавляем всякое разное на основе полного состояния строки
+        for( const date of dates ) {
+            if( !row.byDate[date.index] ) {
+                row.byDate[date.index] = {
+                    value: 0,
+                    byCreatedBy: {},
+                    details: []
+                };
+            }
+        }
+
+        if( badTimeDuration > 0 && row.parameters && row.parameters.resultGroup === RESULT_GROUP_WORKER ) {
+            for( const dateIndex of Object.keys(row.byDate) ) {
+                const duration = row.byDate[dateIndex].value;
+
+                const date = dates.find( date => date.index === dateIndex );
+
+                row.byDate[dateIndex].isUnexpectedDuration = date && !date.grouped && !WEEKEND_WEEK_DAYS.includes(date.includes[0].isoWeekday()) && extractRawMinutesFromDuration(duration) < badTimeDuration;
+            }
+        }
+
+        return row;
+    });
 };

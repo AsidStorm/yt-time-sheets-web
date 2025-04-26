@@ -84,7 +84,7 @@ function fixedHeaderContent(dates, classes, t) {
     return () => {
         return <TableRow sx={{background: "white"}}>
             <TableCell className={classes.stickyHeader}/>
-            {dates.map((date, index) => <TableCell align="center" sx={daySx(date, true, 0, 0)}
+            {dates.map((date, index) => <TableCell align="center" sx={daySx(date, true, false)}
                                                    key={`table-head-${date.title}`}>
                 {date.title}
             </TableCell>)}
@@ -170,7 +170,7 @@ function ResultTable() {
                                 <TableCell className={classes.stickyHeader}>
                                     &nbsp;
                                 </TableCell>
-                                {dates.map(date => <TableCell align="center" sx={daySx(date, true, 0, 0)}
+                                {dates.map(date => <TableCell align="center" sx={daySx(date, true, false)}
                                                               key={`table-head-${date.title}`}>
                                     {date.title}
                                 </TableCell>)}

@@ -1,5 +1,4 @@
 import {DATE_FORMAT_MONTH, DEPTH_COLORS, WEEKEND_WEEK_DAYS} from "../constants";
-import {extractRawMinutesFromDuration} from "./duration";
 
 export const isLastRowCaller = rows => index => rows.length - 1 === index;
 export const rowDateExists = (row, date) => !!row.byDate[date.index];
@@ -22,7 +21,7 @@ export const rowSx = (row, index) => {
     };
 };
 
-export const daySx = (day, isLastRow, duration, limit) => {
+export const daySx = (day, isLastRow, isUnexpectedDuration) => {
     const out = {
         width: 150
     };
@@ -33,7 +32,7 @@ export const daySx = (day, isLastRow, duration, limit) => {
         out.background = "#F9F7F2";
     }
 
-    if( !isLastRow && limit > 0 && !isWeekend && extractRawMinutesFromDuration(duration) < limit ) {
+    if( !isLastRow && isUnexpectedDuration === true ) {
         out.background = "rgba(255,0,0,.3);";
     }
 
