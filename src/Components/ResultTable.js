@@ -13,7 +13,7 @@ import {
 import {makeStyles} from "@mui/styles"
 import moment from "moment";
 import {Trans, useTranslation} from "react-i18next";
-import {useAtom, useAtomValue} from "jotai";
+import {useAtomValue} from "jotai";
 import {
     VIRTUOSO_MIN_LENGTH,
 } from "../constants";
@@ -31,9 +31,9 @@ import ChartsDialog from "./ChartsDialog";
 import {TableVirtuoso} from 'react-virtuoso';
 import InsightsDialog from "./InsightsDialog";
 import {
-    workLogsAtom,
     resultRowsAtom,
-    myUserAtom, datesAtom
+    myUserAtom,
+    datesAtom
 } from "../jotai/atoms";
 import {ExportButton} from "./ExportButton";
 import {ResultTableRowContent} from "./ResultTable/RowContent";
@@ -93,14 +93,13 @@ function fixedHeaderContent(dates, classes, t) {
     };
 }
 
-function ResultTable({showError, showSuccess}) {
+function ResultTable() {
     const {t} = useTranslation();
     const classes = useStyles();
 
     const rows = useAtomValue(resultRowsAtom);
     const myUser = useAtomValue(myUserAtom);
     const dates = useAtomValue(datesAtom);
-    const workLogs = useAtomValue(workLogsAtom);
 
     const [insightRow, setInsightRow] = useState({});
     const [insightDialog, setInsightDialog] = useState(false);
@@ -109,19 +108,6 @@ function ResultTable({showError, showSuccess}) {
     const [chartsDialog, setChartsDialog] = useState(false);
 
     const [useVirtuoso, setUseVirtuoso] = useState(false);
-
-    const [createWorkLogData, setCreateWorkLogData] = useState({
-        open: false,
-        userIdentity: null,
-        projectId: "",
-        issueKey: "",
-        duration: "",
-        comment: "",
-        date: {
-            includes: [moment()]
-        },
-        issueTitle: ""
-    });
 
     useEffect(() => {
         setUseVirtuoso(rows.length > VIRTUOSO_MIN_LENGTH);
@@ -134,12 +120,12 @@ function ResultTable({showError, showSuccess}) {
     return <Fragment>
         <InsightsDialog handleClose={() => setInsightDialog(false)} row={insightRow} state={insightDialog} rows={rows}/>
 
-        <ChartsDialog state={chartsDialog} workLogs={workLogs} handleClose={() => setChartsDialog(false)}/>
+        <ChartsDialog state={chartsDialog} handleClose={() => setChartsDialog(false)}/>
 
         <RestrictionsDialog state={restrictionsDialog} handleClose={() => setRestrictionsDialog(false)}/>
-        <CreateWorkLogDialog setData={setCreateWorkLogData} showError={showError} showSuccess={showSuccess}/>
-        <DeleteWorkLogDialog showError={showError} showSuccess={showSuccess}/>
-        <UpdateWorkLogDialog showError={showError} showSuccess={showSuccess} />
+        <CreateWorkLogDialog />
+        <DeleteWorkLogDialog />
+        <UpdateWorkLogDialog />
 
         <DetailsDialog/>
 

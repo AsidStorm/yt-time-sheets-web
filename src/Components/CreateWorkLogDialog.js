@@ -34,11 +34,12 @@ import {renderTimeViewClock} from "@mui/x-date-pickers/timeViewRenderers";
 import {useTranslation} from "react-i18next";
 import {useAtomValue, useSetAtom} from "jotai";
 import {usersAtom, boardsAtom, resultGroupsAtom, myUserAtom, selectedUsersAtom, workLogsAtom} from "../jotai/atoms";
-import {useCreateWorkLogDialog, useLoader} from "../hooks";
+import {useCreateWorkLogDialog, useLoader, useMessage} from "../hooks";
 
-function CreateWorkLogDialog({setData, showError, showSuccess}) {
+function CreateWorkLogDialog() {
     const {t} = useTranslation();
 
+    const { showSuccess, showError } = useMessage();
     const {startLoading, endLoading} = useLoader();
     const {
         close,

@@ -13,7 +13,6 @@ export function AuthorizeButtonsContainer({
                                               allowManualInput,
                                               federationId,
                                               defaultOrgId,
-                                              showError,
                                               setAuthorized
                                           }) {
     const [ssoDialog, setSsoDialog] = useState({
@@ -42,7 +41,6 @@ export function AuthorizeButtonsContainer({
     return <Grid container spacing={2} direction="column"
                  alignItems="center" alignContent="center" justifyContent="center">
         <SsoDialog
-            showError={showError}
             state={ssoDialog.open}
             handleClose={() => setSsoDialog(prev => ({...prev, open: false}))}
             handleIAmToken={handleIAmToken}

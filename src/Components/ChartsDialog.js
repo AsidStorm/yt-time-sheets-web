@@ -12,7 +12,7 @@ import {useHumanizeDuration} from "../hooks";
 import {useTranslation} from "react-i18next";
 import {Tab, Alert, Box, Dialog} from "@mui/material";
 import {useAtomValue} from "jotai";
-import {dateFormatAtom, datesAtom} from "../jotai/atoms";
+import {dateFormatAtom, datesAtom, workLogsAtom} from "../jotai/atoms";
 
 ChartJS.register(...registerables);
 
@@ -26,11 +26,12 @@ const PROJECTS_CATEGORY = 'PROJECTS';
 const BAR_TYPE_PIE = "PIE";
 const BAR_TYPE_BAR_STACKED = "BAR_STACKED";
 
-function ChartsDialog({state, handleClose, workLogs}) {
+function ChartsDialog({state, handleClose}) {
     const {t} = useTranslation();
 
     const dateFormat = useAtomValue(dateFormatAtom);
     const dates = useAtomValue(datesAtom);
+    const workLogs = useAtomValue(workLogsAtom);
 
     const [category, setCategory] = useState("");
     const [subCategory, setSubCategory] = useState("");

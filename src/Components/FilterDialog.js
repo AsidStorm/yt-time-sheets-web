@@ -57,7 +57,7 @@ import {
     queuesAtom,
     usersAtom,
 } from "../jotai/atoms";
-import {useFilterResult, useLoader} from "../hooks";
+import {useFilterResult, useLoader, useMessage} from "../hooks";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
 const checkedIcon = <CheckBoxIcon fontSize="small"/>;
@@ -83,11 +83,12 @@ function* generateMoments(start, end, step) {
     }
 }
 
-function FilterDialog({handleClose, state, onApply, showError, reload}) {
+function FilterDialog({handleClose, state, onApply, reload}) {
     const {t} = useTranslation();
 
     const {setFilteredData} = useFilterResult();
     const {startLoading, endLoading, setLoadingValue} = useLoader();
+    const {showError} = useMessage();
 
     const users = useAtomValue(usersAtom);
     const groups = useAtomValue(groupsAtom);
@@ -406,7 +407,7 @@ function FilterDialog({handleClose, state, onApply, showError, reload}) {
     >
         <GroupsDialog state={groupDialogState} handleClose={() => setGroupsDialogState(false)}
                       onSelect={group => handleGroupSelection(group)}/>
-        <SalaryDialog state={salaryDialog} handleClose={() => setSalaryDialog(false)} showError={showError}
+        <SalaryDialog state={salaryDialog} handleClose={() => setSalaryDialog(false)}
                       users={users} onApply={() => setSalaryDialog(false)}/>
 
         <AppBar sx={{position: 'relative'}}>

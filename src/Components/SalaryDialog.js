@@ -21,12 +21,15 @@ import {
 import {TimePicker} from "@mui/x-date-pickers";
 import {useTranslation} from "react-i18next";
 import {useSalaryState} from "../Context/Salary";
+import {useMessage} from "../hooks";
 
 const SALARY_MODE_IMPORT = "IMPORT";
 const SALARY_MODEL_VIEW = "VIEW";
 
-function SalaryDialog({state, handleClose, showError, users, onApply}) {
+function SalaryDialog({state, handleClose, users, onApply}) {
     const {t} = useTranslation();
+
+    const { showError } = useMessage();
 
     const [mode, setMode] = useState(SALARY_MODE_IMPORT);
     const [salaries, setSalaries] = useState({});

@@ -6,9 +6,12 @@ import DonateCard from "./DonateCard";
 import {pushAnalytics} from "../helpers";
 import {get} from "../requests";
 import {AUTHORIZED_STATE_DONE} from "../constants";
+import {useMessage} from "../hooks";
 
-export function OrganizationSelectorContainer({ showError, defaultOrgId, setAuthorized, setFilterDialogState, exit }) {
-    const { t, i18n } = useTranslation();
+export function OrganizationSelectorContainer({ defaultOrgId, setAuthorized, setFilterDialogState, exit }) {
+    const { t } = useTranslation();
+
+    const { showError } = useMessage();
     const onOrgSubmit = e => {
         e.preventDefault();
 

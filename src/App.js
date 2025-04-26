@@ -41,13 +41,14 @@ import {
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer";
 import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorContainer";
-import {useLoader} from "./hooks";
+import {useLoader, useMessage} from "./hooks";
 import {LanguageSelector} from "./Components/LanguageSelector";
 
 function App() {
     const { t } = useTranslation();
 
     const { startLoading, endLoading } = useLoader();
+    const { showSuccess, showError } = useMessage();
 
     const setUsersMap = useSetAtom(usersMapAtom);
     const setQueuesMap = useSetAtom(queuesMapAtom);
@@ -66,12 +67,6 @@ function App() {
     const [ colorMode, setColorMode ] = useState(false);
 
     const [authorized, setAuthorized] = useState(AUTHORIZED_STATE_NONE);
-
-    const [ messageState, setMessageState ] = useState({
-        open: false,
-        message: "",
-        type: "info" // error, warning, info, success
-    });
 
     const [ filterDialogState, setFilterDialogState ] = useState(false);
 
@@ -231,22 +226,6 @@ function App() {
         setColorMode(!colorMode);
     };
 
-    const showError = message => {
-        setMessageState({
-            open: true,
-            message: message instanceof Error ? message.message : message,
-            type: "error"
-        });
-    };
-
-    const showSuccess = message => {
-        setMessageState({
-            open: true,
-            message: message,
-            type: "success"
-        });
-    };
-
     const onFilterApply = () => {
         setFiltered(true);
         setReload(false);
@@ -281,10 +260,9 @@ function App() {
         <CssBaseline />
 
         <Loader />
+        <Message />
 
-        <Message state={messageState.open} message={messageState.message} type={messageState.type} handleClose={() => setMessageState(prev => ({...prev, open: false}))} />
-
-        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)} startLoading={startLoading} endLoading={endLoading} showError={showError} handleComplete={handleInitialConfigComplete} />
+        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)} showError={showError} handleComplete={handleInitialConfigComplete} />
 
         <FilterDialog
             handleClose={() => setFilterDialogState(false)}
@@ -360,10 +338,7 @@ function App() {
                                 filterLink: <Link href="#" onClick={() => setFilterDialogState(true)} />
                             }}
                         /></div>}
-                        {haveDataToDisplay && <ResultTable
-                            showError={showError}
-                            showSuccess={showSuccess}
-                        />}
+                        {haveDataToDisplay && <ResultTable />}
                     </Grid>
                     <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}} offset={{xs: 0, sm: 2, md: 0, lg: 2, xl: 3}}>
                         <CopyrightCard />

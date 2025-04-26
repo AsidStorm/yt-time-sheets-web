@@ -13,15 +13,16 @@ import {
 import {Trans, useTranslation} from "react-i18next";
 import {patch} from "../requests";
 import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
-import {useHumanizeDuration, useLoader, useUpdateWorkLogDialog} from "../hooks";
+import {useHumanizeDuration, useLoader, useMessage, useUpdateWorkLogDialog} from "../hooks";
 import {useSetAtom} from "jotai/index";
 import {workLogsAtom} from "../jotai/atoms";
 
-function UpdateWorkLogDialog({showError, showSuccess}) {
+function UpdateWorkLogDialog() {
     const {t} = useTranslation();
 
     const setWorkLogs = useSetAtom(workLogsAtom);
 
+    const { showSuccess, showError } = useMessage();
     const humanize = useHumanizeDuration();
     const {
         isOpen,

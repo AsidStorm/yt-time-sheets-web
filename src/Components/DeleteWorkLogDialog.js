@@ -5,10 +5,11 @@ import {useSetAtom} from "jotai";
 import {remove} from "../requests";
 import {pushAnalytics, yandexTrackerIssueUrl} from "../helpers";
 import {workLogsAtom} from "../jotai/atoms";
-import {useDeleteWorkLogDialog, useHumanizeDuration, useLoader} from "../hooks";
+import {useDeleteWorkLogDialog, useHumanizeDuration, useLoader, useMessage} from "../hooks";
 
-function DeleteWorkLogDialog({showSuccess, showError}) {
+function DeleteWorkLogDialog() {
     const {t} = useTranslation();
+    const { showSuccess, showError } = useMessage();
 
     const {startLoading, endLoading} = useLoader();
     const {

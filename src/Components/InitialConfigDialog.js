@@ -17,9 +17,13 @@ import {
 } from "@mui/material";
 import {post} from "../requests";
 import {Trans, useTranslation} from "react-i18next";
+import {useLoader, useMessage} from "../hooks";
 
-function InitialConfigDialog({state, handleClose, startLoading, endLoading, handleComplete, showError}) {
+function InitialConfigDialog({state, handleClose, handleComplete}) {
     const {t, i18n} = useTranslation();
+
+    const { startLoading, endLoading } = useLoader();
+    const { showError } = useMessage();
 
     const handleSubmit = (e) => {
         e.preventDefault();
