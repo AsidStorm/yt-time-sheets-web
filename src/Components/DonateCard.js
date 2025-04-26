@@ -14,8 +14,8 @@ import {
     Tooltip
 } from "@mui/material";
 import CakeIcon from '@mui/icons-material/Cake';
-import {pushAnalytics} from "../helpers";
 import {Trans, useTranslation} from 'react-i18next';
+import {pushAnalytics} from "../helpers";
 
 
 function DonateCard() {
@@ -30,11 +30,13 @@ function DonateCard() {
             <DialogContent>
                 <DialogContentText>
                     <Typography>
-                        Yandex Tracker Time Sheets был запущен <Tooltip
-                        title={"Если быть точными, то 28 октября 2022 года"}><Typography component="span"
-                                                                                         sx={{textDecoration: 'underline'}}>в
-                        октябре 2022 года</Typography></Tooltip> и с тех пор постоянно развивается благодаря вашим
-                        отзывам и предложениям.
+                        <Trans
+                            i18nKey="components:donate_card.dialog.row_1"
+                            components={{
+                                tooltip: <Tooltip title={t('components:donate_card.dialog.row_1.tooltip')}/>,
+                                decoration: <Typography component="span" sx={{textDecoration: 'underline'}}/>
+                            }}
+                        />
                     </Typography>
                     <Typography>
                         {t('components:donate_card.dialog.row_2')}
@@ -46,8 +48,8 @@ function DonateCard() {
             </DialogContent>
             <DialogActions>
                 <Link href={url} target="_blank" rel="nofollow noopener" variant="button" underline="none"
-                      onClick={() => pushAnalytics("donate", {source: "dialog"})}>Подарить печеньку</Link>
-                <Button onClick={() => setInfoDialog(false)}>Спасибо</Button>
+                      onClick={() => pushAnalytics("donate", {source: "dialog"})}>{t('components:donate_card.dialog.button.donate')}</Link>
+                <Button onClick={() => setInfoDialog(false)}>{t('common:button.thanks')}</Button>
             </DialogActions>
         </Dialog>
 
@@ -57,15 +59,18 @@ function DonateCard() {
                     <CakeIcon/>
                 </Avatar>
             }
-            title={<React.Fragment>
-                <Trans>Нам 2,5 года <Link href="#" onClick={() => {
-                    setInfoDialog(true);
-                    pushAnalytics("donateInfo");
-                }} underline={"none"}>^_^</Link></Trans>
-            </React.Fragment>}
+            title={<Trans
+                i18nKey="components:donate_card.title"
+                components={{
+                    dialogLink: <Link href="#" onClick={() => {
+                        setInfoDialog(true);
+                        pushAnalytics("donateInfo");
+                    }} underline={"none"}/>
+                }}
+            />}
             subheader={<React.Fragment>
                 <Link href={url} target="_blank" rel="nofollow noopener"
-                      onClick={() => pushAnalytics("donate", {source: "card"})}><Trans>На печеньки разработчикам</Trans></Link>
+                      onClick={() => pushAnalytics("donate", {source: "card"})}>{t('components:donate_card.donate_link_title')}</Link>
             </React.Fragment>}
         />
     </Card>

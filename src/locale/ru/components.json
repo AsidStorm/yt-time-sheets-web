@@ -86,8 +86,13 @@
   "initial_config_dialog.fields.allow_manual_input.description": "Необходимо для работы одного инстанса на несколько организаций или авторизаций. В таком случае поля при авторизации будут предзаполнены, и их можно будет поменять вручную.",
 
   "donate_card.dialog.title": "Спасибо что вы с нами =)",
+  "donate_card.dialog.row_1": "Yandex Tracker Time Sheets был запущен <tooltip><decoration>в октябре 2022 года</decoration></tooltip> и с тех пор постоянно развивается благодаря вашим отзывам и предложениям.",
+  "donate_card.dialog.row_1.tooltip": "Если быть точными, то 28 октября 2022 года",
   "donate_card.dialog.row_2": "Мы рады, что вы активно им пользуетесь, и благодарим каждого за доверие и участие.",
   "donate_card.dialog.row_3": "Портал был и останется бесплатным, а мы продолжим выпускать обновления! \uD83D\uDE80",
+  "donate_card.dialog.button.donate": "Подарить печеньку",
+  "donate_card.title": "Нам 2,5 года <dialogLink>^_^</dialogLink>",
+  "donate_card.donate_link_title": "На печеньки разработчикам",
 
   "create_work_log_dialog.title": "Создание рабочего времени",
   "create_work_log_dialog.fields.search.label": "Поиск задач",
