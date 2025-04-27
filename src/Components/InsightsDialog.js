@@ -1,8 +1,5 @@
 import React, {useEffect, useState} from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Grid from "@mui/material/Grid2";
-import Container from "@mui/material/Container";
+import {Dialog, DialogTitle, Grid2 as Grid, Container, Avatar, Tooltip, Typography, Link} from "@mui/material";
 import {
     RESULT_GROUP_WORKER,
     TIME_FORMAT_HOURS
@@ -11,17 +8,15 @@ import {Card, CardContent, CardHeader} from "@mui/material";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
-import Avatar from "@mui/material/Avatar";
 import {red} from "@mui/material/colors";
 import {humanizeDuration, yandexTrackerIssueUrl, yandexTrackerQueueUrl} from "../helpers";
-import { Chart as ChartJS, registerables } from 'chart.js';
-import { Pie, Bar } from 'react-chartjs-2';
-import Typography from "@mui/material/Typography";
-import Tooltip from "@mui/material/Tooltip";
-import Link from "@mui/material/Link";
-import {useAtomValue} from "jotai";
-import {timeFormatAtom} from "../jotai/atoms";
+import {Chart as ChartJS, registerables} from 'chart.js';
+import {Pie, Bar} from 'react-chartjs-2';
 import {useTranslation} from "react-i18next";
+import {useInsightsDialog} from "../hooks";
+import {useAtomValue} from "jotai";
+import {resultRowsAtom} from "../jotai/atoms";
+
 ChartJS.register(...registerables);
 
 const numberValueFormatter = value => value;
@@ -50,36 +45,44 @@ const buildComparison = (valueFormatter) => (data, userValue) => {
                 result['same'].push(item.label);
             } else if (group === 'greater') {
                 if (result['greater'].length === 0 || diff > result['greater'][0].diff) {
-                    result['greater'] = [{ label: item.label, diff: diff, value: item.value }];
+                    result['greater'] = [{label: item.label, diff: diff, value: item.value}];
                 }
             } else if (group === 'less') {
                 if (result['less'].length === 0 || Math.abs(diff) < Math.abs(result['less'][0].diff)) {
-                    result['less'] = [{ label: item.label, diff: diff, value: item.value }];
+                    result['less'] = [{label: item.label, diff: diff, value: item.value}];
                 }
             }
         });
     });
 
-    if( result.greater.length === 0 && result.less.length === 0 ) {
+    if (result.greater.length === 0 && result.less.length === 0) {
         return `Одинаково с ${result.same.join(', ')}`
     }
 
-    if( result.greater.length > 0 && result.less.length > 0 ) {
+    if (result.greater.length > 0 && result.less.length > 0) {
         return <React.Fragment>
-            Больше {result.less[0].label} на <Tooltip title={`У ${result.less[0].label} отмечено ${valueFormatter(result.less[0].value)}`}><Link href="#" underline="none">{valueFormatter(Math.abs(result.less[0].diff))}</Link></Tooltip><br />
-            Меньше {result.greater[0].label} на <Tooltip title={`У ${result.greater[0].label} отмечено ${valueFormatter(result.greater[0].value)}`}><Link href="#" underline="none">{valueFormatter(Math.abs(result.greater[0].diff))}</Link></Tooltip>
+            Больше {result.less[0].label} на <Tooltip
+            title={`У ${result.less[0].label} отмечено ${valueFormatter(result.less[0].value)}`}><Link href="#"
+                                                                                                       underline="none">{valueFormatter(Math.abs(result.less[0].diff))}</Link></Tooltip><br/>
+            Меньше {result.greater[0].label} на <Tooltip
+            title={`У ${result.greater[0].label} отмечено ${valueFormatter(result.greater[0].value)}`}><Link href="#"
+                                                                                                             underline="none">{valueFormatter(Math.abs(result.greater[0].diff))}</Link></Tooltip>
         </React.Fragment>
     }
 
-    if( result.greater.length > 0 ) {
+    if (result.greater.length > 0) {
         return <React.Fragment>
-            Меньше {result.greater[0].label} на <Tooltip title={`У ${result.greater[0].label} отмечено ${valueFormatter(result.greater[0].value)}`}><Link href="#" underline="none">{valueFormatter(Math.abs(result.greater[0].diff))}</Link></Tooltip>
+            Меньше {result.greater[0].label} на <Tooltip
+            title={`У ${result.greater[0].label} отмечено ${valueFormatter(result.greater[0].value)}`}><Link href="#"
+                                                                                                             underline="none">{valueFormatter(Math.abs(result.greater[0].diff))}</Link></Tooltip>
         </React.Fragment>
     }
 
-    if( result.less.length > 0 ) {
+    if (result.less.length > 0) {
         return <React.Fragment>
-            Больше {result.less[0].label} на <Tooltip title={`У ${result.less[0].label} отмечено ${valueFormatter(result.less[0].value)}`}><Link href="#" underline="none">{valueFormatter(Math.abs(result.less[0].diff))}</Link></Tooltip>
+            Больше {result.less[0].label} на <Tooltip
+            title={`У ${result.less[0].label} отмечено ${valueFormatter(result.less[0].value)}`}><Link href="#"
+                                                                                                       underline="none">{valueFormatter(Math.abs(result.less[0].diff))}</Link></Tooltip>
         </React.Fragment>
     }
 
@@ -90,7 +93,7 @@ const generateTotalTimeBox = ({row, rows}) => {
     const calculateTotalByRow = row => {
         let total = 0;
 
-        for( const userId of Object.keys(row.byCreatedBy) ) {
+        for (const userId of Object.keys(row.byCreatedBy)) {
             const value = row.byCreatedBy[userId];
             total += value;
         }
@@ -106,25 +109,25 @@ const generateTotalTimeBox = ({row, rows}) => {
         less: {}
     };
 
-    for( const other of rows ) {
-        if( !other.isMaxDepth ) {
+    for (const other of rows) {
+        if (!other.isMaxDepth) {
             continue;
         }
 
-        const { key,  resultGroup } = other.parameters;
+        const {key, resultGroup} = other.parameters;
 
-        if( key === row.parameters.key && resultGroup === row.parameters.resultGroup ) {
+        if (key === row.parameters.key && resultGroup === row.parameters.resultGroup) {
             continue;
         }
 
         const otherTotal = calculateTotalByRow(other);
 
-        if( otherTotal > total ) {
-            comparison.greater[key] = { value: otherTotal, label: other.title };
-        } else if( otherTotal === total ) {
-            comparison.same[key] = { value: otherTotal, label: other.title };
+        if (otherTotal > total) {
+            comparison.greater[key] = {value: otherTotal, label: other.title};
+        } else if (otherTotal === total) {
+            comparison.same[key] = {value: otherTotal, label: other.title};
         } else {
-            comparison.less[key] = { value: otherTotal, label: other.title };
+            comparison.less[key] = {value: otherTotal, label: other.title};
         }
     }
 
@@ -133,12 +136,12 @@ const generateTotalTimeBox = ({row, rows}) => {
         title: humanizeDuration(total, TIME_FORMAT_HOURS),
         subheader: "insights_dialog.boxes.total_time.sub_header",
         comparison: buildComparison(durationValueFormatter)(comparison, total),
-        icon: <AccessTimeIcon />
+        icon: <AccessTimeIcon/>
     };
 };
 
 const generateTotalUsersBox = (row) => {
-    if( Object.keys(row.byCreatedBy).length <= 1 && row.parameters.resultGroup === RESULT_GROUP_WORKER ) {
+    if (Object.keys(row.byCreatedBy).length <= 1 && row.parameters.resultGroup === RESULT_GROUP_WORKER) {
         return null;
     }
 
@@ -146,18 +149,18 @@ const generateTotalUsersBox = (row) => {
         index: "total-users-box",
         title: Object.keys(row.byCreatedBy).length,
         subheader: "insights_dialog.boxes.total_users.sub_header",
-        icon: <PeopleIcon />
+        icon: <PeopleIcon/>
     };
 }
 
 const generateAvgTimeByUserBox = (row) => {
-    if( Object.keys(row.byCreatedBy).length <= 1 ) {
+    if (Object.keys(row.byCreatedBy).length <= 1) {
         return null;
     }
 
     let total = 0;
 
-    for( const userId of Object.keys(row.byCreatedBy) ) {
+    for (const userId of Object.keys(row.byCreatedBy)) {
         const value = row.byCreatedBy[userId];
         total += value;
     }
@@ -166,7 +169,7 @@ const generateAvgTimeByUserBox = (row) => {
         index: "avg-time-by-user-box",
         title: humanizeDuration(parseInt(total / Object.keys(row.byCreatedBy).length), TIME_FORMAT_HOURS),
         subheader: "insights_dialog.boxes.avg_time_by_user.sub_header",
-        icon: <AccessTimeIcon />
+        icon: <AccessTimeIcon/>
     };
 }
 
@@ -175,9 +178,9 @@ const generateTotalIssuesBox = (row, rows) => {
         const uniqueIssues = [];
         let total = 0;
 
-        for( const { details } of Object.values(row.byDate) ) {
-            for( const { issueKey } of details ) {
-                if( !uniqueIssues.includes(issueKey) ) {
+        for (const {details} of Object.values(row.byDate)) {
+            for (const {issueKey} of details) {
+                if (!uniqueIssues.includes(issueKey)) {
                     uniqueIssues.push(issueKey);
                     total += 1;
                 }
@@ -189,7 +192,7 @@ const generateTotalIssuesBox = (row, rows) => {
 
     const total = calculateTotalByRow(row);
 
-    if( total <= 1 && row.parameters.resultGroup !== RESULT_GROUP_WORKER ) {
+    if (total <= 1 && row.parameters.resultGroup !== RESULT_GROUP_WORKER) {
         return null;
     }
 
@@ -199,25 +202,25 @@ const generateTotalIssuesBox = (row, rows) => {
         less: {}
     };
 
-    for( const other of rows ) {
-        if( !other.isMaxDepth ) {
+    for (const other of rows) {
+        if (!other.isMaxDepth) {
             continue;
         }
 
-        const { key,  resultGroup } = other.parameters;
+        const {key, resultGroup} = other.parameters;
 
-        if( key === row.parameters.key && resultGroup === row.parameters.resultGroup ) {
+        if (key === row.parameters.key && resultGroup === row.parameters.resultGroup) {
             continue;
         }
 
         const otherTotal = calculateTotalByRow(other);
 
-        if( otherTotal > total ) {
-            comparison.greater[key] = { value: otherTotal, label: other.title };
-        } else if( otherTotal === total ) {
-            comparison.same[key] = { value: otherTotal, label: other.title };
+        if (otherTotal > total) {
+            comparison.greater[key] = {value: otherTotal, label: other.title};
+        } else if (otherTotal === total) {
+            comparison.same[key] = {value: otherTotal, label: other.title};
         } else {
-            comparison.less[key] = { value: otherTotal, label: other.title };
+            comparison.less[key] = {value: otherTotal, label: other.title};
         }
     }
 
@@ -226,7 +229,7 @@ const generateTotalIssuesBox = (row, rows) => {
         title: total,
         subheader: "insights_dialog.boxes.total_issues.sub_header",
         comparison: buildComparison(numberValueFormatter)(comparison, total),
-        icon: <OutlinedFlagIcon />
+        icon: <OutlinedFlagIcon/>
     }
 };
 
@@ -235,9 +238,9 @@ const generateAvgTimeByIssueBox = (row) => {
     let totalIssues = 0;
     let totalTime = 0;
 
-    for( const { details } of Object.values(row.byDate) ) {
-        for( const { issueKey, value } of details ) {
-            if( !uniqueIssues.includes(issueKey) ) {
+    for (const {details} of Object.values(row.byDate)) {
+        for (const {issueKey, value} of details) {
+            if (!uniqueIssues.includes(issueKey)) {
                 uniqueIssues.push(issueKey);
                 totalIssues += 1;
             }
@@ -246,7 +249,7 @@ const generateAvgTimeByIssueBox = (row) => {
         }
     }
 
-    if( totalIssues <= 1 ) {
+    if (totalIssues <= 1) {
         return null;
     }
 
@@ -254,16 +257,16 @@ const generateAvgTimeByIssueBox = (row) => {
         index: "avg-time-by-issue-box",
         title: humanizeDuration(parseInt(totalTime / totalIssues), TIME_FORMAT_HOURS),
         subheader: "insights_dialog.boxes.avg_time_by_issue.sub_header",
-        icon: <OutlinedFlagIcon />
+        icon: <OutlinedFlagIcon/>
     }
 };
 
 const generateIssuesChart = (row) => {
     const timeByIssues = {};
 
-    for( const { details } of Object.values(row.byDate) ) {
-        for( const { issueKey, issueTitle, value } of details ) {
-            if( !timeByIssues[issueKey] ) {
+    for (const {details} of Object.values(row.byDate)) {
+        for (const {issueKey, issueTitle, value} of details) {
+            if (!timeByIssues[issueKey]) {
                 timeByIssues[issueKey] = {
                     label: issueTitle,
                     value: 0
@@ -274,7 +277,7 @@ const generateIssuesChart = (row) => {
         }
     }
 
-    if( Object.keys(timeByIssues).length <= 1 ) {
+    if (Object.keys(timeByIssues).length <= 1) {
         return null;
     }
 
@@ -282,10 +285,10 @@ const generateIssuesChart = (row) => {
         type: "PIE",
         label: "insights_dialog.charts.issues.label",
         data: {
-            labels: Object.values(timeByIssues).map( v => v.label ),
+            labels: Object.values(timeByIssues).map(v => v.label),
             datasets: [
                 {
-                    data: Object.keys(timeByIssues).map( k => ({ issueKey: k, value: timeByIssues[k].value })),
+                    data: Object.keys(timeByIssues).map(k => ({issueKey: k, value: timeByIssues[k].value})),
                 },
             ]
         },
@@ -302,7 +305,7 @@ const generateIssuesChart = (row) => {
                 }
             },
             onClick: (e, elements) => {
-                const { issueKey } = elements[0].element['$context'].raw;
+                const {issueKey} = elements[0].element['$context'].raw;
 
                 window.open(yandexTrackerIssueUrl(issueKey));
             },
@@ -316,9 +319,9 @@ const generateIssuesChart = (row) => {
 const generateQueuesChart = (row) => {
     const timeByQueues = {};
 
-    for( const { details } of Object.values(row.byDate) ) {
-        for( const { queue, queueName, value } of details ) {
-            if( !timeByQueues[queue] ) {
+    for (const {details} of Object.values(row.byDate)) {
+        for (const {queue, queueName, value} of details) {
+            if (!timeByQueues[queue]) {
                 timeByQueues[queue] = {
                     label: queue.toUpperCase() === queueName.toUpperCase() ? queue : `${queue}: ${queueName}`,
                     value: 0
@@ -329,7 +332,7 @@ const generateQueuesChart = (row) => {
         }
     }
 
-    if( Object.keys(timeByQueues).length <= 1 ) {
+    if (Object.keys(timeByQueues).length <= 1) {
         return null;
     }
 
@@ -337,10 +340,10 @@ const generateQueuesChart = (row) => {
         type: "PIE",
         label: "insights_dialog.charts.queues.label",
         data: {
-            labels: Object.values(timeByQueues).map( v => v.label ),
+            labels: Object.values(timeByQueues).map(v => v.label),
             datasets: [
                 {
-                    data: Object.keys(timeByQueues).map( k => ({ queueKey: k, value: timeByQueues[k].value })),
+                    data: Object.keys(timeByQueues).map(k => ({queueKey: k, value: timeByQueues[k].value})),
                 },
             ]
         },
@@ -357,7 +360,7 @@ const generateQueuesChart = (row) => {
                 }
             },
             onClick: (e, elements) => {
-                const { queueKey } = elements[0].element['$context'].raw;
+                const {queueKey} = elements[0].element['$context'].raw;
 
                 window.open(yandexTrackerQueueUrl(queueKey));
             },
@@ -371,9 +374,9 @@ const generateQueuesChart = (row) => {
 const generateUsersChart = (row) => {
     const timeByUsers = {};
 
-    for( const { details } of Object.values(row.byDate) ) {
-        for( const { createdById, createdByDisplay, value } of details ) {
-            if( !timeByUsers[createdById] ) {
+    for (const {details} of Object.values(row.byDate)) {
+        for (const {createdById, createdByDisplay, value} of details) {
+            if (!timeByUsers[createdById]) {
                 timeByUsers[createdById] = {
                     label: createdByDisplay,
                     value: 0
@@ -384,7 +387,7 @@ const generateUsersChart = (row) => {
         }
     }
 
-    if( Object.keys(timeByUsers).length <= 1 && row.parameters.resultGroup === RESULT_GROUP_WORKER ) {
+    if (Object.keys(timeByUsers).length <= 1 && row.parameters.resultGroup === RESULT_GROUP_WORKER) {
         return null;
     }
 
@@ -392,7 +395,7 @@ const generateUsersChart = (row) => {
         type: "PIE",
         label: "insights_dialog.charts.users.label",
         data: {
-            labels: Object.values(timeByUsers).map( v => v.label ),
+            labels: Object.values(timeByUsers).map(v => v.label),
             datasets: [
                 {
                     data: Object.values(timeByUsers),
@@ -416,31 +419,34 @@ const generateUsersChart = (row) => {
 }
 
 const durationValueFormatter = value => {
-    if( parseInt(value) === value ) {
+    if (parseInt(value) === value) {
         return humanizeDuration(value, TIME_FORMAT_HOURS);
     }
 
-    if( parseInt(value.parsed) > 0 ) {
+    if (parseInt(value.parsed) > 0) {
         return humanizeDuration(value.parsed, TIME_FORMAT_HOURS);
     }
 
-    if( parseInt(value.raw) > 0 ) {
+    if (parseInt(value.raw) > 0) {
         return humanizeDuration(value.raw, TIME_FORMAT_HOURS);
     }
 
     return humanizeDuration(0, TIME_FORMAT_HOURS);
 };
 
-function InsightsDialog({ state, handleClose, row, rows }) {
-    const { t, i18n } = useTranslation();
+function InsightsDialog() {
+    const {t} = useTranslation();
 
-    const timeFormat = useAtomValue(timeFormatAtom);
+    const rows = useAtomValue(resultRowsAtom);
+    const row = {};
 
-    const [ boxes, setBoxes ] = useState([]);
-    const [ charts, setCharts ] = useState([]);
+    const {isOpen, close} = useInsightsDialog();
+
+    const [boxes, setBoxes] = useState([]);
+    const [charts, setCharts] = useState([]);
 
     useEffect(() => {
-        if( !row || Object.keys(row).length === 0 ) return;
+        if (!row || Object.keys(row).length === 0) return;
 
         const boxes = [
             generateTotalTimeBox,
@@ -459,25 +465,25 @@ function InsightsDialog({ state, handleClose, row, rows }) {
         const nextBoxes = [];
         const nextCharts = [];
 
-        for( const box of boxes ) {
-            const generated = box({ row, rows });
+        for (const box of boxes) {
+            const generated = box({row, rows});
 
-            if( generated !== null ) {
-                nextBoxes.push( generated );
+            if (generated !== null) {
+                nextBoxes.push(generated);
 
-                if( nextBoxes.length === 3 ) {
+                if (nextBoxes.length === 3) {
                     break;
                 }
             }
         }
 
-        for( const chart of charts ) {
+        for (const chart of charts) {
             const generated = chart(row, rows);
 
-            if( generated !== null ) {
-                nextCharts.push( generated );
+            if (generated !== null) {
+                nextCharts.push(generated);
 
-                if( nextCharts.length === 3 ) {
+                if (nextCharts.length === 3) {
                     break;
                 }
             }
@@ -487,16 +493,16 @@ function InsightsDialog({ state, handleClose, row, rows }) {
         setCharts(nextCharts);
     }, [row]);
 
-    return <Dialog open={state} onClose={() => handleClose()} fullWidth maxWidth="lg">
+    return <Dialog open={isOpen} onClose={() => close()} fullWidth maxWidth="lg">
         <DialogTitle>{t('components:insights_dialog.title')}</DialogTitle>
-        {state && <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
+        {isOpen && <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
             <Grid container spacing={2}>
-                {boxes.map( box => {
-                    return <Grid size={{ xs: 12, md: 4}} key={box.index}>
+                {boxes.map(box => {
+                    return <Grid size={{xs: 12, md: 4}} key={box.index}>
                         <Card variant="outlined">
                             <CardHeader
                                 avatar={
-                                    <Avatar sx={{ bgcolor: red[500] }}>
+                                    <Avatar sx={{bgcolor: red[500]}}>
                                         {box.icon}
                                     </Avatar>
                                 }
@@ -504,17 +510,17 @@ function InsightsDialog({ state, handleClose, row, rows }) {
                                 subheader={t(`components:${box.subheader}`)}
                             />
                             {box.comparison && <CardContent>
-                                <Typography sx={{ color: 'text.secondary' }}>
+                                <Typography sx={{color: 'text.secondary'}}>
                                     {box.comparison}
                                 </Typography>
                             </CardContent>}
                         </Card>
                     </Grid>
                 })}
-                {charts.map( chart => {
-                    return <Grid size={{ xs: 12, md: 4}} key={chart.index}>
+                {charts.map(chart => {
+                    return <Grid size={{xs: 12, md: 4}} key={chart.index}>
                         <Card variant="outlined">
-                            <CardHeader title={t(`components:${chart.label}`)} />
+                            <CardHeader title={t(`components:${chart.label}`)}/>
                             {chart.type === 'PIE' && <Pie
                                 data={chart.data}
                                 options={chart.options}

@@ -19,7 +19,7 @@ const HtmlTooltip = styled(({className, ...props}) => (
     },
 }));
 
-export function ResultTableRowContent({index, row, setInsightRow, setInsightDialog}) {
+export function ResultTableRowContent({index, row}) {
     const {t} = useTranslation();
 
     const humanize = useHumanizeDuration();
@@ -57,13 +57,13 @@ export function ResultTableRowContent({index, row, setInsightRow, setInsightDial
     }
 
     return <Fragment>
-        <ResultTableRowTitle row={row} setInsightRow={setInsightRow} setInsightDialog={setInsightDialog}/>
+        <ResultTableRowTitle row={row} />
 
         {dates.map(date => <TableCell align="center"
                                       sx={daySx(date, isLastRow(index), rowDateExists(row, date) ? row.byDate[date.index].isUnexpectedDuration : false)}
                                       key={`table-cell-${index}-${date.index}-${row.title}`}>
             {!isLastRow(index) && row.isMaxDepth && <CellTooltip row={row} date={date}/>}
-            {(isLastRow(index) || !row.isMaxDepth) && <Button disabled={true} sx={{color: "black !important"}}>
+            {(isLastRow(index) || !row.isMaxDepth) && <Button disabled={true} sx={{color: (theme) => theme.palette.mode === 'dark' ? 'white !important' : "black !important"}}>
                 {rowDateExists(row, date) && row.byDate[date.index].value > 0 ? humanize(row.byDate[date.index].value, row.byDate[date.index].byCreatedBy) : t('common:no_time')}
             </Button>}
         </TableCell>)}

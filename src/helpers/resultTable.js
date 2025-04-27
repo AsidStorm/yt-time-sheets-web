@@ -1,4 +1,6 @@
 import {DATE_FORMAT_MONTH, DEPTH_COLORS, WEEKEND_WEEK_DAYS} from "../constants";
+import { pink, brown, amber, grey } from '@mui/material/colors';
+
 
 export const isLastRowCaller = rows => index => rows.length - 1 === index;
 export const rowDateExists = (row, date) => !!row.byDate[date.index];
@@ -29,7 +31,7 @@ export const daySx = (day, isLastRow, isUnexpectedDuration) => {
     const isWeekend = day.grouped ? false : WEEKEND_WEEK_DAYS.includes(day.includes[0].isoWeekday());
 
     if ( isWeekend ) {
-        out.background = "#F9F7F2";
+        out.backgroundColor = theme => theme.palette.mode === 'dark' ? 'weekend.dark' : 'weekend.light';
     }
 
     if( !isLastRow && isUnexpectedDuration === true ) {

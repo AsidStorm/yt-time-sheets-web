@@ -109,6 +109,7 @@
   "create_work_log_dialog.fields.search_type.values.BOARD": "On boards",
   "create_work_log_dialog.selected_issue": "Selected issue:",
   "create_work_log_dialog.sprint_name": "{{name}} (from {{startDate}} to {{endDate}})",
+  "create_work_log_dialog.issues_search_type": "Будем искать задачи",
 
   "details_table.caption_issue_with_user": "<issueLink>{{issueDisplay}}</issueLink>. Author: {{createdByDisplay}}",
   "details_table.caption_only_author": "Author: {{createdByDisplay}}" ,

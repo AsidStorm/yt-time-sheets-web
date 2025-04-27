@@ -14,6 +14,7 @@ import Link from "@mui/material/Link";
 import {yandexTrackerIssueUrl, yandexTrackerProjectUrl, yandexTrackerQueueUrl} from "../../helpers";
 import {makeStyles} from "@mui/styles";
 import {useTranslation} from "react-i18next";
+import {useInsightsDialog} from "../../hooks";
 
 const useStyles = makeStyles({
     table: {
@@ -22,7 +23,6 @@ const useStyles = makeStyles({
     sticky: {
         position: "sticky",
         left: 0,
-        background: "white",
         borderRight: "1px solid black",
         width: 500,
         zIndex: 1
@@ -30,15 +30,16 @@ const useStyles = makeStyles({
     stickyHeader: {
         position: "sticky",
         left: 0,
-        background: "white",
         borderRight: "1px solid black",
         width: 500,
         zIndex: "5 !important"
     }
 });
 
-export function ResultTableRowTitle({ row, setInsightRow, setInsightDialog }) {
+export function ResultTableRowTitle({ row }) {
     const {t} = useTranslation();
+
+    const { open: openInsightsDialog } = useInsightsDialog();
 
     const classes = useStyles();
 
@@ -55,7 +56,7 @@ export function ResultTableRowTitle({ row, setInsightRow, setInsightDialog }) {
     const { parameters: { resultGroup, key } } = row;
 
     const insights = (row) => row.isMaxDepth ? <Tooltip title={t('components:row_title.insights_tooltip')}>
-        <IconButton size="small" onClick={() => { setInsightRow(row); setInsightDialog(true); }}>
+        <IconButton size="small" onClick={() => { openInsightsDialog(row); }}>
             <AnalyticsIcon />
         </IconButton>
     </Tooltip> : null;

@@ -39,7 +39,7 @@ import {useCreateWorkLogDialog, useLoader, useMessage} from "../hooks";
 function CreateWorkLogDialog() {
     const {t} = useTranslation();
 
-    const { showSuccess, showError } = useMessage();
+    const {showSuccess, showError} = useMessage();
     const {startLoading, endLoading} = useLoader();
     const {
         close,
@@ -59,19 +59,19 @@ function CreateWorkLogDialog() {
     const selectedUsers = useAtomValue(selectedUsersAtom);
     const setWorkLogs = useSetAtom(workLogsAtom);
 
-    const [ userIdentity, setUserIdentity ] = useState(null);
+    const [userIdentity, setUserIdentity] = useState(null);
 
     useEffect(() => {
-        if( resultGroups.includes(RESULT_GROUP_WORKER) ) {
-            if( myUser.isAdmin ) {
-                if( createdById ) {
+        if (resultGroups.includes(RESULT_GROUP_WORKER)) {
+            if (myUser.isAdmin) {
+                if (createdById) {
                     setUserIdentity(createdById);
                     return;
                 }
             }
         }
 
-        if( createdById ) {
+        if (createdById) {
             setUserIdentity(createdById);
             return;
         }
@@ -199,7 +199,8 @@ function CreateWorkLogDialog() {
     const taskFilter = () => {
         const taskFilterBase = () => {
             return <Grid size={{xs: 12}}>
-                <TextField label={t('components:create_work_log_dialog.fields.search.label')} variant="outlined" fullWidth onChange={e => handleTaskSearch(e)}/>
+                <TextField label={t('components:create_work_log_dialog.fields.search.label')} variant="outlined"
+                           fullWidth onChange={e => handleTaskSearch(e)}/>
             </Grid>
         };
 
@@ -230,13 +231,15 @@ function CreateWorkLogDialog() {
             <Grid container spacing={2}>
                 {boards.length > 0 && <Grid size={{xs: 12}}>
                     <FormControl fullWidth>
-                        <FormLabel>Будем искать задачи</FormLabel>
+                        <FormLabel>{t('components:create_work_log_dialog.issues_search_type')}</FormLabel>
                         <RadioGroup row
                                     value={taskSearchType}
                                     onChange={(e, newValue) => setTaskSearchType(newValue)}
                         >
-                            <FormControlLabel value={TASK_SEARCH_TYPE_BASE} control={<Radio/>} label={t('components:create_work_log_dialog.fields.search_type.values.BASE')} />
-                            <FormControlLabel value={TASK_SEARCH_TYPE_BOARD} control={<Radio/>} label={t('components:create_work_log_dialog.fields.search_type.values.BOARD')} />
+                            <FormControlLabel value={TASK_SEARCH_TYPE_BASE} control={<Radio/>}
+                                              label={t('components:create_work_log_dialog.fields.search_type.values.BASE')}/>
+                            <FormControlLabel value={TASK_SEARCH_TYPE_BOARD} control={<Radio/>}
+                                              label={t('components:create_work_log_dialog.fields.search_type.values.BOARD')}/>
                         </RadioGroup>
                     </FormControl>
                 </Grid>}
@@ -385,7 +388,8 @@ function CreateWorkLogDialog() {
                     </Grid>
                     {userIdentity === myUser.value && !myUser.isReadOnly && <Grid size={{xs: 12}}>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox/>} label={t('components:create_work_log_dialog.fields.with_comment.label')}
+                            <FormControlLabel control={<Checkbox/>}
+                                              label={t('components:create_work_log_dialog.fields.with_comment.label')}
                                               checked={withComment} onChange={(e) => setWithComment(e.target.checked)}/>
                         </FormGroup>
                     </Grid>}

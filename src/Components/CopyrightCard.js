@@ -10,7 +10,7 @@ function CopyrightCard() {
     return <Card>
         <CardHeader
             avatar={
-                <Avatar sx={{ bgcolor: "black" }}>
+                <Avatar sx={{ backgroundColor: theme => theme.palette.mode === "dark" ? "grey" : "black" }}>
                     <GitHubIcon />
                 </Avatar>
             }

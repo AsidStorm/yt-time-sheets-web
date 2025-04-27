@@ -7,7 +7,6 @@ import {LocalizationProvider} from "@mui/x-date-pickers";
 import {SalaryProvider} from "./Context/Salary";
 import './i18n';
 
-
 import "moment/locale/ru";
 import { Provider } from 'jotai';
 

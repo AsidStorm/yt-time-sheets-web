@@ -7,8 +7,6 @@ export function useCreateWorkLogDialog() {
     const [data, setData] = useAtom(createWorkLogDataAtom);
 
     const open = (row, date) => {
-        console.log( row );
-
         setData({
             duration: "",
             comment: "",

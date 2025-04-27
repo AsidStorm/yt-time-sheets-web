@@ -109,6 +109,7 @@
   "create_work_log_dialog.fields.search_type.values.BOARD": "На досках",
   "create_work_log_dialog.selected_issue": "Выбрана задача:",
   "create_work_log_dialog.sprint_name": "{{name}} (с {{startDate}} по {{endDate}})",
+  "create_work_log_dialog.issues_search_type": "Будем искать задачи",
 
   "details_table.caption_issue_with_user": "<issueLink>{{issueDisplay}}</issueLink>. Автор: {{createdByDisplay}}",
   "details_table.caption_only_author": "Автор: {{createdByDisplay}}" ,

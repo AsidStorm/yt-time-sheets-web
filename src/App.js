@@ -246,15 +246,32 @@ function App() {
         showSuccess("Вы успешно вышли. Не забудьте отозвать токен, т.к. для этого нет API.");*/
     };
 
-    const theme = useMemo(
+    let theme = useMemo(
         () =>
             createTheme({
                 palette: {
                     mode: colorMode ? 'dark' : 'light',
+                    /*weekend: theme.palette.augmentColor({
+                        color: {
+                            main: '#FF5733',
+                        },
+                        name: 'weekend',
+                    }),*/
                 },
             }),
         [colorMode],
     );
+
+    theme = createTheme(theme, {
+        palette: {
+            weekend: {
+                main: '#F9F7F2',
+                light: '#F9F7F2',
+                dark: '#757575',
+                contrastText: '#242105',
+            }
+        },
+    });
 
     return <ThemeProvider theme={theme}>
         <CssBaseline />

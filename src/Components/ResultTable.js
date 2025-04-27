@@ -11,7 +11,6 @@ import {
     Button
 } from "@mui/material";
 import {makeStyles} from "@mui/styles"
-import moment from "moment";
 import {Trans, useTranslation} from "react-i18next";
 import {useAtomValue} from "jotai";
 import {
@@ -45,7 +44,6 @@ const useStyles = makeStyles({
     sticky: {
         position: "sticky",
         left: 0,
-        background: "white",
         borderRight: "1px solid black",
         width: 500,
         zIndex: 1
@@ -53,7 +51,6 @@ const useStyles = makeStyles({
     stickyHeader: {
         position: "sticky",
         left: 0,
-        background: "white",
         borderRight: "1px solid black",
         width: 500,
         zIndex: "5 !important"
@@ -101,9 +98,6 @@ function ResultTable() {
     const myUser = useAtomValue(myUserAtom);
     const dates = useAtomValue(datesAtom);
 
-    const [insightRow, setInsightRow] = useState({});
-    const [insightDialog, setInsightDialog] = useState(false);
-
     const [restrictionsDialog, setRestrictionsDialog] = useState(false);
     const [chartsDialog, setChartsDialog] = useState(false);
 
@@ -118,7 +112,7 @@ function ResultTable() {
     };
 
     return <Fragment>
-        <InsightsDialog handleClose={() => setInsightDialog(false)} row={insightRow} state={insightDialog} rows={rows}/>
+        <InsightsDialog />
 
         <ChartsDialog state={chartsDialog} handleClose={() => setChartsDialog(false)}/>
 
@@ -157,9 +151,7 @@ function ResultTable() {
                     <TableVirtuoso
                         context={{rows}}
                         data={rows}
-                        itemContent={(index, row) => <ResultTableRowContent row={row} index={index}
-                                                                            setInsightRow={setInsightRow}
-                                                                            setInsightDialog={setInsightDialog}/>}
+                        itemContent={(index, row) => <ResultTableRowContent row={row} index={index} />}
                         fixedHeaderContent={fixedHeaderContent(dates, classes, t)}
                         components={VirtuosoTableComponents}/>
                 </Paper>}
@@ -181,8 +173,7 @@ function ResultTable() {
                         <TableBody>
                             {rows.map((row, index) => <TableRow sx={rowSx(row, row.realIndex)}
                                                                 key={`table-row-${index}`}>
-                                <ResultTableRowContent row={row} index={index} setInsightRow={setInsightRow}
-                                                       setInsightDialog={setInsightDialog}/>
+                                <ResultTableRowContent row={row} index={index} />
                             </TableRow>)}
                         </TableBody>
                     </Table>
