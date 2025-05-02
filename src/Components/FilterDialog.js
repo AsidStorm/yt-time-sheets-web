@@ -45,7 +45,6 @@ import {
 import {post} from "../requests";
 import GroupsDialog from "./GroupsDialog";
 import {pushAnalytics, sleep, sliceIntoChunks} from "../helpers";
-import SalaryDialog from "./SalaryDialog";
 import {useSalaryState} from "../Context/Salary";
 import {useTranslation} from "react-i18next";
 import {useAtomValue} from "jotai";
@@ -54,10 +53,11 @@ import {
     issueStatusesAtom,
     issueTypesAtom, myUserAtom,
     projectsAtom,
-    queuesAtom,
+    queuesAtom, salaryMapAtom,
     usersAtom,
 } from "../jotai/atoms";
 import {useFilterResult, useLoader, useMessage} from "../hooks";
+import {DialogsSalary} from "./Dialogs/Salary";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
 const checkedIcon = <CheckBoxIcon fontSize="small"/>;
@@ -97,6 +97,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
     const issueTypes = useAtomValue(issueTypesAtom);
     const projects = useAtomValue(projectsAtom);
     const myUser = useAtomValue(myUserAtom);
+    const salaryMap = useAtomValue(salaryMapAtom);
 
     // Специфика работы следующая, всё что происходит здесь - влияет на общий стейт только после нажатия кнопки "Применить"
     const [timeFormat, setTimeFormat] = useState(TIME_FORMAT_HOURS);
@@ -403,7 +404,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
     >
         <GroupsDialog state={groupDialogState} handleClose={() => setGroupsDialogState(false)}
                       onSelect={group => handleGroupSelection(group)}/>
-        <SalaryDialog state={salaryDialog} handleClose={() => setSalaryDialog(false)}
+        <DialogsSalary state={salaryDialog} handleClose={() => setSalaryDialog(false)}
                       users={users} onApply={() => setSalaryDialog(false)}/>
 
         <AppBar sx={{position: 'relative'}}>
@@ -672,7 +673,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                                     value={timeFormat}
                                     onChange={(e, newValue) => setTimeFormat(newValue)}
                         >
-                            {TIME_FORMATS.map(format => <FormControlLabel value={format} key={`time_formats-${format}`}
+                            {TIME_FORMATS.map(format => <FormControlLabel value={format} key={`time-formats-${format}`}
                                                                           control={<Radio/>}
                                                                           label={t(`filter:time_format.values.${format}`)}/>)}
                         </RadioGroup>
@@ -682,7 +683,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                     <Button fullWidth onClick={() => {
                         setSalaryDialog(true);
                         pushAnalytics('salaryButtonClick')
-                    }}>{t('filter:button.salaries')}</Button>
+                    }}>{t('filter:button.salaries', { value: Object.keys(salaryMap).length })}</Button>
                 </Grid>}
 
                 {RESULT_GROUPS.map((variants, index) => resultGroups[index] ?

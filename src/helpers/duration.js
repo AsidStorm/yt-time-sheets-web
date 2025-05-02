@@ -34,20 +34,20 @@ export const durationToISO = (duration) => {
     return `${minutes}m`;
 };
 
-export const humanizeDuration = (t) => (duration, timeFormat, details, salaries) => {
+export const humanizeDuration = (t, salaryMap) => (duration, timeFormat, owners) => {
     if( timeFormat === TIME_FORMAT_MONEY ) {
         let totalMoney = 0;
         let warning = false;
 
-        for( const userId of Object.keys(details) ) {
-            const salary = salaries[userId];
+        for( const userId of Object.keys(owners) ) {
+            const salary = salaryMap[userId];
 
             if( !salary ) {
                 warning = true;
                 continue;
             }
 
-            const value = details[userId];
+            const value = owners[userId];
 
             const { rawMinutes } = extractDuration(value);
 
@@ -56,7 +56,7 @@ export const humanizeDuration = (t) => (duration, timeFormat, details, salaries)
             totalMoney += salaryPerMinute * rawMinutes;
         }
 
-        return totalMoney.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ') + " ₽" + (warning ? " (!!!)" : "");
+        return totalMoney.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ') + " ₽" + (warning ? " (!!!)" : ""); // !!! РУБЛИ !!!
     }
 
     const { hours, minutes, rawMinutes } = extractDuration(duration);

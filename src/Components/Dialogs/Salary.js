@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import {
     Dialog,
     DialogTitle,
@@ -16,26 +16,39 @@ import {
     FormControl,
     Checkbox,
     FormControlLabel,
-    FormGroup
+    FormGroup, Tab, Alert
 } from "@mui/material";
 import {TimePicker} from "@mui/x-date-pickers";
 import {useTranslation} from "react-i18next";
-import {useSalaryState} from "../Context/Salary";
-import {useMessage} from "../hooks";
+import {useSetAtom} from "jotai";
+import {useMessage} from "../../hooks";
+import {salaryMapAtom} from "../../jotai/atoms";
+import {TabContext, TabList, TabPanel} from "@mui/lab";
 
 const SALARY_MODE_IMPORT = "IMPORT";
+const SALARY_MODE_MANUAL = "MANUAL";
 const SALARY_MODEL_VIEW = "VIEW";
+const SALARY_MODE_INPUT = "INPUT";
 
-function SalaryDialog({state, handleClose, users, onApply}) {
+const SALARY_INPUT_TYPE_MANUAL = "MANUAL";
+const SALARY_INPUT_TYPE_TEXT = "TEXT";
+
+const SALARY_INPUT_TYPES = [
+    SALARY_INPUT_TYPE_TEXT,
+    SALARY_INPUT_TYPE_MANUAL,
+];
+
+export function DialogsSalary({state, handleClose, users, onApply}) {
     const {t} = useTranslation();
+
+    const setSalaryMap = useSetAtom(salaryMapAtom);
 
     const { showError } = useMessage();
 
-    const [mode, setMode] = useState(SALARY_MODE_IMPORT);
+    const [mode, setMode] = useState(SALARY_MODE_INPUT);
     const [salaries, setSalaries] = useState({});
     const [isSimple, setIsSimple] = useState(false);
-
-    const [globalSalaries, setGlobalSalaries] = useSalaryState();
+    const [inputType, setInputType] = useState(SALARY_INPUT_TYPE_TEXT);
 
     const [spreadUnmarkedTime, setSpreadUnmarkedTime] = useState(false);
     const [mustWorkedTime, setMustWorkedTime] = useState(null);
@@ -118,14 +131,11 @@ function SalaryDialog({state, handleClose, users, onApply}) {
         return user.label;
     };
 
-    const handleApplySubmit = (e) => {
-        e.preventDefault();
+    const handleApplySubmit = event => {
+        event.preventDefault();
 
-        const data = new FormData(e.currentTarget);
+        setSalaryMap(salaries);
 
-        setGlobalSalaries(salaries);
-
-        //onApply({salaries, spreadUnmarkedTime, mustWorkedTime, weekendsMultiplier: parseFloat(data.get('weekendsMultiplier').replace(",", ".")), overtimeMultiplier: parseFloat(data.get('overtimeMultiplier').replace(",", ""))});
         onApply();
     };
 
@@ -134,28 +144,64 @@ function SalaryDialog({state, handleClose, users, onApply}) {
         setMode(SALARY_MODE_IMPORT);
     };
 
+    const handleSetInputType = (event, newValue) => {
+        setInputType(newValue);
+    };
+
     return <Dialog open={state} onClose={() => handleClose()} maxWidth="lg" fullWidth>
         <DialogTitle>{t('components:salary_dialog.title')}</DialogTitle>
         <DialogContent>
-            {mode === SALARY_MODE_IMPORT && <form onSubmit={(e) => handleSubmit(e)}>
-                <Grid container spacing={2} sx={{paddingTop: 2}}>
-                    <Grid size={{xs: 12}}>
-                        <TextField
-                            label={t('components:salary_dialog.fields.csv.label')}
-                            multiline
-                            fullWidth
-                            rows={5}
-                            name="csv"
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid size={{xs: 12}}>
-                        <Button fullWidth type="submit" color="success">{t('common:button.associate')}</Button>
-                    </Grid>
-                </Grid>
-            </form>}
+            {mode === SALARY_MODE_INPUT && <Fragment>
+                <TabContext value={inputType}>
+                    <TabList
+                        variant="fullWidth"
+                        onChange={handleSetInputType}
+                    >
+                        {SALARY_INPUT_TYPES.map(type => (
+                            <Tab
+                                key={`salary=input-type-${type}`}
+                                value={type}
+                                label={type}
+                            />
+                        ))}
+                    </TabList>
+                    <TabPanel
+                        value={SALARY_INPUT_TYPE_TEXT}
+                    >
+                        <form onSubmit={(e) => handleSubmit(e)}>
+                            <Grid container spacing={2}>
+                                <Grid size={{xs: 12}}>
+                                    <Alert severity="info">
+                                        Вставьте в поле ниже список пользователей ...
+                                    </Alert>
+                                </Grid>
+                                <Grid size={{xs: 12}}>
+                                    <TextField
+                                        label={t('components:salary_dialog.fields.csv.label')}
+                                        multiline
+                                        fullWidth
+                                        autoFocus
+                                        rows={5}
+                                        name="csv"
+                                        variant="standard"
+                                    />
+                                </Grid>
+                                <Grid size={{xs: 12}}>
+                                    <Button fullWidth type="submit"
+                                            color="success">{t('common:button.associate')}</Button>
+                                </Grid>
+                            </Grid>
+                        </form>
+                    </TabPanel>
+                </TabContext>
+            </Fragment>}
             {mode === SALARY_MODEL_VIEW && <form onSubmit={(e) => handleApplySubmit(e)}>
-                <Grid container spacing={2} sx={{paddingTop: 2}}>
+                <Grid container spacing={2}>
+                    <Grid size={{xs: 12}}>
+                        <Alert severity="info">
+                            Проверьте правильность заполнения данных
+                        </Alert>
+                    </Grid>
                     <Grid size={{xs: 12}}>
                         <TableContainer component={Paper} sx={{maxHeight: 440}}>
                             <Table stickyHeader>
@@ -242,5 +288,3 @@ function SalaryDialog({state, handleClose, users, onApply}) {
         </DialogContent>
     </Dialog>
 }
-
-export default SalaryDialog;

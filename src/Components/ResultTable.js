@@ -42,13 +42,6 @@ const useStyles = makeStyles({
     table: {
         minWidth: 650
     },
-    sticky: {
-        position: "sticky",
-        left: 0,
-        borderRight: "1px solid black",
-        width: 500,
-        zIndex: 1
-    },
     stickyHeader: {
         position: "sticky",
         left: 0,

@@ -25,12 +25,21 @@ export const RESULT_GROUP_ISSUE = "ISSUE"; // Группировка по зад
 export const RESULT_GROUP_ISSUE_TYPE = "ISSUE_TYPE"; // Группировка по типу задачи
 
 export const DEPTH_COLORS = [
-    'rgba(0, 0, 255, 0.12)',
-    'rgba(0, 0, 255, 0.18)',
-    'rgba(0, 0, 255, 0.24)',
-    'rgba(0, 0, 255, 0.30)',
-    'rgba(0, 0, 255, 0.36)',
-    'rgba(0, 0, 255, 0.42)'
+    'rgb(229, 229, 255)',  // rgba(0, 0, 255, 0.12) blended with white
+    'rgb(209, 209, 255)',  // rgba(0, 0, 255, 0.18) blended with white
+    'rgb(194, 194, 255)',  // rgba(0, 0, 255, 0.24) blended with white
+    'rgb(178, 178, 255)',  // rgba(0, 0, 255, 0.30) blended with white
+    'rgb(163, 163, 255)',  // rgba(0, 0, 255, 0.36) blended with white
+    'rgb(148, 148, 255)'   // rgba(0, 0, 255, 0.42) blended with white
+];
+
+export const DEPTH_COLORS_DARK = [
+    'rgb(0, 0, 31)',   // rgba(0, 0, 255, 0.12) blended with black
+    'rgb(0, 0, 46)',   // rgba(0, 0, 255, 0.18) blended with black
+    'rgb(0, 0, 61)',   // rgba(0, 0, 255, 0.24) blended with black
+    'rgb(0, 0, 77)',   // rgba(0, 0, 255, 0.30) blended with black
+    'rgb(0, 0, 92)',   // rgba(0, 0, 255, 0.36) blended with black
+    'rgb(0, 0, 107)'   // rgba(0, 0, 255, 0.42) blended with black
 ];
 
 export const RESULT_GROUPS = [

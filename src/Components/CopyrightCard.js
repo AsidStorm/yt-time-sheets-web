@@ -3,6 +3,7 @@ import {Card, CardHeader, Avatar, Link} from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import {Trans, useTranslation} from "react-i18next";
 import {pushAnalytics} from "../helpers";
+import {COLOR_THEME_DARK} from "../constants";
 
 function CopyrightCard() {
     const { t } = useTranslation();
@@ -10,7 +11,7 @@ function CopyrightCard() {
     return <Card>
         <CardHeader
             avatar={
-                <Avatar sx={{ backgroundColor: theme => theme.palette.mode === "dark" ? "grey" : "black" }}>
+                <Avatar sx={{ backgroundColor: theme => theme.palette.mode === COLOR_THEME_DARK ? "lightgrey" : "black" }}>
                     <GitHubIcon />
                 </Avatar>
             }

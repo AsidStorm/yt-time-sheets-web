@@ -9,6 +9,7 @@ import {ResultTableRowTitle} from "./RowTitle";
 import {useHumanizeDuration, useDetailsDialog} from "../../hooks";
 import {datesAtom, resultRowsAtom, hideDetailsAtom} from "../../jotai/atoms";
 import {useTranslation} from "react-i18next";
+import {COLOR_THEME_DARK} from "../../constants";
 
 const HtmlTooltip = styled(({className, ...props}) => (
     <Tooltip {...props} classes={{popper: className}}/>
@@ -63,7 +64,7 @@ export function ResultTableRowContent({index, row}) {
                                       sx={daySx(date, isLastRow(index), rowDateExists(row, date) ? row.byDate[date.index].isUnexpectedDuration : false)}
                                       key={`table-cell-${index}-${date.index}-${row.title}`}>
             {!isLastRow(index) && row.isMaxDepth && <CellTooltip row={row} date={date}/>}
-            {(isLastRow(index) || !row.isMaxDepth) && <Button disabled={true} sx={{color: (theme) => theme.palette.mode === 'dark' ? 'white !important' : "black !important"}}>
+            {(isLastRow(index) || !row.isMaxDepth) && <Button disabled={true} sx={{color: (theme) => theme.palette.mode === COLOR_THEME_DARK ? 'white !important' : "black !important"}}>
                 {rowDateExists(row, date) && row.byDate[date.index].value > 0 ? humanize(row.byDate[date.index].value, row.byDate[date.index].byCreatedBy) : t('common:no_time')}
             </Button>}
         </TableCell>)}

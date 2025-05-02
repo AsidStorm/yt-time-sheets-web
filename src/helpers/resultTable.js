@@ -1,4 +1,4 @@
-import {DATE_FORMAT_MONTH, DEPTH_COLORS, WEEKEND_WEEK_DAYS} from "../constants";
+import {COLOR_THEME_DARK, DATE_FORMAT_MONTH, DEPTH_COLORS, DEPTH_COLORS_DARK, WEEKEND_WEEK_DAYS} from "../constants";
 import { pink, brown, amber, grey } from '@mui/material/colors';
 
 
@@ -8,18 +8,20 @@ export const rowDateExists = (row, date) => !!row.byDate[date.index];
 export const rowHaveDetails = (row, date) => rowDateExists(row, date) && row.byDate[date.index].details && row.byDate[date.index].details.length > 0;
 
 export const rowSx = (row, index) => {
-    if( row.isMaxDepth ) {
+    if( row.isMaxDepth || row.isSummary ) {
         if( (index+1) %2 === 0 ) {
             return {
-                background: 'rgba(0, 0, 0, 0.04)'
+                background: theme => theme.palette.mode === COLOR_THEME_DARK ? '#1E1E1E' : 'rgb(245, 245, 245)' //'rgba(0, 0, 0, 0.04)'
             };
         }
 
-        return {};
+        return {
+            background: theme => theme.palette.mode === COLOR_THEME_DARK ? 'black' : 'white'
+        };
     }
 
     return {
-        background: DEPTH_COLORS[row.depth]
+        background: theme => theme.palette.mode === COLOR_THEME_DARK ? DEPTH_COLORS_DARK[row.depth] : DEPTH_COLORS[row.depth]
     };
 };
 
