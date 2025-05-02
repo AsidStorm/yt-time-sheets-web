@@ -25,7 +25,6 @@ import CreateWorkLogDialog from "./CreateWorkLogDialog";
 import DeleteWorkLogDialog from "./DeleteWorkLogDialog";
 import UpdateWorkLogDialog from "./UpdateWorkLogDialog";
 import DetailsDialog from "./DetailsDialog";
-import RestrictionsDialog from "./RestrictionsDialog";
 import ChartsDialog from "./ChartsDialog";
 import {TableVirtuoso} from 'react-virtuoso';
 import InsightsDialog from "./InsightsDialog";
@@ -37,6 +36,7 @@ import {
 import {ExportButton} from "./ExportButton";
 import {ResultTableRowContent} from "./ResultTable/RowContent";
 import {useDateFormatter} from "../hooks";
+import {DialogsRestrictions} from "./Dialogs/Restrictions";
 
 const useStyles = makeStyles({
     table: {
@@ -119,7 +119,7 @@ function ResultTable() {
 
         <ChartsDialog state={chartsDialog} handleClose={() => setChartsDialog(false)}/>
 
-        <RestrictionsDialog state={restrictionsDialog} handleClose={() => setRestrictionsDialog(false)}/>
+        <DialogsRestrictions state={restrictionsDialog} handleClose={() => setRestrictionsDialog(false)}/>
         <CreateWorkLogDialog />
         <DeleteWorkLogDialog />
         <UpdateWorkLogDialog />

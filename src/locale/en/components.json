@@ -44,8 +44,6 @@
   "organization_selector_container.description": "Чтобы узнать идентификатор организации, перейдите на <trackerSettings>страницу настроек Tracker</trackerSettings> или в <cloudSettings>настройки Cloud организации</cloudSettings>. Идентификатор указан в поле <strong>ID организации для API</strong>.",
   "organization_selector_container.fields.organization_id.label": "ID организации",
 
-  "language_selector.tooltip.title": "Language selection",
-
   "insights_dialog.title": "Insights",
   "insights_dialog.boxes.total_time.sub_header": "Всего затрачено",
   "insights_dialog.boxes.total_users.sub_header": "Всего затрачено",
