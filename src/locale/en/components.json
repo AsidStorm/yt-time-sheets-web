@@ -118,7 +118,8 @@
 
   "app.welcome": "Welcome, {{userLabel}}",
   "app.not_enough_data": "No data to build analytics, use <filterLink>filter</filterLink>",
-  "app.theme.tooltip.go_to_light": "Switch to light theme",
-  "app.theme.tooltip.go_to_dark": "Switch to dark theme"
 
+  "dialogs.settings.title": "Settings",
+  "dialogs.settings.fields.locale.label": "App locale",
+  "dialogs.settings.fields.color_theme.label": "Color theme"
 }

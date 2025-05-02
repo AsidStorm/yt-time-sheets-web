@@ -19,6 +19,8 @@
   "button.all_projects": "All projects",
   "button.filter": "Filter",
   "button.thanks": "Thanks",
+  "button.settings": "Settings",
+  "button.close": "Close",
 
   "total": "Total",
   "summary": "SUMMARY",
@@ -26,8 +28,8 @@
   "no_data": "-",
   "month_with_year": "{{month}}, {{year}}",
 
-  "language.russian": "Russian",
-  "language.english": "English",
+  "language.ru": "Russian",
+  "language.en": "English",
 
   "month.0": "January",
   "month.1": "February",

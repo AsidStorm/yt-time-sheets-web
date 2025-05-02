@@ -74,8 +74,18 @@ export const EXPORT_VARIANTS = [
 export const LOCALE_RU = "ru";
 export const LOCALE_EN = "en";
 
+export const LOCALES = [
+    LOCALE_RU,
+    LOCALE_EN,
+];
+
 export const COLOR_THEME_DARK = "dark";
 export const COLOR_THEME_LIGHT = "light";
+
+export const COLOR_THEMES = [
+    COLOR_THEME_LIGHT,
+    COLOR_THEME_DARK,
+];
 
 export const FILTER_FAST_DATES_TODAY = "TODAY";
 export const FILTER_FAST_DATES_LAST_2_DAYS = "LAST_2_DAYS";

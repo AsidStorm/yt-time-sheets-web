@@ -18,9 +18,6 @@ import {
     AUTHORIZED_STATE_NONE, COLOR_THEME_DARK, COLOR_THEME_LIGHT
 } from "./constants";
 import Link from "@mui/material/Link";
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import IconButton from "@mui/material/IconButton";
 import InitialConfigDialog from "./Components/InitialConfigDialog";
 import './App.css';
 import {makeObjectFromArray, pushAnalytics} from "./helpers";
@@ -42,8 +39,7 @@ import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer";
 import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorContainer";
 import {useLoader, useMessage} from "./hooks";
-import {LanguageSelector} from "./Components/LanguageSelector";
-import {Tooltip} from "@mui/material";
+import {SettingsButton} from "./Components/SettingsButton";
 
 function App() {
     const {t} = useTranslation();
@@ -59,9 +55,10 @@ function App() {
     const setIssueTypesMap = useSetAtom(issueTypesMapAtom);
     const setIssueStatusesMap = useSetAtom(issueStatusesMapAtom);
     const haveDataToDisplay = useAtomValue(haveWorkLogsAtom);
+    const colorTheme  = useAtomValue(colorThemeAtom);
 
     const [myUser, setMyUser] = useAtom(myUserAtom);
-    const [colorTheme, setColorTheme] = useAtom(colorThemeAtom);
+
 
     const [filtered, setFiltered] = useState(false);
     const [reload, setReload] = useState(false);
@@ -124,7 +121,7 @@ function App() {
                                 setAuthorized(AUTHORIZED_STATE_NO_ORG_ID);
                             }
 
-                            showSuccess("Вы успешно авторизованы");
+                            showSuccess(t('notifications:success_authorization'));
                         }
                     }
                 }
@@ -230,10 +227,6 @@ function App() {
         }
     }, [authorized]);
 
-    const toggleColorTheme = () => {
-        setColorTheme(prev => prev === COLOR_THEME_DARK ? COLOR_THEME_LIGHT : COLOR_THEME_DARK);
-    };
-
     const onFilterApply = () => {
         setFiltered(true);
         setReload(false);
@@ -254,32 +247,21 @@ function App() {
         showSuccess("Вы успешно вышли. Не забудьте отозвать токен, т.к. для этого нет API.");*/
     };
 
-    let theme = useMemo(
+    const theme = useMemo(
         () =>
             createTheme({
                 palette: {
                     mode: colorTheme,
-                    /*weekend: theme.palette.augmentColor({
-                        color: {
-                            main: '#FF5733',
-                        },
-                        name: 'weekend',
-                    }),*/
+                    weekend: {
+                        main: '#F9F7F2',
+                        light: '#F9F7F2',
+                        dark: '#757575',
+                        contrastText: '#242105',
+                    }
                 },
             }),
         [colorTheme],
     );
-
-    theme = createTheme(theme, {
-        palette: {
-            weekend: {
-                main: '#F9F7F2',
-                light: '#F9F7F2',
-                dark: '#757575',
-                contrastText: '#242105',
-            }
-        },
-    });
 
     return <ThemeProvider theme={theme}>
         <CssBaseline/>
@@ -303,6 +285,7 @@ function App() {
         <Box
             sx={{
                 display: 'flex',
+                position: 'relative',
                 flexDirection: 'column',
                 minHeight: '100vh',
             }}
@@ -317,12 +300,6 @@ function App() {
                 }}
             >
                 <Toolbar sx={{flexWrap: 'wrap'}}>
-                    <LanguageSelector/>
-                    <Tooltip title={t(`components:app.theme.tooltip.${theme.palette.mode === COLOR_THEME_DARK ? 'go_to_light': 'go_to_dark'}`)}>
-                        <IconButton onClick={toggleColorTheme} color="inherit">
-                            {theme.palette.mode === COLOR_THEME_DARK ? <Brightness7Icon/> : <Brightness4Icon/>}
-                        </IconButton>
-                    </Tooltip>
                     <Typography variant="h6" color="inherit" noWrap
                                 sx={{flexGrow: 1, display: {xs: 'none', md: 'block'}}}>
                         {t('components:app.welcome', {userLabel: myUser.label})}
@@ -393,6 +370,8 @@ function App() {
                     <OrganizationSelectorContainer defaultOrgId={defaultOrgId} setAuthorized={setAuthorized}
                                                    setFilterDialogState={setFilterDialogState} exit={exit}/>}
             </Container>
+
+            <SettingsButton />
         </Box>
     </ThemeProvider>
 }

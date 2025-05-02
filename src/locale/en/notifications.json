@@ -11,5 +11,6 @@
   "minimum_search_term_is_3_symbols": "Enter 3 characters to start search",
   "issues_not_found": "Issues not found",
   "no_sprints_found_on_board": "Selected board without sprints. Please, choose other board.",
-  "work_log_updated": "Work log updated"
+  "work_log_updated": "Work log updated",
+  "success_authorization": "Вы успешно авторизованы"
 }

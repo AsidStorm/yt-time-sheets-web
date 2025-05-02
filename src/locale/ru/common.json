@@ -19,6 +19,8 @@
   "button.all_projects": "Все проекты",
   "button.filter": "Фильтр",
   "button.thanks": "Спасибо",
+  "button.settings": "Настройки",
+  "button.close": "Закрыть",
 
   "total": "Итого",
   "summary": "SUMMARY",
@@ -26,8 +28,11 @@
   "no_data": "-",
   "month_with_year": "{{month}}, {{year}}",
 
-  "language.russian": "Русский",
-  "language.english": "Английский",
+  "language.ru": "Русский",
+  "language.en": "Английский",
+
+  "color_theme.light": "Светлая",
+  "color_theme.dark":  "Тёмная",
 
   "month.0": "Январь",
   "month.1": "Февраль",

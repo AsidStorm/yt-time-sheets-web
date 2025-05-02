@@ -1,6 +1,6 @@
 import {useAtom} from "jotai";
 import {updateWorkLogStateAtom, updateWorkLogDataAtom} from "../jotai/atoms";
-import {durationToISO} from "../helpers";
+
 export function useUpdateWorkLogDialog() {
     const [ state, setState ] = useAtom(updateWorkLogStateAtom);
     const [ data, setData ] = useAtom(updateWorkLogDataAtom);

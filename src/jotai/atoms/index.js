@@ -23,3 +23,4 @@ export * from './salary';
 export * from './insights';
 export * from './colorTheme';
 export * from './locale';
+export * from './settingsDialog';
