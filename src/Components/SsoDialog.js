@@ -5,7 +5,7 @@ import {useMessage} from "../hooks";
 
 function SsoDialog({state, handleClose, handleIAmToken, federationId, allowManualInput}) {
     const {t} = useTranslation();
-    const { showError } = useMessage();
+    const {showError} = useMessage();
 
     const [mode, setMode] = useState("NONE");
 

@@ -15,7 +15,7 @@ import Message from "./Components/Message";
 import ResultTable from "./Components/ResultTable";
 import {
     AUTHORIZED_STATE_DONE, AUTHORIZED_STATE_NO_ORG_ID,
-    AUTHORIZED_STATE_NONE, COLOR_THEME_DARK, COLOR_THEME_LIGHT
+    AUTHORIZED_STATE_NONE,
 } from "./constants";
 import Link from "@mui/material/Link";
 import InitialConfigDialog from "./Components/InitialConfigDialog";
@@ -40,6 +40,7 @@ import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer"
 import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorContainer";
 import {useLoader, useMessage} from "./hooks";
 import {SettingsButton} from "./Components/SettingsButton";
+import {Button} from "@mui/material";
 
 function App() {
     const {t} = useTranslation();
@@ -305,42 +306,24 @@ function App() {
                         {t('components:app.welcome', {userLabel: myUser.label})}
                     </Typography>
                     <nav>
-                        {filtered && <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            onClick={() => {
-                                setReload(true);
-                                pushAnalytics('reloadButtonClick');
-                            }}
-                            sx={{my: 1, mx: 1.5}}
-                        >
+                        {filtered && <Button color="inherit" onClick={() => {
+                            setReload(true);
+                            pushAnalytics('reloadButtonClick');
+                        }}>
                             {t('common:button.reload')}
-                        </Link>}
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            onClick={() => {
-                                setFilterDialogState(true);
-                                pushAnalytics('filterButtonClick');
-                            }}
-                            sx={{my: 1, mx: 1.5}}
-                        >
+                        </Button>}
+                        <Button color="inherit" onClick={() => {
+                            setFilterDialogState(true);
+                            pushAnalytics('filterButtonClick');
+                        }}>
                             {t('common:button.filter')}
-                        </Link>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            onClick={() => {
-                                exit();
-                                pushAnalytics('exitButtonClick')
-                            }}
-                            sx={{my: 1, mx: 1.5}}
-                        >
+                        </Button>
+                        <Button color="inherit" onClick={() => {
+                            exit();
+                            pushAnalytics('exitButtonClick')
+                        }}>
                             {t('common:button.exit')}
-                        </Link>
+                        </Button>
                     </nav>
                 </Toolbar>
             </AppBar>}

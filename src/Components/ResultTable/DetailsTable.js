@@ -1,5 +1,16 @@
 import React from "react";
-import {Paper, Table, TableHead, TableRow, TableCell, Typography, TableBody, Link, IconButton} from "@mui/material";
+import {
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    Typography,
+    TableBody,
+    Link,
+    IconButton,
+    Button
+} from "@mui/material";
 import {useAtomValue} from "jotai";
 import {calculateDetailsCols, rowHaveDetails, yandexTrackerIssueUrl} from "../../helpers";
 import {RowDescription} from "./RowDescription";
@@ -126,10 +137,9 @@ export function ResultDetailsTable({index, row, date}) {
                 {!myUser.isReadOnly && <TableRow>
                     <TableCell align="center"
                                colSpan={cols}>
-                        <IconButton size="small" color="success"
-                                    onClick={() => openWorkLogCreateDialog(row, date)}>
-                            <AddIcon fontSize="inherit"/>
-                        </IconButton>
+                        <Button color="success" size="small" startIcon={<AddIcon fontSize="inherit"/>} onClick={() => openWorkLogCreateDialog(row, date)}>
+                            Добавить
+                        </Button>
                     </TableCell>
                 </TableRow>}
             </TableBody>

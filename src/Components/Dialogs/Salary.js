@@ -12,13 +12,8 @@ import {
     TableRow,
     TableContainer,
     TableCell,
-    TableBody,
-    FormControl,
-    Checkbox,
-    FormControlLabel,
-    FormGroup, Tab, Alert
+    TableBody, Tab, Alert
 } from "@mui/material";
-import {TimePicker} from "@mui/x-date-pickers";
 import {useTranslation} from "react-i18next";
 import {useSetAtom} from "jotai";
 import {useMessage} from "../../hooks";
@@ -49,9 +44,6 @@ export function DialogsSalary({state, handleClose, users, onApply}) {
     const [salaries, setSalaries] = useState({});
     const [isSimple, setIsSimple] = useState(false);
     const [inputType, setInputType] = useState(SALARY_INPUT_TYPE_TEXT);
-
-    const [spreadUnmarkedTime, setSpreadUnmarkedTime] = useState(false);
-    const [mustWorkedTime, setMustWorkedTime] = useState(null);
 
     useEffect(() => {
         if (Object.keys(salaries).length > 0) {
@@ -235,47 +227,6 @@ export function DialogsSalary({state, handleClose, users, onApply}) {
                             </Table>
                         </TableContainer>
                     </Grid>
-                    {false && <Grid size={{xs: 12}}>
-                        <FormGroup>
-                            <FormControlLabel control={<Checkbox/>} label="Распределить неотмеченное время по задачам"
-                                              checked={spreadUnmarkedTime}
-                                              onChange={(e) => setSpreadUnmarkedTime(e.target.checked)}/>
-                        </FormGroup>
-                    </Grid>}
-                    {spreadUnmarkedTime && <Grid size={{xs: 12}}>
-                        <FormControl fullWidth>
-                            <TimePicker
-                                label={t('components:salary_dialog.fields.must_worked_time.label')}
-                                value={mustWorkedTime}
-                                onChange={(newValue) => {
-                                    setMustWorkedTime(newValue);
-                                }}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
-                        </FormControl>
-                    </Grid>}
-                    {false && <Grid size={{xs: 12}}>
-                        <TextField
-                            margin="dense"
-                            label="Мультипликатор стоимости в выходные"
-                            fullWidth
-                            type="number"
-                            name="weekendsMultiplier"
-                            variant="standard"
-                            defaultValue={2}
-                        />
-                    </Grid>}
-                    {false && <Grid size={{xs: 12}}>
-                        <TextField
-                            margin="dense"
-                            label="Мультипликатор овертайма в будние дни"
-                            fullWidth
-                            type="number"
-                            name="overtimeMultiplier"
-                            variant="standard"
-                            defaultValue={1.5}
-                        />
-                    </Grid>}
                     <Grid size={{xs: 12, md: 6}}>
                         <Button fullWidth onClick={() => handleCancel()}
                                 color="warning">{t('common:button.reset')}</Button>

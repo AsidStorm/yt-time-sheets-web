@@ -27,7 +27,6 @@ import {
     TASK_SEARCH_TYPE_BOARD,
 } from "../constants";
 import {post, get} from "../requests";
-import TaskSearchDialog from "./TaskSearchDialog";
 import moment from "moment";
 import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
 import {renderTimeViewClock} from "@mui/x-date-pickers/timeViewRenderers";
@@ -35,6 +34,7 @@ import {useTranslation} from "react-i18next";
 import {useAtomValue, useSetAtom} from "jotai";
 import {usersAtom, boardsAtom, resultGroupsAtom, myUserAtom, selectedUsersAtom, workLogsAtom} from "../jotai/atoms";
 import {useCreateWorkLogDialog, useLoader, useMessage} from "../hooks";
+import {DialogsIssueSearch} from "./Dialogs/IssueSearch";
 
 function CreateWorkLogDialog() {
     const {t} = useTranslation();
@@ -309,7 +309,7 @@ function CreateWorkLogDialog() {
     }, [isOpen]);
 
     return <Dialog open={isOpen} onClose={() => close()} maxWidth="md" fullWidth>
-        <TaskSearchDialog state={taskSearchDialogState} handleClose={() => setTaskSearchDialogState(false)}
+        <DialogsIssueSearch state={taskSearchDialogState} handleClose={() => setTaskSearchDialogState(false)}
                           tasks={tasks}
                           onSelect={task => {
                               setTaskSearchDialogState(false);
@@ -386,14 +386,14 @@ function CreateWorkLogDialog() {
                             onChange={(e) => setIssuePlaceholder(e.target.value)}
                         />
                     </Grid>
-                    {userIdentity === myUser.value && !myUser.isReadOnly && <Grid size={{xs: 12}}>
+                    {String(userIdentity) === String(myUser.value) && !myUser.isReadOnly && <Grid size={{xs: 12}}>
                         <FormGroup>
                             <FormControlLabel control={<Checkbox/>}
                                               label={t('components:create_work_log_dialog.fields.with_comment.label')}
                                               checked={withComment} onChange={(e) => setWithComment(e.target.checked)}/>
                         </FormGroup>
                     </Grid>}
-                    {(userIdentity === myUser.value && withComment) && <Grid size={{xs: 12}}>
+                    {(String(userIdentity) === String(myUser.value) && withComment) && <Grid size={{xs: 12}}>
                         <TextField
                             label={t('components:create_work_log_dialog.fields.issue_comment.label')}
                             multiline

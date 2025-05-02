@@ -43,7 +43,6 @@ import {
     TIME_FORMATS, TIME_FORMAT_HOURS, RESULT_GROUP_ISSUE,
 } from "../constants";
 import {post} from "../requests";
-import GroupsDialog from "./GroupsDialog";
 import {pushAnalytics, sleep, sliceIntoChunks} from "../helpers";
 import {useTranslation} from "react-i18next";
 import {useAtomValue} from "jotai";
@@ -57,6 +56,7 @@ import {
 } from "../jotai/atoms";
 import {useFilterResult, useLoader, useMessage} from "../hooks";
 import {DialogsSalary} from "./Dialogs/Salary";
+import {DialogsGroups} from "./Dialogs/Groups";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
 const checkedIcon = <CheckBoxIcon fontSize="small"/>;
@@ -408,7 +408,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
         onClose={handleClose}
         TransitionComponent={Transition}
     >
-        <GroupsDialog state={groupDialogState} handleClose={() => setGroupsDialogState(false)}
+        <DialogsGroups state={groupDialogState} handleClose={() => setGroupsDialogState(false)}
                       onSelect={group => handleGroupSelection(group)}/>
         <DialogsSalary state={salaryDialog} handleClose={() => setSalaryDialog(false)}
                        users={users} onApply={() => setSalaryDialog(false)}/>

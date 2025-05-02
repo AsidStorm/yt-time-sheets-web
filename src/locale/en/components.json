@@ -8,10 +8,10 @@
   "delete_work_log_dialog.text": "Вы уверены, что хотите удалить эту запись о времени?",
   "delete_work_log_dialog.description_text": "{{createdByDisplay}}, <issue>{{issueTitle}}</issue>: {{value}}",
 
-  "update_work_log_dialog.title": "Изменение рабочего времени",
-  "update_work_log_dialog.text": "Вы уверены, что хотите изменить эту запись о времени?",
+  "update_work_log_dialog.title": "Change work log",
+  "update_work_log_dialog.text": "Are you sure you want to change this work log entry?",
   "update_work_log_dialog.description_text": "{{createdByDisplay}}, <issue>{{issueTitle}}</issue>: {{value}}",
-  "update_work_log_dialog.fields.duration.label": "Новое время",
+  "update_work_log_dialog.fields.duration.label": "New time",
   "update_work_log_dialog.fields.comment.label": "Comment",
 
   "task_search_dialog.title": "Choose issue",
@@ -91,7 +91,7 @@
   "donate_card.donate_link_title": "На печеньки разработчикам",
 
   "create_work_log_dialog.title": "Work log creation",
-  "create_work_log_dialog.fields.search.label": "Поиск задач",
+  "create_work_log_dialog.fields.search.label": "Search",
   "create_work_log_dialog.fields.board.label": "Board",
   "create_work_log_dialog.fields.date.label": "Date",
   "create_work_log_dialog.fields.time.label": "Time",
@@ -105,7 +105,7 @@
   "create_work_log_dialog.fields.search_type.values.BOARD": "On boards",
   "create_work_log_dialog.selected_issue": "Selected issue:",
   "create_work_log_dialog.sprint_name": "{{name}} (from {{startDate}} to {{endDate}})",
-  "create_work_log_dialog.issues_search_type": "Будем искать задачи",
+  "create_work_log_dialog.issues_search_type": "How to find issues",
 
   "details_table.caption_issue_with_user": "<issueLink>{{issueDisplay}}</issueLink>. Author: {{createdByDisplay}}",
   "details_table.caption_only_author": "Author: {{createdByDisplay}}" ,

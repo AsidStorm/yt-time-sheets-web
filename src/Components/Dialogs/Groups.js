@@ -13,10 +13,10 @@ import {useTranslation} from "react-i18next";
 import {useAtomValue, useSetAtom} from "jotai";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import {favoriteGroupsAtom, orderedGroupsAtom} from "../jotai/atoms";
-import {createLabelFilter} from "../helpers";
+import {favoriteGroupsAtom, orderedGroupsAtom} from "../../jotai/atoms";
+import {createLabelFilter} from "../../helpers";
 
-function GroupsDialog({state, handleClose, onSelect}) {
+export function DialogsGroups({state, handleClose, onSelect}) {
     const {t} = useTranslation();
 
     const groups = useAtomValue(orderedGroupsAtom);
@@ -62,5 +62,3 @@ function GroupsDialog({state, handleClose, onSelect}) {
         </List>
     </Dialog>
 }
-
-export default GroupsDialog;

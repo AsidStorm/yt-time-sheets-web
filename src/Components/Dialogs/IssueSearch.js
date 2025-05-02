@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import {useTranslation} from "react-i18next";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import {yandexTrackerIssueUrl} from "../helpers";
+import {yandexTrackerIssueUrl} from "../../helpers";
 
-function TaskSearchDialog({state, handleClose, tasks, onSelect}) {
+export function DialogsIssueSearch({state, handleClose, tasks, onSelect}) {
     const {t} = useTranslation();
     const handleOpenInNewTab = (e, issueKey) => {
         e.preventDefault();
@@ -24,15 +24,18 @@ function TaskSearchDialog({state, handleClose, tasks, onSelect}) {
         <DialogTitle>{t('components:task_search_dialog.title')}</DialogTitle>
         <List sx={{pt: 0}}>
             {tasks.map((task) => (
-                <ListItem button onClick={() => onSelect(task)} key={`task-${task.id}`}>
+                <ListItem button
+                          onClick={() => onSelect(task)} key={`issue-search-${task.id}`}
+                          sx={{cursor: 'pointer'}}
+                          secondaryAction={
+                              <IconButton onClick={(e) => handleOpenInNewTab(e, task.id)}>
+                                  <OpenInNewIcon/>
+                              </IconButton>
+                          }
+                >
                     <ListItemText primary={task.attributes.summary} secondary={task.id}/>
-                    <IconButton onClick={(e) => handleOpenInNewTab(e, task.id)}>
-                        <OpenInNewIcon/>
-                    </IconButton>
                 </ListItem>
             ))}
         </List>
     </Dialog>
 }
-
-export default TaskSearchDialog;
