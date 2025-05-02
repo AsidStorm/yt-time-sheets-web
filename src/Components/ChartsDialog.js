@@ -8,7 +8,7 @@ import {Chart as ChartJS, registerables} from 'chart.js';
 
 import {Pie, Bar} from 'react-chartjs-2';
 import {TabContext, TabList, TabPanel} from "@mui/lab";
-import {useHumanizeDuration} from "../hooks";
+import {useDateFormatter, useHumanizeDuration} from "../hooks";
 import {useTranslation} from "react-i18next";
 import {Tab, Alert, Box, Dialog} from "@mui/material";
 import {useAtomValue} from "jotai";
@@ -32,6 +32,8 @@ function ChartsDialog({state, handleClose}) {
     const dateFormat = useAtomValue(dateFormatAtom);
     const dates = useAtomValue(datesAtom);
     const workLogs = useAtomValue(workLogsAtom);
+
+    const { formatDate } = useDateFormatter();
 
     const [category, setCategory] = useState("");
     const [subCategory, setSubCategory] = useState("");
@@ -135,7 +137,7 @@ function ChartsDialog({state, handleClose}) {
             value,
 
             data: {
-                labels: dates.map(({title}) => title),
+                labels: dates.map(date => formatDate(date)),
                 datasets: Object.keys(data).map(key => {
                     return {
                         label: data[key].label,

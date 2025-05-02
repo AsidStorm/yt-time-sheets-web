@@ -153,10 +153,6 @@ function FilterDialog({handleClose, state, onApply, reload}) {
     }, [dateFrom, dateTo]);
 
     const prepareDates = (dates, dateFormat) => {
-        const months = [
-            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-        ];
-
         if (dateFormat === DATE_FORMAT_MONTH) {
             const out = [];
 
@@ -168,8 +164,8 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                     index++;
                     month = date.format("MM.YYYY");
                     out.push({
-                        title: months[date.month()] + ", " + date.format("YYYY"),
                         index: date.format("MM.YYYY"),
+                        date,
                         grouped: true,
                         includes: []
                     });
@@ -182,8 +178,8 @@ function FilterDialog({handleClose, state, onApply, reload}) {
         }
 
         return dates.map(date => ({
-            title: date.format(DATE_FORMAT),
             index: date.format(DATE_FORMAT),
+            date,
             grouped: false,
             includes: [date]
         }));

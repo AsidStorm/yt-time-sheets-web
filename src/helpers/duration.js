@@ -34,7 +34,7 @@ export const durationToISO = (duration) => {
     return `${minutes}m`;
 };
 
-export const humanizeDuration = (duration, timeFormat, details, salaries) => {
+export const humanizeDuration = (t) => (duration, timeFormat, details, salaries) => {
     if( timeFormat === TIME_FORMAT_MONEY ) {
         let totalMoney = 0;
         let warning = false;
@@ -63,11 +63,11 @@ export const humanizeDuration = (duration, timeFormat, details, salaries) => {
 
     if (timeFormat === TIME_FORMAT_HOURS && hours > 0) {
         if( minutes > 0 ) {
-            return `${hours} ч. ${minutes} м.`;
+            return t('duration:hours_and_minutes', { hours, minutes });
         }
 
-        return `${hours} ч.`;
+        return t('duration:hours', { hours });
     }
 
-    return `${rawMinutes} м.`
+    return t('duration:minutes', { minutes: rawMinutes });
 };

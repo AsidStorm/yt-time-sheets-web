@@ -36,6 +36,7 @@ import {
 } from "../jotai/atoms";
 import {ExportButton} from "./ExportButton";
 import {ResultTableRowContent} from "./ResultTable/RowContent";
+import {useDateFormatter} from "../hooks";
 
 const useStyles = makeStyles({
     table: {
@@ -77,13 +78,13 @@ const VirtuosoTableComponents = {
     )),
 };
 
-function fixedHeaderContent(dates, classes, t) {
+function fixedHeaderContent(dates, classes, t, formatDate) {
     return () => {
         return <TableRow sx={{background: "white"}}>
             <TableCell className={classes.stickyHeader}/>
-            {dates.map((date, index) => <TableCell align="center" sx={daySx(date, true, false)}
-                                                   key={`table-head-${date.title}`}>
-                {date.title}
+            {dates.map((date) => <TableCell align="center" sx={daySx(date, true, false)}
+                                                   key={`table-head-${date.index}`}>
+                {formatDate(date)}
             </TableCell>)}
             <TableCell align="right" sx={{width: 120}}>{t('common:total')}</TableCell>
         </TableRow>
@@ -97,6 +98,8 @@ function ResultTable() {
     const rows = useAtomValue(resultRowsAtom);
     const myUser = useAtomValue(myUserAtom);
     const dates = useAtomValue(datesAtom);
+
+    const { formatDate } = useDateFormatter();
 
     const [restrictionsDialog, setRestrictionsDialog] = useState(false);
     const [chartsDialog, setChartsDialog] = useState(false);
@@ -152,7 +155,7 @@ function ResultTable() {
                         context={{rows}}
                         data={rows}
                         itemContent={(index, row) => <ResultTableRowContent row={row} index={index} />}
-                        fixedHeaderContent={fixedHeaderContent(dates, classes, t)}
+                        fixedHeaderContent={fixedHeaderContent(dates, classes, t, formatDate)}
                         components={VirtuosoTableComponents}/>
                 </Paper>}
                 {!useVirtuoso && <TableContainer component={Paper} sx={{maxHeight: 670}}>
@@ -163,8 +166,8 @@ function ResultTable() {
                                     &nbsp;
                                 </TableCell>
                                 {dates.map(date => <TableCell align="center" sx={daySx(date, true, false)}
-                                                              key={`table-head-${date.title}`}>
-                                    {date.title}
+                                                              key={`table-head-${date.index}`}>
+                                    {formatDate(date)}
                                 </TableCell>)}
                                 <TableCell align="right"
                                            sx={{minWidth: 120, width: 120}}>{t('common:total')}</TableCell>

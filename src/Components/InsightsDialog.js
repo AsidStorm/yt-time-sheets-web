@@ -11,30 +11,21 @@ import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
 import {red} from "@mui/material/colors";
 import {humanizeDuration, yandexTrackerIssueUrl, yandexTrackerQueueUrl} from "../helpers";
 import {Chart as ChartJS, registerables} from 'chart.js';
-import {Pie, Bar} from 'react-chartjs-2';
+import {Pie} from 'react-chartjs-2';
 import {useTranslation} from "react-i18next";
-import {useInsightsDialog} from "../hooks";
+import {useHumanizeDuration, useInsightsDialog} from "../hooks";
 import {useAtomValue} from "jotai";
 import {resultRowsAtom} from "../jotai/atoms";
 
 ChartJS.register(...registerables);
 
 const numberValueFormatter = value => value;
-const timeValueFormatter = timeFormat => value => humanizeDuration(value, timeFormat);
 
 const buildComparison = (valueFormatter) => (data, userValue) => {
     const result = {
         greater: [],
         same: [],
         less: []
-    };
-
-    /*const valueFormatter = value => {
-        return value;
-    };*/
-
-    const labelFormatter = () => {
-
     };
 
     ['greater', 'same', 'less'].forEach(group => {
@@ -89,7 +80,7 @@ const buildComparison = (valueFormatter) => (data, userValue) => {
     return null;
 };
 
-const generateTotalTimeBox = ({row, rows}) => {
+const generateTotalTimeBox = ({row, rows, durationValueFormatter}) => {
     const calculateTotalByRow = row => {
         let total = 0;
 
@@ -140,7 +131,7 @@ const generateTotalTimeBox = ({row, rows}) => {
     };
 };
 
-const generateTotalUsersBox = (row) => {
+const generateTotalUsersBox = ({row}) => {
     if (Object.keys(row.byCreatedBy).length <= 1 && row.parameters.resultGroup === RESULT_GROUP_WORKER) {
         return null;
     }
@@ -153,7 +144,7 @@ const generateTotalUsersBox = (row) => {
     };
 }
 
-const generateAvgTimeByUserBox = (row) => {
+const generateAvgTimeByUserBox = ({row, humanizeDuration}) => {
     if (Object.keys(row.byCreatedBy).length <= 1) {
         return null;
     }
@@ -173,7 +164,7 @@ const generateAvgTimeByUserBox = (row) => {
     };
 }
 
-const generateTotalIssuesBox = (row, rows) => {
+const generateTotalIssuesBox = ({row, rows}) => {
     const calculateTotalByRow = row => {
         const uniqueIssues = [];
         let total = 0;
@@ -233,7 +224,7 @@ const generateTotalIssuesBox = (row, rows) => {
     }
 };
 
-const generateAvgTimeByIssueBox = (row) => {
+const generateAvgTimeByIssueBox = ({row, humanizeDuration}) => {
     const uniqueIssues = [];
     let totalIssues = 0;
     let totalTime = 0;
@@ -261,7 +252,7 @@ const generateAvgTimeByIssueBox = (row) => {
     }
 };
 
-const generateIssuesChart = (row) => {
+const generateIssuesChart = ({row, durationValueFormatter}) => {
     const timeByIssues = {};
 
     for (const {details} of Object.values(row.byDate)) {
@@ -316,7 +307,7 @@ const generateIssuesChart = (row) => {
     };
 }
 
-const generateQueuesChart = (row) => {
+const generateQueuesChart = ({row, durationValueFormatter}) => {
     const timeByQueues = {};
 
     for (const {details} of Object.values(row.byDate)) {
@@ -371,7 +362,7 @@ const generateQueuesChart = (row) => {
     };
 }
 
-const generateUsersChart = (row) => {
+const generateUsersChart = ({row, durationValueFormatter}) => {
     const timeByUsers = {};
 
     for (const {details} of Object.values(row.byDate)) {
@@ -418,35 +409,35 @@ const generateUsersChart = (row) => {
     };
 }
 
-const durationValueFormatter = value => {
-    if (parseInt(value) === value) {
-        return humanizeDuration(value, TIME_FORMAT_HOURS);
-    }
-
-    if (parseInt(value.parsed) > 0) {
-        return humanizeDuration(value.parsed, TIME_FORMAT_HOURS);
-    }
-
-    if (parseInt(value.raw) > 0) {
-        return humanizeDuration(value.raw, TIME_FORMAT_HOURS);
-    }
-
-    return humanizeDuration(0, TIME_FORMAT_HOURS);
-};
-
 function InsightsDialog() {
     const {t} = useTranslation();
 
     const rows = useAtomValue(resultRowsAtom);
-    const row = {};
 
-    const {isOpen, close} = useInsightsDialog();
+    const {isOpen, close, row} = useInsightsDialog();
+    const humanizeDuration = useHumanizeDuration();
 
     const [boxes, setBoxes] = useState([]);
     const [charts, setCharts] = useState([]);
 
     useEffect(() => {
         if (!row || Object.keys(row).length === 0) return;
+
+        const durationValueFormatter = value => {
+            if (parseInt(value) === value) {
+                return humanizeDuration(value);
+            }
+
+            if (parseInt(value.parsed) > 0) {
+                return humanizeDuration(value.parsed);
+            }
+
+            if (parseInt(value.raw) > 0) {
+                return humanizeDuration(value.raw);
+            }
+
+            return humanizeDuration(0);
+        };
 
         const boxes = [
             generateTotalTimeBox,
@@ -466,7 +457,7 @@ function InsightsDialog() {
         const nextCharts = [];
 
         for (const box of boxes) {
-            const generated = box({row, rows});
+            const generated = box({row, rows, durationValueFormatter, humanizeDuration});
 
             if (generated !== null) {
                 nextBoxes.push(generated);
@@ -478,7 +469,7 @@ function InsightsDialog() {
         }
 
         for (const chart of charts) {
-            const generated = chart(row, rows);
+            const generated = chart({row, rows, durationValueFormatter, humanizeDuration});
 
             if (generated !== null) {
                 nextCharts.push(generated);
@@ -491,11 +482,11 @@ function InsightsDialog() {
 
         setBoxes(nextBoxes);
         setCharts(nextCharts);
-    }, [row]);
+    }, [row, rows]);
 
     return <Dialog open={isOpen} onClose={() => close()} fullWidth maxWidth="lg">
         <DialogTitle>{t('components:insights_dialog.title')}</DialogTitle>
-        {isOpen && <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
+        {isOpen && row && <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
             <Grid container spacing={2}>
                 {boxes.map(box => {
                     return <Grid size={{xs: 12, md: 4}} key={box.index}>

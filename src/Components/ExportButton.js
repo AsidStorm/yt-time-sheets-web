@@ -16,6 +16,7 @@ import {
 import {useTranslation} from "react-i18next";
 import {useAtomValue} from "jotai";
 import {datesAtom, resultGroupsAtom, resultRowsAtom, usersMapAtom} from "../jotai/atoms";
+import {useDateFormatter} from "../hooks";
 
 export function ExportButton() {
     const { t } = useTranslation();
@@ -24,6 +25,8 @@ export function ExportButton() {
     const usersMap = useAtomValue(usersMapAtom);
     const rows = useAtomValue(resultRowsAtom);
     const dates = useAtomValue(datesAtom);
+
+    const { formatDate } = useDateFormatter();
 
     const anchorRef = useRef(null);
 
@@ -70,7 +73,7 @@ export function ExportButton() {
         }
 
         for( const date of dates ) {
-            header.push(date.title);
+            header.push(formatDate(date));
         }
 
         header.push("Итого");
@@ -218,7 +221,7 @@ export function ExportButton() {
         }
 
         for( const date of dates ) {
-            header.push(date.title);
+            header.push(formatDate(date));
         }
 
         header.push("Итого");
@@ -419,7 +422,7 @@ export function ExportButton() {
                     continue;
                 }
 
-                clone.push(date.title);
+                clone.push(formatDate(date));
                 clone.push(rawMinutes);
 
                 csv.push(clone.join(";"));

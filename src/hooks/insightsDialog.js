@@ -5,8 +5,9 @@ export function useInsightsDialog() {
     const [state, setState] = useAtom(insightsStateAtom);
     const [data, setData] = useAtom(insightsDataAtom);
 
-    const open = () => {
+    const open = row => {
         setState(true);
+        setData({ row });
     };
     const close = () => setState(false);
 

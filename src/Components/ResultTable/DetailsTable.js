@@ -8,7 +8,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import TableContainer from "@mui/material/TableContainer";
-import {useCreateWorkLogDialog, useDeleteWorkLogDialog, useHumanizeDuration, useUpdateWorkLogDialog} from "../../hooks";
+import {
+    useCreateWorkLogDialog,
+    useDateFormatter,
+    useDeleteWorkLogDialog,
+    useHumanizeDuration,
+    useUpdateWorkLogDialog
+} from "../../hooks";
 import {dateFormatAtom, myUserAtom, resultGroupsAtom} from "../../jotai/atoms";
 import {RowTooltipTitle} from "./RowTooltipTitle";
 import {Trans, useTranslation} from "react-i18next";
@@ -21,6 +27,8 @@ export function ResultDetailsTable({index, row, date}) {
     const {open: openWorkLogDeleteDialog} = useDeleteWorkLogDialog();
     const {open: openWorkLogCreateDialog} = useCreateWorkLogDialog();
     const {open: openWorkLogUpdateDialog} = useUpdateWorkLogDialog();
+
+    const { formatDate } = useDateFormatter();
 
     const dateFormat = useAtomValue(dateFormatAtom);
     const resultGroups = useAtomValue(resultGroupsAtom);
@@ -77,7 +85,7 @@ export function ResultDetailsTable({index, row, date}) {
                         <Typography variant="h5">
                             <Trans
                                 i18nKey='components:details_table.title'
-                                values={{title: date.title}}
+                                values={{title: formatDate(date)}}
                                 components={{
                                     tooltip: <RowTooltipTitle row={row} />
                                 }}

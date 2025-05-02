@@ -1,11 +1,11 @@
 const makeHost = () => {
-    let host = `${window.location.protocol}//${window.location.hostname}`;
+    const base = `${window.location.protocol}//${window.location.hostname}`;
 
     if( process.env.REACT_APP_HTTPS_API_PORT || process.env.REACT_APP_API_PORT ) {
-        host += `:${window.location.protocol.includes('https:') ? process.env.REACT_APP_HTTPS_API_PORT : process.env.REACT_APP_API_PORT}`
+        return `${base}:${window.location.protocol.includes('https:') ? process.env.REACT_APP_HTTPS_API_PORT : process.env.REACT_APP_API_PORT}`
     }
 
-    return host;
+    return base;
 };
 
 const host = makeHost();

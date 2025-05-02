@@ -7,3 +7,4 @@ export * from './loader';
 export * from './detailsDialog';
 export * from './message';
 export * from './insightsDialog';
+export * from './dateFormatter';

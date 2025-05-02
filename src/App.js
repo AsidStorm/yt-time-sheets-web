@@ -15,7 +15,7 @@ import Message from "./Components/Message";
 import ResultTable from "./Components/ResultTable";
 import {
     AUTHORIZED_STATE_DONE, AUTHORIZED_STATE_NO_ORG_ID,
-    AUTHORIZED_STATE_NONE
+    AUTHORIZED_STATE_NONE, COLOR_THEME_DARK, COLOR_THEME_LIGHT
 } from "./constants";
 import Link from "@mui/material/Link";
 import Brightness4Icon from '@mui/icons-material/Brightness4';
@@ -23,7 +23,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import IconButton from "@mui/material/IconButton";
 import InitialConfigDialog from "./Components/InitialConfigDialog";
 import './App.css';
-import {makeObjectFromArray, pushAnalytics, yandexTrackerIssueUrl} from "./helpers";
+import {makeObjectFromArray, pushAnalytics} from "./helpers";
 import ChangelogDialog from "./Components/ChangelogDialog";
 import CopyrightCard from "./Components/CopyrightCard";
 import DonateCard from "./Components/DonateCard";
@@ -36,19 +36,20 @@ import {
     boardsMapAtom,
     issueTypesMapAtom,
     issueStatusesMapAtom,
-    haveWorkLogsAtom, myUserAtom,
+    haveWorkLogsAtom, myUserAtom, colorThemeAtom,
 } from "./jotai/atoms";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer";
 import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorContainer";
 import {useLoader, useMessage} from "./hooks";
 import {LanguageSelector} from "./Components/LanguageSelector";
+import {Tooltip} from "@mui/material";
 
 function App() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
-    const { startLoading, endLoading } = useLoader();
-    const { showSuccess, showError } = useMessage();
+    const {startLoading, endLoading} = useLoader();
+    const {showSuccess, showError} = useMessage();
 
     const setUsersMap = useSetAtom(usersMapAtom);
     const setQueuesMap = useSetAtom(queuesMapAtom);
@@ -59,20 +60,19 @@ function App() {
     const setIssueStatusesMap = useSetAtom(issueStatusesMapAtom);
     const haveDataToDisplay = useAtomValue(haveWorkLogsAtom);
 
-    const [ myUser, setMyUser ] = useAtom(myUserAtom);
+    const [myUser, setMyUser] = useAtom(myUserAtom);
+    const [colorTheme, setColorTheme] = useAtom(colorThemeAtom);
 
     const [filtered, setFiltered] = useState(false);
     const [reload, setReload] = useState(false);
 
-    const [ colorMode, setColorMode ] = useState(false);
-
     const [authorized, setAuthorized] = useState(AUTHORIZED_STATE_NONE);
 
-    const [ filterDialogState, setFilterDialogState ] = useState(false);
+    const [filterDialogState, setFilterDialogState] = useState(false);
 
     const [OAuthClientId, setOAuthClientId] = useState("");
 
-    const [ initialConfigDialogState, setInitialConfigDialogState ] = useState(false);
+    const [initialConfigDialogState, setInitialConfigDialogState] = useState(false);
 
     const [allowManualInput, setAllowManualInput] = useState(false);
     const [defaultOrgId, setDefaultOrgId] = useState("");
@@ -82,12 +82,11 @@ function App() {
         startLoading();
 
         get("/api/v1/config")
-            .then( data => {
-                if( !data.haveConfig ) {
+            .then(data => {
+                if (!data.haveConfig) {
                     setInitialConfigDialogState(true);
-                }
-                else {
-                    if( data.organizationId !== '' ) {
+                } else {
+                    if (data.organizationId !== '') {
                         localStorage.setItem("orgId", data.organizationId); // У нас МОЖЕТ быть установлена организация
                         setDefaultOrgId(data.organizationId);
                     }
@@ -101,25 +100,25 @@ function App() {
                     const orgId = localStorage.getItem("orgId");
                     const iAmToken = localStorage.getItem("iAmToken");
 
-                    if ( (token || iAmToken) && orgId && !allowManualInput ) {
+                    if ((token || iAmToken) && orgId && !allowManualInput) {
                         return setAuthorized(AUTHORIZED_STATE_DONE);
                     }
 
-                    if ( token || iAmToken ) {
+                    if (token || iAmToken) {
                         return setAuthorized(AUTHORIZED_STATE_NO_ORG_ID);
                     }
 
-                    if( window.location.hash ) {
+                    if (window.location.hash) {
                         const urlSearchParams = new URLSearchParams(window.location.hash.replace("#", "?"));
                         const params = Object.fromEntries(urlSearchParams.entries());
 
-                        if ( params.error_description ) {
+                        if (params.error_description) {
                             showError(params.error_description);
                         } else {
                             window.history.replaceState({}, document.title, "/");
                             localStorage.setItem("authToken", params.access_token);
 
-                            if( orgId && !data.allowManualInput ) {
+                            if (orgId && !data.allowManualInput) {
                                 setAuthorized(AUTHORIZED_STATE_DONE);
                             } else {
                                 setAuthorized(AUTHORIZED_STATE_NO_ORG_ID);
@@ -131,20 +130,20 @@ function App() {
                 }
             })
             .catch(showError)
-            .finally( endLoading );
+            .finally(endLoading);
     };
 
-    const handleInitialConfigComplete= () => {
+    const handleInitialConfigComplete = () => {
         setInitialConfigDialogState(false);
         boot();
     };
 
-    useEffect( () => {
+    useEffect(() => {
         boot();
     }, []);
 
     useEffect(() => {
-        if( authorized === AUTHORIZED_STATE_DONE ) {
+        if (authorized === AUTHORIZED_STATE_DONE) {
             startLoading();
 
             const fetchData = async () => {
@@ -158,11 +157,20 @@ function App() {
                     get("/api/v1/issue_statuses")
                 ]);
 
-                return {me: me.data, users: usersAndGroups.users, queues: queues.data, groups: usersAndGroups.groups, boards: boards.data, projects: projects.data, issueTypes: issueTypes.data, issueStatuses: issueStatuses.issueStatuses};
+                return {
+                    me: me.data,
+                    users: usersAndGroups.users,
+                    queues: queues.data,
+                    groups: usersAndGroups.groups,
+                    boards: boards.data,
+                    projects: projects.data,
+                    issueTypes: issueTypes.data,
+                    issueStatuses: issueStatuses.issueStatuses
+                };
             };
 
             get("/api/v1/ping")
-                .then( () => {
+                .then(() => {
                     fetchData()
                         .then(({me, users, queues, groups, boards, projects, issueTypes, issueStatuses}) => {
                             setMyUser({
@@ -212,18 +220,18 @@ function App() {
 
                             setFilterDialogState(true);
                         }).catch((e) => {
-                            showError(e);
-                            exit();
-                        }).finally(endLoading);
-                }).catch( () => {
-                    exit();
-                    endLoading();
-                });
+                        showError(e);
+                        exit();
+                    }).finally(endLoading);
+                }).catch(() => {
+                exit();
+                endLoading();
+            });
         }
     }, [authorized]);
 
-    const toggleColorMode = () => {
-        setColorMode(!colorMode);
+    const toggleColorTheme = () => {
+        setColorTheme(prev => prev === COLOR_THEME_DARK ? COLOR_THEME_LIGHT : COLOR_THEME_DARK);
     };
 
     const onFilterApply = () => {
@@ -250,7 +258,7 @@ function App() {
         () =>
             createTheme({
                 palette: {
-                    mode: colorMode ? 'dark' : 'light',
+                    mode: colorTheme,
                     /*weekend: theme.palette.augmentColor({
                         color: {
                             main: '#FF5733',
@@ -259,7 +267,7 @@ function App() {
                     }),*/
                 },
             }),
-        [colorMode],
+        [colorTheme],
     );
 
     theme = createTheme(theme, {
@@ -274,12 +282,13 @@ function App() {
     });
 
     return <ThemeProvider theme={theme}>
-        <CssBaseline />
+        <CssBaseline/>
 
-        <Loader />
-        <Message />
+        <Loader/>
+        <Message/>
 
-        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)} showError={showError} handleComplete={handleInitialConfigComplete} />
+        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)}
+                             showError={showError} handleComplete={handleInitialConfigComplete}/>
 
         <FilterDialog
             handleClose={() => setFilterDialogState(false)}
@@ -289,7 +298,8 @@ function App() {
             reload={reload}
         />
 
-        <ChangelogDialog state={false} handleClose={() => {}}/>
+        <ChangelogDialog state={false} handleClose={() => {
+        }}/>
 
         <Box
             sx={{
@@ -308,20 +318,26 @@ function App() {
                 }}
             >
                 <Toolbar sx={{flexWrap: 'wrap'}}>
-                    <LanguageSelector />
-                    <IconButton onClick={toggleColorMode} color="inherit">
-                        {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-                    </IconButton>
-                    <Typography variant="h6" color="inherit" noWrap sx={{flexGrow: 1, display: {xs: 'none', md: 'block'}}}>
-                        {t('components:app.welcome', { userLabel: myUser.label })}
+                    <LanguageSelector/>
+                    <Tooltip title={t(`components:app.theme.tooltip.${theme.palette.mode === COLOR_THEME_DARK ? 'go_to_light': 'go_to_dark'}`)}>
+                        <IconButton onClick={toggleColorTheme} color="inherit">
+                            {theme.palette.mode === COLOR_THEME_DARK ? <Brightness7Icon/> : <Brightness4Icon/>}
+                        </IconButton>
+                    </Tooltip>
+                    <Typography variant="h6" color="inherit" noWrap
+                                sx={{flexGrow: 1, display: {xs: 'none', md: 'block'}}}>
+                        {t('components:app.welcome', {userLabel: myUser.label})}
                     </Typography>
                     <nav>
                         {filtered && <Link
                             variant="button"
                             color="text.primary"
                             href="#"
-                            onClick={() => { setReload(true); pushAnalytics('reloadButtonClick'); }}
-                            sx={{ my: 1, mx: 1.5 }}
+                            onClick={() => {
+                                setReload(true);
+                                pushAnalytics('reloadButtonClick');
+                            }}
+                            sx={{my: 1, mx: 1.5}}
                         >
                             {t('common:button.reload')}
                         </Link>}
@@ -329,8 +345,11 @@ function App() {
                             variant="button"
                             color="text.primary"
                             href="#"
-                            onClick={() => {setFilterDialogState(true); pushAnalytics('filterButtonClick'); }}
-                            sx={{ my: 1, mx: 1.5 }}
+                            onClick={() => {
+                                setFilterDialogState(true);
+                                pushAnalytics('filterButtonClick');
+                            }}
+                            sx={{my: 1, mx: 1.5}}
                         >
                             {t('common:button.filter')}
                         </Link>
@@ -338,8 +357,11 @@ function App() {
                             variant="button"
                             color="text.primary"
                             href="#"
-                            onClick={() => { exit(); pushAnalytics('exitButtonClick') }}
-                            sx={{ my: 1, mx: 1.5 }}
+                            onClick={() => {
+                                exit();
+                                pushAnalytics('exitButtonClick')
+                            }}
+                            sx={{my: 1, mx: 1.5}}
                         >
                             {t('common:button.exit')}
                         </Link>
@@ -352,20 +374,25 @@ function App() {
                         {!haveDataToDisplay && <div><Trans
                             i18nKey='components:app.not_enough_data'
                             components={{
-                                filterLink: <Link href="#" onClick={() => setFilterDialogState(true)} />
+                                filterLink: <Link href="#" onClick={() => setFilterDialogState(true)}/>
                             }}
                         /></div>}
-                        {haveDataToDisplay && <ResultTable />}
+                        {haveDataToDisplay && <ResultTable/>}
                     </Grid>
                     <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}} offset={{xs: 0, sm: 2, md: 0, lg: 2, xl: 3}}>
-                        <CopyrightCard />
+                        <CopyrightCard/>
                     </Grid>
-                    <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}} offset={{xs:0, sm: 2, md: 0}}>
-                        <DonateCard />
+                    <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}} offset={{xs: 0, sm: 2, md: 0}}>
+                        <DonateCard/>
                     </Grid>
                 </Grid>}
-                {authorized === AUTHORIZED_STATE_NONE && <AuthorizeButtonsContainer OAuthClientId={OAuthClientId} allowManualInput={allowManualInput} federationId={federationId} defaultOrgId={defaultOrgId} showError={showError} setAuthorized={setAuthorized} />}
-                {authorized === AUTHORIZED_STATE_NO_ORG_ID && <OrganizationSelectorContainer showError={showError} defaultOrgId={defaultOrgId} setAuthorized={setAuthorized} setFilterDialogState={setFilterDialogState} exit={exit} />}
+                {authorized === AUTHORIZED_STATE_NONE &&
+                    <AuthorizeButtonsContainer OAuthClientId={OAuthClientId} allowManualInput={allowManualInput}
+                                               federationId={federationId} defaultOrgId={defaultOrgId}
+                                               setAuthorized={setAuthorized}/>}
+                {authorized === AUTHORIZED_STATE_NO_ORG_ID &&
+                    <OrganizationSelectorContainer defaultOrgId={defaultOrgId} setAuthorized={setAuthorized}
+                                                   setFilterDialogState={setFilterDialogState} exit={exit}/>}
             </Container>
         </Box>
     </ThemeProvider>

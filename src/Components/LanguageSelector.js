@@ -2,10 +2,15 @@ import React, {Fragment, useState} from "react";
 import {Avatar, Menu, MenuItem, IconButton, Tooltip} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {deepPurple} from '@mui/material/colors';
+import {LOCALE_EN, LOCALE_RU} from "../constants";
+import {useSetAtom} from "jotai";
+import {localeAtom} from "../jotai/atoms";
 
 
 export function LanguageSelector() {
     const {t, i18n} = useTranslation();
+
+    const setLocale = useSetAtom(localeAtom);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -18,7 +23,7 @@ export function LanguageSelector() {
 
     const handleLanguageSelect = language => {
         i18n.changeLanguage(language);
-        localStorage.setItem('yt-time-sheets/locale', language);
+        setLocale(language);
         handleClose();
     };
 
@@ -55,10 +60,10 @@ export function LanguageSelector() {
                 horizontal: 'left',
             }}
         >
-            <MenuItem onClick={() => handleLanguageSelect('ru')}>
+            <MenuItem onClick={() => handleLanguageSelect(LOCALE_RU)}>
                 {t('common:language.russian')}
             </MenuItem>
-            <MenuItem onClick={() => handleLanguageSelect('en')}>
+            <MenuItem onClick={() => handleLanguageSelect(LOCALE_EN)}>
                 {t('common:language.english')}
             </MenuItem>
         </Menu>

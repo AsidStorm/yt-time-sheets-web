@@ -21,3 +21,5 @@ export * from './highlightTime';
 export * from './message';
 export * from './salary';
 export * from './insights';
+export * from './colorTheme';
+export * from './locale';

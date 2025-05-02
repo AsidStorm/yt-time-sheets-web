@@ -1,10 +1,8 @@
 {
   "groups_dialog.title": "Choose group",
   "groups_dialog.search": "Search",
-  "groups_dialog.users_one": "{{count}} пользователь",
-  "groups_dialog.users_few": "{{count}} пользователя",
-  "groups_dialog.users_many": "{{count}} пользователей",
-  "groups_dialog.users_other": "{{count}} пользователя",
+  "groups_dialog.users_one": "{{count}} user",
+  "groups_dialog.users_other": "{{count}} users",
 
   "delete_work_log_dialog.title": "Удаление рабочего времени",
   "delete_work_log_dialog.text": "Вы уверены, что хотите удалить эту запись о времени?",
@@ -37,11 +35,11 @@
   "salary_dialog.table.header.user": "User",
   "salary_dialog.table.header.salary": "Salary",
 
-  "result_table.restrictions_text": "На вашу учётную запись действуют ограничения. <details>Details</details>",
+  "result_table.restrictions_text": "There are restrictions on your account. <details>Details</details>",
 
-  "restrictions_dialog.title": "На вашу учётную запись действуют ограничения",
-  "restrictions_dialog.readonly_description": "Ваша учётная запись доступна только для чтения, создание, изменение или удаление времени невозможно.",
-  "restrictions_dialog.not_admin_description": "У вашей учётной записи нет прав администратора Yandex.360, вы не можете создавать рабочее время за других пользователей.",
+  "restrictions_dialog.title": "There are restrictions on your account",
+  "restrictions_dialog.readonly_description": "Your account is read-only, creating, editing or deleting time is not possible.",
+  "restrictions_dialog.not_admin_description": "Your account does not have Yandex.360 administrator rights, you cannot create working hours for other users.",
 
   "organization_selector_container.description": "Чтобы узнать идентификатор организации, перейдите на <trackerSettings>страницу настроек Tracker</trackerSettings> или в <cloudSettings>настройки Cloud организации</cloudSettings>. Идентификатор указан в поле <strong>ID организации для API</strong>.",
   "organization_selector_container.fields.organization_id.label": "ID организации",
@@ -119,6 +117,8 @@
   "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}",
 
   "app.welcome": "Welcome, {{userLabel}}",
-  "app.not_enough_data": "No data to build analytics, use <filterLink>filter</filterLink>"
+  "app.not_enough_data": "No data to build analytics, use <filterLink>filter</filterLink>",
+  "app.theme.tooltip.go_to_light": "Switch to light theme",
+  "app.theme.tooltip.go_to_dark": "Switch to dark theme"
 
 }

@@ -11,6 +11,11 @@ export const TIME_FORMATS = [
 export const DATE_FORMAT_DATE = "DATE";
 export const DATE_FORMAT_MONTH = "MONTH";
 
+export const DATE_FORMATS = [
+    DATE_FORMAT_DATE,
+    DATE_FORMAT_MONTH
+];
+
 export const RESULT_GROUP_NONE = "NONE";
 export const RESULT_GROUP_WORKER = "WORKER";
 export const RESULT_GROUP_QUEUE = "QUEUE"; // Группировка по очереди
@@ -49,6 +54,9 @@ export const RESULT_GROUPS = [
 
 export const DATE_FORMAT = "DD.MM.YYYY";
 
+export const DATE_FORMAT_RU = "DD.MM.YYYY";
+export const DATE_FORMAT_EN = "YYYY-MM-DD";
+
 export const WEEKEND_WEEK_DAYS = [6, 7];
 
 export const CREATE_WORK_LOG_FORM_TYPE_BASIC = "BASIC";
@@ -75,6 +83,9 @@ export const EXPORT_VARIANTS = [
 
 export const LOCALE_RU = "ru";
 export const LOCALE_EN = "en";
+
+export const COLOR_THEME_DARK = "dark";
+export const COLOR_THEME_LIGHT = "light";
 
 export const FILTER_FAST_DATES_TODAY = "TODAY";
 export const FILTER_FAST_DATES_LAST_2_DAYS = "LAST_2_DAYS";

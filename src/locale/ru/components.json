@@ -119,6 +119,8 @@
   "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}",
 
   "app.welcome": "Добро пожаловать, {{userLabel}}",
-  "app.not_enough_data": "Недостаточно данных для построения аналитики, используйте <filterLink>фильтр</filterLink>"
+  "app.not_enough_data": "Недостаточно данных для построения аналитики, используйте <filterLink>фильтр</filterLink>",
+  "app.theme.tooltip.go_to_light": "Переключиться на светлую тему",
+  "app.theme.tooltip.go_to_dark": "Переключиться на тёмную тему"
 
 }

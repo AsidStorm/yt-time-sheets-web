@@ -22,7 +22,21 @@
 
   "total": "Итого",
   "no_time": "---",
+  "month_with_year": "{{month}}, {{year}}",
 
   "language.russian": "Русский",
-  "language.english": "Английский"
+  "language.english": "Английский",
+
+  "month.0": "Январь",
+  "month.1": "Февраль",
+  "month.2": "Март",
+  "month.3": "Апрель",
+  "month.4": "Май",
+  "month.5": "Июнь",
+  "month.6": "Июль",
+  "month.7": "Август",
+  "month.8": "Сентябрь",
+  "month.9": "Октябрь",
+  "month.10": "Ноябрь",
+  "month.11": "Декабрь"
 }
