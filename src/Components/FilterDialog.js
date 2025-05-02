@@ -45,13 +45,12 @@ import {
 import {post} from "../requests";
 import GroupsDialog from "./GroupsDialog";
 import {pushAnalytics, sleep, sliceIntoChunks} from "../helpers";
-import {useSalaryState} from "../Context/Salary";
 import {useTranslation} from "react-i18next";
 import {useAtomValue} from "jotai";
 import {
     groupsAtom,
     issueStatusesAtom,
-    issueTypesAtom, myUserAtom,
+    issueTypesAtom, myUserAtom, orderedGroupsAtom,
     projectsAtom,
     queuesAtom, salaryMapAtom,
     usersAtom,
@@ -98,6 +97,9 @@ function FilterDialog({handleClose, state, onApply, reload}) {
     const projects = useAtomValue(projectsAtom);
     const myUser = useAtomValue(myUserAtom);
     const salaryMap = useAtomValue(salaryMapAtom);
+    const orderedGroups = useAtomValue(orderedGroupsAtom);
+
+    const favoriteGroups = orderedGroups.filter( group => group.isFavorite );
 
     // Специфика работы следующая, всё что происходит здесь - влияет на общий стейт только после нажатия кнопки "Применить"
     const [timeFormat, setTimeFormat] = useState(TIME_FORMAT_HOURS);
@@ -112,8 +114,6 @@ function FilterDialog({handleClose, state, onApply, reload}) {
     const [dateFrom, setDateFrom] = useState(moment());
     const [dateTo, setDateTo] = useState(moment());
     const [salaryDialog, setSalaryDialog] = useState(false);
-
-    const [salaries] = useSalaryState();
 
     const [forceUpdate, setForceUpdate] = useState(false);
 
@@ -332,6 +332,12 @@ function FilterDialog({handleClose, state, onApply, reload}) {
         pushAnalytics('groupSelected');
     };
 
+    const handleFastGroupSelection = group => {
+        setSelectedUsers(group.members.map(memberId => parseInt(memberId)));
+
+        pushAnalytics('fastGroupSelected');
+    };
+
     const updateResultGroups = (newValue, index) => {
         setResultGroups(prev => {
             prev[index] = newValue;
@@ -405,7 +411,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
         <GroupsDialog state={groupDialogState} handleClose={() => setGroupsDialogState(false)}
                       onSelect={group => handleGroupSelection(group)}/>
         <DialogsSalary state={salaryDialog} handleClose={() => setSalaryDialog(false)}
-                      users={users} onApply={() => setSalaryDialog(false)}/>
+                       users={users} onApply={() => setSalaryDialog(false)}/>
 
         <AppBar sx={{position: 'relative'}}>
             <Toolbar>
@@ -427,7 +433,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
         </AppBar>
 
         <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{pt:1}}>
                 <Grid size={{xs: 12, md: 9}}>
                     <Autocomplete
                         multiple
@@ -454,6 +460,13 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                             <TextField {...params} label={t('filter:users.label')}/>
                         )}
                     />
+                    {favoriteGroups.length > 0 && <Stack direction="row" spacing={1} sx={{pt:1}}>
+                        {favoriteGroups.map(group => <Button variant="text" key={`favorite-group-${group.value}`}
+                                                                onClick={() => handleFastGroupSelection(group)}
+                                                                size="small">
+                            {group.label}
+                        </Button>)}
+                    </Stack>}
                 </Grid>
                 <Grid size={{xs: 12, md: 3}}>
                     {groups.length > 0 && <Button variant="outlined" size="large" fullWidth onClick={() => {
@@ -637,7 +650,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                         </FormControl>
                     </Grid>
                     <Grid size={{xs: 12}}>
-                        <Stack direction="row" spacing={2}>
+                        <Stack direction="row" spacing={1}>
                             {FILTER_FAST_DATES.map(value => <Button variant="text" key={`fast_date_${value}`}
                                                                     onClick={() => handleFastDateClick(value)}
                                                                     size="small">
@@ -683,7 +696,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                     <Button fullWidth onClick={() => {
                         setSalaryDialog(true);
                         pushAnalytics('salaryButtonClick')
-                    }}>{t('filter:button.salaries', { value: Object.keys(salaryMap).length })}</Button>
+                    }}>{t('filter:button.salaries', {value: Object.keys(salaryMap).length})}</Button>
                 </Grid>}
 
                 {RESULT_GROUPS.map((variants, index) => resultGroups[index] ?

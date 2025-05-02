@@ -10,7 +10,7 @@ import {
     IconButton
 } from "@mui/material";
 import {useTranslation} from "react-i18next";
-import {useAtom, useAtomValue} from "jotai";
+import {useAtomValue, useSetAtom} from "jotai";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {favoriteGroupsAtom, orderedGroupsAtom} from "../jotai/atoms";
@@ -20,7 +20,7 @@ function GroupsDialog({state, handleClose, onSelect}) {
     const {t} = useTranslation();
 
     const groups = useAtomValue(orderedGroupsAtom);
-    const [favorites, setFavorites] = useAtom(favoriteGroupsAtom);
+    const setFavorites = useSetAtom(favoriteGroupsAtom);
     const [filteredGroups, setFilteredGroups] = useState([]);
 
     const [search, setSearch] = useState("");
@@ -39,8 +39,6 @@ function GroupsDialog({state, handleClose, onSelect}) {
         setFavorites(prev => prev.includes(group.value) ? prev.filter(f => f !== group.value) : [...prev, group.value]);
     };
 
-    const isFavorite = group => favorites.includes(group.value);
-
     return <Dialog onClose={handleClose} open={state} maxWidth="sm" fullWidth>
         <DialogTitle>{t('components:groups_dialog.title')}</DialogTitle>
         <List sx={{pt: 0}}>
@@ -53,8 +51,8 @@ function GroupsDialog({state, handleClose, onSelect}) {
                 <ListItem button onClick={() => onSelect(group)} key={`group-${group.value}`} sx={{cursor: 'pointer'}}
                           secondaryAction={
                               <IconButton edge="end" onClick={(e) => handleFavoriteGroupClick(e, group)}
-                                          color={isFavorite(group) ? 'error' : 'primary'}>
-                                  {isFavorite(group) ? <FavoriteIcon/> : <FavoriteBorderIcon/>}
+                                          color={group.isFavorite ? 'error' : 'primary'}>
+                                  {group.isFavorite ? <FavoriteIcon/> : <FavoriteBorderIcon/>}
                               </IconButton>
                           }>
                     <ListItemText primary={group.label}

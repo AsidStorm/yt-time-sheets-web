@@ -2,15 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
 import {LocalizationProvider} from "@mui/x-date-pickers";
-import {SalaryProvider} from "./Context/Salary";
 import './i18n';
 
 import "moment/locale/ru";
-import { Provider } from 'jotai';
+import {Provider} from 'jotai';
 
-export const Providers = ({ children }) => {
+export const Providers = ({children}) => {
     return (
         <Provider>
             {children}
@@ -21,11 +20,9 @@ export const Providers = ({ children }) => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Providers>
-        <SalaryProvider>
-            <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"ru"}>
-                <App/>
-            </LocalizationProvider>
-        </SalaryProvider>
+        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"ru"}>
+            <App/>
+        </LocalizationProvider>
     </Providers>
 );
 

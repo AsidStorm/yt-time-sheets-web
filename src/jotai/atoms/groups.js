@@ -15,13 +15,13 @@ export const orderedGroupsAtom = atom(get => {
 
     for (const favorite of favorites) {
         if (groups[favorite]) {
-            out.favorites.push(groups[favorite]);
+            out.favorites.push({...groups[favorite], isFavorite: true});
         }
     }
 
     for (const groupId of Object.keys(groups)) {
         if (!favorites.includes(groupId)) {
-            out.other.push(groups[groupId]);
+            out.other.push({...groups[groupId], isFavorite: false});
         }
     }
 
