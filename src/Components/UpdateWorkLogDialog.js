@@ -48,7 +48,7 @@ function UpdateWorkLogDialog() {
         const duration = replaceRuDuration(data.get("duration"));
 
         if (duration.includes('-')) {
-            return showError(t('notifications:unable_to_set_negative_time'));
+            return showError(t('notifications:unable_to_use_negative_time'));
         }
 
         startLoading();

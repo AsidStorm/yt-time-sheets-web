@@ -11,6 +11,5 @@
   "minimum_search_term_is_3_symbols": "Введите 3 символа для поиска задачи",
   "issues_not_found": "Задач не найдено",
   "no_sprints_found_on_board": "Указанная доска не содержит спринтов. Выберите другую.",
-  "unable_to_set_negative_time": "Нельзя указывать отрицательное время",
   "work_log_updated": "Затраченное время успешно изменено"
 }

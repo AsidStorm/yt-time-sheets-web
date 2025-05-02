@@ -2,5 +2,24 @@
   "variants.AS_IS.label": "Стандартный",
   "variants.ONE_ROW.label": "В одну строчку (по датам)",
   "variants.ONE_ROW_WITH_DATE.label": "В одну строчку (с датой)",
-  "variants.SHORT.label": "Короткий"
+  "variants.SHORT.label": "Короткий",
+
+  "fields.date.label": "Дата",
+  "fields.value.label": "Значение",
+  "fields.issue_type_key.label": "Ключ типа задачи",
+  "fields.issue_type.label": "Тип задачи",
+  "fields.issue_type_id.label": "ID Типа задачи",
+  "fields.project_id.label": "ID проекта",
+  "fields.project_name.label": "Название проекта",
+  "fields.epic_key.label": "Ключ эпика",
+  "fields.epic_description.label": "Описание эпика",
+  "fields.queue_key.label": "Ключ очереди",
+  "fields.queue_description.label": "Описание очереди",
+  "fields.issue_epic_key.label": "Ключ эпика задачи",
+  "fields.issue_epic_description.label": "Описание эпика задачи",
+  "fields.issue_key.label": "Ключ задачи",
+  "fields.issue_description.label": "Описание задачи",
+  "fields.user_id.label": "ID пользователя",
+  "fields.user_email.label": "Email пользователя",
+  "fields.user_full_name.label": "ФИО пользователя"
 }

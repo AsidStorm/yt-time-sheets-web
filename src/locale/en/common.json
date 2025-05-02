@@ -21,7 +21,9 @@
   "button.thanks": "Thanks",
 
   "total": "Total",
+  "summary": "SUMMARY",
   "no_time": "---",
+  "no_data": "-",
   "month_with_year": "{{month}}, {{year}}",
 
   "language.russian": "Russian",

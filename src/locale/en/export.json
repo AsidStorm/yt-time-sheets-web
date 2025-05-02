@@ -1,6 +1,25 @@
 {
-  "variants.AS_IS.label": "Стандартный",
-  "variants.ONE_ROW.label": "В одну строчку (по датам)",
-  "variants.ONE_ROW_WITH_DATE.label": "В одну строчку (с датой)",
-  "variants.SHORT.label": "Короткий"
+  "variants.AS_IS.label": "Standard",
+  "variants.ONE_ROW.label": "One line (by dates)",
+  "variants.ONE_ROW_WITH_DATE.label": "One line (with date)",
+  "variants.SHORT.label": "Short",
+
+  "fields.date.label": "Date",
+  "fields.value.label": "Value",
+  "fields.issue_type_key.label": "Issue type key",
+  "fields.issue_type.label": "Issue type",
+  "fields.issue_type_id.label": "Issue type ID",
+  "fields.project_id.label": "Project ID",
+  "fields.project_name.label": "Project name",
+  "fields.epic_key.label": "Epic key",
+  "fields.epic_description.label": "Epic description",
+  "fields.queue_key.label": "Queue key",
+  "fields.queue_description.label": "Queue description",
+  "fields.issue_epic_key.label": "Issue's epic key",
+  "fields.issue_epic_description.label": "Issue's epic description",
+  "fields.issue_key.label": "Issue key",
+  "fields.issue_description.label": "Issue description",
+  "fields.user_id.label": "User ID",
+  "fields.user_email.label": "User Email",
+  "fields.user_full_name.label": "User full name"
 }

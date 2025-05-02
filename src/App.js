@@ -287,8 +287,7 @@ function App() {
         <Loader/>
         <Message/>
 
-        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)}
-                             showError={showError} handleComplete={handleInitialConfigComplete}/>
+        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)} handleComplete={handleInitialConfigComplete}/>
 
         <FilterDialog
             handleClose={() => setFilterDialogState(false)}
