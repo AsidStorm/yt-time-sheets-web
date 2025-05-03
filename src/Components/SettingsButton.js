@@ -5,6 +5,7 @@ import {Fab} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {useSettingsDialog} from "../hooks";
 import {DialogsSettings} from "./Dialogs/Settings";
+import {pushAnalytics} from "../helpers";
 
 export function SettingsButton() {
     const {t} = useTranslation();
@@ -14,7 +15,7 @@ export function SettingsButton() {
     return <Fragment>
         <DialogsSettings />
 
-        <Fab sx={{position: 'absolute', bottom: 16, right: 16, zIndex: 999999 }} color="primary" variant="extended" onClick={openSettingsDialog}>
+        <Fab sx={{position: 'absolute', bottom: 16, right: 16, zIndex: 999999 }} color="primary" variant="extended" onClick={() => { openSettingsDialog(); pushAnalytics('settingsClicked'); }}>
             <SettingsIcon sx={{ mr: 1 }} />
             {t('common:button.settings')}
         </Fab>

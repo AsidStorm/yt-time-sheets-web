@@ -8,6 +8,7 @@ import chartsRu from "./locale/ru/charts.json";
 import notificationsRu from "./locale/ru/notifications.json";
 import componentsRu from "./locale/ru/components.json";
 import durationRu from "./locale/ru/duration.json";
+import changelogRu from "./locale/ru/changelog.json";
 import commonEn from "./locale/en/common.json";
 import filterEn from "./locale/en/filter.json";
 import exportEn from "./locale/en/export.json";
@@ -16,6 +17,7 @@ import chartsEn from "./locale/en/charts.json";
 import notificationsEn from "./locale/en/notifications.json";
 import componentsEn from "./locale/en/components.json";
 import durationEn from "./locale/en/duration.json";
+import changelogEn from "./locale/en/changelog.json";
 import {LOCALE_RU} from "./constants";
 
 const resources = {
@@ -28,6 +30,7 @@ const resources = {
         notifications: notificationsRu,
         components: componentsRu,
         duration: durationRu,
+        changelog: changelogRu,
     },
     en: {
         common: commonEn,
@@ -38,6 +41,7 @@ const resources = {
         notifications: notificationsEn,
         components: componentsEn,
         duration: durationEn,
+        changelog: changelogEn,
     }
 };
 

@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Dialog, Grid2 as Grid, Container, Avatar, Tooltip, Link} from "@mui/material";
 import {
+    DATE_FORMAT,
+    DATE_FORMAT_DATE,
     RESULT_GROUP_EPIC,
     RESULT_GROUP_ISSUE, RESULT_GROUP_ISSUE_TYPE, RESULT_GROUP_PROJECT, RESULT_GROUP_QUEUE,
     RESULT_GROUP_WORKER,
@@ -13,13 +15,17 @@ import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
 import {red} from "@mui/material/colors";
 import {yandexTrackerIssueUrl, yandexTrackerQueueUrl} from "../helpers";
 import {Chart as ChartJS, registerables} from 'chart.js';
-import {Pie} from 'react-chartjs-2';
+import {Bar, Pie} from 'react-chartjs-2';
 import {useTranslation} from "react-i18next";
-import {useHumanizeDuration, useInsightsDialog} from "../hooks";
+import {useDateFormatter, useHumanizeDuration, useInsightsDialog} from "../hooks";
 import {useAtomValue} from "jotai";
-import {resultRowsAtom} from "../jotai/atoms";
+import {dateFormatAtom, datesAtom, resultRowsAtom} from "../jotai/atoms";
+import moment from "moment/moment";
 
 ChartJS.register(...registerables);
+
+const BAR_TYPE_PIE = "PIE";
+const BAR_TYPE_BAR_STACKED = "BAR_STACKED";
 
 const numberValueFormatter = value => value;
 
@@ -325,10 +331,6 @@ const generateQueuesChart = ({row, durationValueFormatter}) => {
         }
     }
 
-    if (Object.keys(timeByQueues).length <= 1) {
-        return null;
-    }
-
     return {
         type: "PIE",
         label: "insights_dialog.charts.queues.label",
@@ -411,13 +413,160 @@ const generateUsersChart = ({row, durationValueFormatter}) => {
     };
 }
 
+const generateBarChartByUserAndDate = ({row, dates, formatDate, durationValueFormatter, dateFormat}) => {
+    const data = {};
+
+    for( const byDate of Object.values(row.byDate) ) {
+        for( const log of byDate.details ) {
+            const key = dateFormat === DATE_FORMAT_DATE ? moment(log.createdAt).format(DATE_FORMAT) : moment(log.createdAt).format("MM.YYYY");
+
+            if (!data[log.createdById]) {
+                data[log.createdById] = {
+                    label: log.createdByDisplay,
+                    data: {}
+                };
+
+                for (const originalDate of dates) {
+                    data[log.createdById].data[originalDate.index] = 0;
+                }
+            }
+
+            data[log.createdById].data[key] += log.value;
+        }
+    }
+
+    return {
+        type: BAR_TYPE_BAR_STACKED,
+        index: 'bar-chart-by-user-and-date',
+        label: 'insights_dialog.charts.user_and_date.label',
+
+        data: {
+            labels: dates.map(date => formatDate(date)),
+            datasets: Object.keys(data).map(key => {
+                return {
+                    label: data[key].label,
+                    data: Object.values(data[key].data),
+                    stack: "stack-o"
+                }
+            })
+        },
+
+        options: {
+            maintainAspectRatio: true,
+
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true,
+
+                    ticks: {
+                        callback: function (value) {
+                            return durationValueFormatter(value);
+                        }
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    position: "right",
+                },
+                tooltip: {
+                    callbacks: {
+                        label: value => {
+                            return value.dataset.label + ": " + durationValueFormatter(value);
+                        }
+                    }
+                }
+            }
+        }
+    };
+}
+
+const generateBarChartByIssueAndDate = ({row, dates, formatDate, durationValueFormatter, dateFormat}) => {
+    const data = {};
+
+    for( const byDate of Object.values(row.byDate) ) {
+        for( const log of byDate.details ) {
+            const key = dateFormat === DATE_FORMAT_DATE ? moment(log.createdAt).format(DATE_FORMAT) : moment(log.createdAt).format("MM.YYYY");
+
+            if (!data[log.issueKey]) {
+                data[log.issueKey] = {
+                    label: log.issueTitle,
+                    data: {}
+                };
+
+                for (const originalDate of dates) {
+                    data[log.issueKey].data[originalDate.index] = 0;
+                }
+            }
+
+            data[log.issueKey].data[key] += log.value;
+        }
+    }
+
+    return {
+        type: BAR_TYPE_BAR_STACKED,
+        index: 'bar-chart-by-issue-and-date',
+        label: 'insights_dialog.charts.issue_and_date.label',
+
+        data: {
+            labels: dates.map(date => formatDate(date)),
+            datasets: Object.keys(data).map(key => {
+                return {
+                    label: data[key].label,
+                    data: Object.values(data[key].data),
+                    stack: "stack-o"
+                }
+            })
+        },
+
+        options: {
+            maintainAspectRatio: true,
+
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true,
+
+                    ticks: {
+                        callback: function (value) {
+                            return durationValueFormatter(value);
+                        }
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    position: "right",
+                },
+                tooltip: {
+                    callbacks: {
+                        label: value => {
+                            return value.dataset.label + ": " + durationValueFormatter(value);
+                        }
+                    }
+                }
+            }
+        }
+    };
+}
+
 function InsightsDialog() {
     const {t} = useTranslation();
 
     const rows = useAtomValue(resultRowsAtom);
+    const dates = useAtomValue(datesAtom);
+    const dateFormat = useAtomValue(dateFormatAtom);
 
     const {isOpen, close, row} = useInsightsDialog();
     const humanizeDuration = useHumanizeDuration();
+    const {formatDate} = useDateFormatter();
 
     const [boxes, setBoxes] = useState([]);
     const [charts, setCharts] = useState([]);
@@ -441,14 +590,6 @@ function InsightsDialog() {
             return humanizeDuration(0);
         };
 
-        // Делаем компановку из элементов визуальных - чисто графики
-        // ЗАДАЧА - [Распределение времени по пользователям (4), Распределение времени по дням по пользователям (8)]
-        // ПОЛЬЗОВАТЕЛЬ - [Распределение по задачам (4), Распределение по дням по задачам (8)]
-        // ОЧЕРЕДЬ - [Кол-во пользователей (4), Кол-во задач (4), Кол-во типов задач (4)]
-        // ТИП ЗАДАЧИ - [Кол-во пользователей (4), Кол-во задач (4), Кол-во очередей (4)]
-        // ЭПИК - [Кол-во пользователей (4), Кол-во задач (4), Кол-во очередей (4)]
-        // ПРОЕКТ - [Кол-во пользователей (4), Кол-во задач (4), Кол-во очередей (4)]
-
         const boxes = [
             /*generateTotalTimeBox,
             generateTotalUsersBox,
@@ -457,17 +598,13 @@ function InsightsDialog() {
             generateAvgTimeByIssueBox,*/
         ];
 
-        const charts = { // Здесь идёт приоритет генерации графиков, если значение 1 => график не попадает
-            [RESULT_GROUP_ISSUE]: [generateUsersChart],
-            [RESULT_GROUP_WORKER]: [generateIssuesChart],
+        const charts = {
+            [RESULT_GROUP_ISSUE]: [generateUsersChart, generateBarChartByUserAndDate],
+            [RESULT_GROUP_WORKER]: [generateIssuesChart, generateBarChartByIssueAndDate],
             [RESULT_GROUP_QUEUE]: [generateUsersChart, generateIssuesChart],
             [RESULT_GROUP_ISSUE_TYPE]: [generateUsersChart, generateIssuesChart, generateQueuesChart],
             [RESULT_GROUP_EPIC]: [generateUsersChart, generateIssuesChart, generateQueuesChart],
             [RESULT_GROUP_PROJECT]: [generateUsersChart, generateIssuesChart, generateQueuesChart],
-
-            //generateUsersChart,
-            //generateIssuesChart,
-            //generateQueuesChart,
         };
 
         const nextBoxes = [];
@@ -486,7 +623,7 @@ function InsightsDialog() {
         }
 
         for (const chart of charts[row.parameters.resultGroup]) {
-            const generated = chart({row, rows, durationValueFormatter, humanizeDuration});
+            const generated = chart({row, rows, durationValueFormatter, humanizeDuration, formatDate, dates, dateFormat});
 
             if (generated !== null) {
                 nextCharts.push(generated);
@@ -525,10 +662,14 @@ function InsightsDialog() {
                     </Grid>
                 })}
                 {charts.map(chart => {
-                    return <Grid size={{xs: 12, md: 4}} key={chart.index}>
-                        <Card variant="outlined">
+                    return <Grid size={{xs: 12, md: (chart.type === BAR_TYPE_BAR_STACKED ? 8 : 4)}} key={chart.index}>
+                        <Card variant="outlined" sx={{height: '500px'}}>
                             <CardHeader title={t(`components:${chart.label}`)}/>
-                            {chart.type === 'PIE' && <Pie
+                            {chart.type === BAR_TYPE_PIE && <Pie
+                                data={chart.data}
+                                options={chart.options}
+                            />}
+                            {chart.type === BAR_TYPE_BAR_STACKED && <Bar
                                 data={chart.data}
                                 options={chart.options}
                             />}

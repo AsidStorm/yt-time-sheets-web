@@ -1,0 +1,58 @@
+{
+  "title": "Changelog",
+
+  "04_05_2025_001": "Added multilingual support",
+  "04_05_2025_002": "Added dark theme",
+  "04_05_2025_003": "Added insights for final elements",
+  "04_05_2025_004": "Completely redesigned chart screens (structure, clickable elements)",
+  "04_05_2025_005": "Added task links to several elements",
+  "04_05_2025_006": "Redesigned group structure (search, favorites, filter)",
+  "04_05_2025_007": "Added quick date selection hints",
+  "04_05_2025_008": "Added a donation card ^_^",
+  "04_05_2025_009": "Fixed an issue where name cells always had the same background",
+  "04_05_2025_010": "Refactored the project structure, now it's easier and more pleasant to work with",
+
+  "28_03_2025_001": "Updated internal libraries, aligned some elements",
+
+  "30_11_2024_001": "Released as Open Source and added a copyright block",
+
+  "02_07_2024_001": "Added an option to load tasks and time when transitioning to specific statuses in a particular month",
+  "02_07_2024_002": "Added an experimental \"Money\" output format",
+  "02_07_2024_003": "Fixed an issue where regrouping could sometimes produce unexpected results",
+  "02_07_2024_004": "Fixed an issue where CSV exports could sometimes be corrupted",
+  "02_07_2024_005": "Fixed an issue where in some cases it was impossible to log time to a task",
+
+  "03_04_2024_001": "Fixed an issue where the \"undefined\" text appeared in the work time deletion dialog",
+
+  "06_02_2024_001": "Fixed an issue where the queue name sometimes wouldn't display",
+
+  "21_11_2023_001": "Added ability to filter tasks by type",
+  "21_11_2023_002": "Fixed an issue where the time toggle sometimes didn't affect the final table",
+
+  "20_11_2023_001": "Group lists now show the number of group members",
+  "20_11_2023_002": "Fixed an issue where time selection fields wouldn't appear in the time log creation dialog",
+
+  "31_10_2023_001": "Reports can now be generated for any date range; very large ranges will load in parts",
+  "31_10_2023_002": "Added option to group large time ranges by month and hide details (for faster loading)",
+  "31_10_2023_003": "Added sticky header column (leftmost), now it remains visible when scrolling right",
+  "31_10_2023_004": "Added sticky header row, now it remains visible when scrolling down",
+  "31_10_2023_005": "Added table virtualization for large datasets (rows can't be found via Ctrl+F now, but the browser won't freeze and scrolling still works)",
+  "31_10_2023_006": "Added task type grouping, charts, and export",
+
+  "27_10_2023_001": "Fixed an issue with the export dropdown menu",
+
+  "24_10_2023_001": "Added ability to set grouping order",
+
+  "11_10_2023_001": "Added information about the epic a task belongs to",
+
+  "10_10_2023_001": "Added time highlighting when logged time is less than required when grouped by time logger",
+
+  "02_10_2023_001": "Added Google Analytics for the public version (yt-time-sheets.ru)",
+
+  "21_04_2023_001": "Product added to Yandex Cloud Marketplace",
+
+  "29_10_2022_001": "Added task search by project",
+  "29_10_2022_002": "Added grouping by queue and project",
+
+  "28_10_2022_001": "Initial project release"
+}

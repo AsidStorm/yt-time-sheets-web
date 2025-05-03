@@ -33,7 +33,7 @@ import {
     boardsMapAtom,
     issueTypesMapAtom,
     issueStatusesMapAtom,
-    haveWorkLogsAtom, myUserAtom, colorThemeAtom,
+    haveWorkLogsAtom, myUserAtom, colorThemeAtom, localeAtom, insightsEnabledAtom,
 } from "./jotai/atoms";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer";
@@ -57,6 +57,8 @@ function App() {
     const setIssueStatusesMap = useSetAtom(issueStatusesMapAtom);
     const haveDataToDisplay = useAtomValue(haveWorkLogsAtom);
     const colorTheme  = useAtomValue(colorThemeAtom);
+    const locale = useAtomValue(localeAtom);
+    const insightsEnabled = useAtomValue(insightsEnabledAtom);
 
     const [myUser, setMyUser] = useAtom(myUserAtom);
 
@@ -138,6 +140,12 @@ function App() {
 
     useEffect(() => {
         boot();
+
+        pushAnalytics('applicationBooted', {
+            locale,
+            colorTheme,
+            insightsEnabled
+        });
     }, []);
 
     useEffect(() => {
@@ -236,7 +244,7 @@ function App() {
     };
 
     const exit = () => {
-        /*localStorage.removeItem("authToken");
+        localStorage.removeItem("authToken");
         localStorage.removeItem("iAmToken");
 
         if( allowManualInput ) {
@@ -245,7 +253,7 @@ function App() {
 
         setAuthorized(AUTHORIZED_STATE_NONE);
 
-        showSuccess("Вы успешно вышли. Не забудьте отозвать токен, т.к. для этого нет API.");*/
+        showSuccess(t('notifications:logout'));
     };
 
     const theme = useMemo(
@@ -289,8 +297,7 @@ function App() {
             reload={reload}
         />
 
-        <ChangelogDialog state={false} handleClose={() => {
-        }}/>
+        <ChangelogDialog />
 
         <Box
             sx={{

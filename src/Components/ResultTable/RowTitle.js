@@ -11,7 +11,7 @@ import {
     RESULT_GROUP_WORKER
 } from "../../constants";
 import Link from "@mui/material/Link";
-import {yandexTrackerIssueUrl, yandexTrackerProjectUrl, yandexTrackerQueueUrl} from "../../helpers";
+import {pushAnalytics, yandexTrackerIssueUrl, yandexTrackerProjectUrl, yandexTrackerQueueUrl} from "../../helpers";
 import {makeStyles} from "@mui/styles";
 import {useTranslation} from "react-i18next";
 import {useInsightsDialog} from "../../hooks";
@@ -54,7 +54,7 @@ export function ResultTableRowTitle({ row }) {
     const { parameters: { resultGroup, key } } = row;
 
     const insights = (row) => row.isMaxDepth && insightsEnabled ? <Tooltip title={t('components:row_title.insights_tooltip')}>
-        <IconButton size="small" onClick={() => { openInsightsDialog(row); }}>
+        <IconButton size="small" onClick={() => { openInsightsDialog(row); pushAnalytics('insightsClicked', { resultGroup: row.parameters.resultGroup }) }}>
             <AnalyticsIcon />
         </IconButton>
     </Tooltip> : null;

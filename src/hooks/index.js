@@ -9,3 +9,4 @@ export * from './message';
 export * from './insightsDialog';
 export * from './dateFormatter';
 export * from './settingsDialog';
+export * from './changelogDialog';

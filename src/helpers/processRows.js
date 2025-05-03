@@ -53,8 +53,6 @@ const groupParametersCaller = (queuesMap) => (workLog, resultGroup) => {
 };
 
 export const processRows = (workLogs, queuesMap, dateFormat, resultGroups, highlightTime, dates) => {
-    console.log( dates );
-
     const totalRow = {
         title: "Итого",
         byDate: {},

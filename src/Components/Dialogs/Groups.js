@@ -14,7 +14,7 @@ import {useAtomValue, useSetAtom} from "jotai";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {favoriteGroupsAtom, orderedGroupsAtom} from "../../jotai/atoms";
-import {createLabelFilter} from "../../helpers";
+import {createLabelFilter, pushAnalytics} from "../../helpers";
 
 export function DialogsGroups({state, handleClose, onSelect}) {
     const {t} = useTranslation();
@@ -35,6 +35,8 @@ export function DialogsGroups({state, handleClose, onSelect}) {
     const handleFavoriteGroupClick = (e, group) => {
         e.preventDefault();
         e.stopPropagation();
+
+        pushAnalytics('groupFavoriteClicked');
 
         setFavorites(prev => prev.includes(group.value) ? prev.filter(f => f !== group.value) : [...prev, group.value]);
     };

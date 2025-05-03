@@ -13,6 +13,7 @@ import {useTranslation} from "react-i18next";
 import {COLOR_THEMES, LOCALES} from "../../constants";
 import {useAtom} from "jotai";
 import {colorThemeAtom, insightsEnabledAtom, localeAtom} from "../../jotai/atoms";
+import {pushAnalytics} from "../../helpers";
 
 export function DialogsSettings() {
     const {t, i18n} = useTranslation();
@@ -26,12 +27,16 @@ export function DialogsSettings() {
     const handleLocaleChange = event => {
         const nextLocale = event.target.value;
 
+        pushAnalytics('localeSelected', { locale: nextLocale });
+
         i18n.changeLanguage(nextLocale);
         setLocale(nextLocale);
     };
 
     const handleColorThemeChange = event => {
         const nextColorTheme = event.target.value;
+
+        pushAnalytics('colorThemeSelected', { colorTheme: nextColorTheme });
 
         setColorTheme(nextColorTheme);
     };
@@ -76,7 +81,7 @@ export function DialogsSettings() {
                             <FormControlLabel control={<Checkbox/>}
                                               label={t('components:dialogs.settings.fields.insights_enabled.label')}
                                               checked={insightsEnabled}
-                                              onChange={(e) => setInsightsEnabled(e.target.checked)}/>
+                                              onChange={(e) => { setInsightsEnabled(e.target.checked); pushAnalytics(e.target.checked ? 'insightsEnabled' : 'insightsDisabled') }}/>
                         </FormGroup>
                     </Grid>
                     <Grid size={{xs: 12}}>
