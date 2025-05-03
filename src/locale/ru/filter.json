@@ -10,7 +10,7 @@
   "date_from.label": "Дата (с)",
   "date_to.label": "Дата (по)",
   "hide_details.label": "Скрыть детали к дате?",
-  "highlight_time.label": "Подсветка часов сотрудника, меньше чем",
+  "highlight_time.label": "Подсветка часов пользователя, меньше чем",
   "date_display.label": "Отображение даты",
   "date_display.values.DATE": "Дата",
   "date_display.values.MONTH": "Месяц",
