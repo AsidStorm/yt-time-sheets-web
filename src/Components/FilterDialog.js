@@ -623,7 +623,6 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                         <FormControl fullWidth>
                             <DesktopDatePicker
                                 label={t('filter:date_from.label')}
-                                inputFormat="DD.MM.YYYY"
                                 value={dateFrom}
                                 onChange={(newValue) => {
                                     setDateFrom(newValue);
@@ -639,7 +638,6 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                             <DesktopDatePicker
                                 label={t('filter:date_to.label')}
                                 value={dateTo}
-                                inputFormat="DD.MM.YYYY"
                                 onChange={(newValue) => {
                                     setDateTo(newValue);
                                 }}

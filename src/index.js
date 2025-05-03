@@ -8,11 +8,16 @@ import './i18n';
 
 import "moment/locale/ru";
 import {Provider} from 'jotai';
+import {useTranslation} from "react-i18next";
 
 export const Providers = ({children}) => {
+    const {i18n} = useTranslation();
+
     return (
         <Provider>
-            {children}
+            <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={i18n.language}>
+                {children}
+            </LocalizationProvider>
         </Provider>
     )
 }
@@ -20,9 +25,7 @@ export const Providers = ({children}) => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Providers>
-        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"ru"}>
-            <App/>
-        </LocalizationProvider>
+        <App/>
     </Providers>
 );
 

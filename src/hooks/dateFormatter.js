@@ -1,6 +1,13 @@
 import {useAtomValue} from "jotai";
 import {dateFormatAtom, localeAtom} from "../jotai/atoms";
-import {DATE_FORMAT_EN, DATE_FORMAT_MONTH, DATE_FORMAT_RU, LOCALE_EN, LOCALE_RU} from "../constants";
+import {
+    DATE_FORMAT_EN,
+    DATE_FORMAT_MONTH,
+    DATE_FORMAT_RU,
+    LOCALE_EN,
+    LOCALE_RU,
+    LOCALIZED_DATE_FORMATS
+} from "../constants";
 import {useTranslation} from "react-i18next";
 
 export function useDateFormatter() {
@@ -9,10 +16,7 @@ export function useDateFormatter() {
 
     const {t} = useTranslation();
 
-    const dateFormats = {
-        [LOCALE_RU]: DATE_FORMAT_RU,
-        [LOCALE_EN]: DATE_FORMAT_EN
-    }
+    const formatDateExact = date => date.format(LOCALIZED_DATE_FORMATS[locale]);
 
     const formatDate = ({ date }) => {
         if( dateFormat === DATE_FORMAT_MONTH ) {
@@ -22,10 +26,11 @@ export function useDateFormatter() {
             });
         }
 
-        return date.format(dateFormats[locale]);
+        return formatDateExact(date);
     };
 
     return {
-        formatDate
+        formatDate,
+        formatDateExact
     };
 }

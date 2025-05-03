@@ -29,11 +29,13 @@ import {
 import {dateFormatAtom, myUserAtom, resultGroupsAtom} from "../../jotai/atoms";
 import {RowTooltipTitle} from "./RowTooltipTitle";
 import {Trans, useTranslation} from "react-i18next";
+import moment from "moment";
 
 export function ResultDetailsTable({index, row, date}) {
     const {t} = useTranslation();
 
     const humanize = useHumanizeDuration();
+    const {formatDateExact} = useDateFormatter();
 
     const {open: openWorkLogDeleteDialog} = useDeleteWorkLogDialog();
     const {open: openWorkLogCreateDialog} = useCreateWorkLogDialog();
@@ -117,7 +119,7 @@ export function ResultDetailsTable({index, row, date}) {
                         </TableCell>}
                         <RowDescription row={detail}/>
                         {dateFormat === DATE_FORMAT_MONTH && <TableCell>
-                            {detail.exactDate}
+                            {formatDateExact(moment(detail.createdAt))}
                         </TableCell>}
                         <TableCell sx={{minWidth: 120}}>
                             {humanize(detail.value, {[detail.createdById]: detail.value})}

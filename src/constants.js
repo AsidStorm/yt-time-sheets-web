@@ -54,7 +54,7 @@ export const RESULT_GROUPS = [
 export const DATE_FORMAT = "DD.MM.YYYY";
 
 export const DATE_FORMAT_RU = "DD.MM.YYYY";
-export const DATE_FORMAT_EN = "YYYY-MM-DD";
+export const DATE_FORMAT_EN = "MM/DD/YYYY";
 
 export const WEEKEND_WEEK_DAYS = [6, 7];
 
@@ -111,3 +111,8 @@ export const FILTER_FAST_DATES = [
 ];
 
 export const VIRTUOSO_MIN_LENGTH = 200;
+
+export const LOCALIZED_DATE_FORMATS = {
+    [LOCALE_RU]: DATE_FORMAT_RU,
+    [LOCALE_EN]: DATE_FORMAT_EN,
+};

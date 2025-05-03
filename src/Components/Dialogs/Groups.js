@@ -7,7 +7,7 @@ import {
     List,
     TextField,
     FormControl,
-    IconButton
+    IconButton, Tooltip
 } from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {useAtomValue, useSetAtom} from "jotai";
@@ -50,10 +50,12 @@ export function DialogsGroups({state, handleClose, onSelect}) {
             {filteredGroups.map(group => (
                 <ListItem button onClick={() => onSelect(group)} key={`group-${group.value}`} sx={{cursor: 'pointer'}}
                           secondaryAction={
+                    <Tooltip title={t(`components:dialogs.groups.tooltip.${group.isFavorite ? 'favorite' : 'make_favorite'}`)}>
                               <IconButton edge="end" onClick={(e) => handleFavoriteGroupClick(e, group)}
                                           color={group.isFavorite ? 'error' : 'primary'}>
                                   {group.isFavorite ? <FavoriteIcon/> : <FavoriteBorderIcon/>}
                               </IconButton>
+                    </Tooltip>
                           }>
                     <ListItemText primary={group.label}
                                   secondary={t('components:groups_dialog.users', {count: group.members.length})}/>

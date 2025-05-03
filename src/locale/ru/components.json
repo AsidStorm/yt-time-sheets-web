@@ -123,5 +123,8 @@
   "dialogs.settings.title": "Настройки",
   "dialogs.settings.fields.locale.label": "Язык приложения",
   "dialogs.settings.fields.color_theme.label": "Цветовая схема",
-  "dialogs.settings.fields.insights_enabled.label": "Инсайты включены"
+  "dialogs.settings.fields.insights_enabled.label": "Инсайты включены",
+
+  "dialogs.groups.tooltip.favorite": "Убрать из избранного",
+  "dialogs.groups.tooltip.make_favorite": "Добавить в избранное. Появится на экране фильтрации"
 }

@@ -121,5 +121,8 @@
   "dialogs.settings.title": "Settings",
   "dialogs.settings.fields.locale.label": "Application locale",
   "dialogs.settings.fields.color_theme.label": "Color theme",
-  "dialogs.settings.fields.insights_enabled.label": "Insights enabled"
+  "dialogs.settings.fields.insights_enabled.label": "Insights enabled",
+
+  "dialogs.groups.tooltip.favorite": "Remove from favorite",
+  "dialogs.groups.tooltip.make_favorite": "Add to favorite. Appears on filter screen"
 }
