@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Link} from "@mui/material";
+import {Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Link, Alert} from "@mui/material";
 import {Trans, useTranslation} from "react-i18next";
 import {useSetAtom} from "jotai";
 import {remove} from "../requests";
@@ -53,14 +53,16 @@ function DeleteWorkLogDialog() {
             <DialogContent>
                 <DialogContentText>
                     {t('components:delete_work_log_dialog.text')}<br/>
-                    <Trans
-                        i18nKey='components:delete_work_log_dialog.description_text'
-                        values={{createdByDisplay, value: humanize(value, {[createdById]: value}), issueTitle}}
-                        components={{
-                            issue: <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank"
-                                         rel="nofollow noopener"/>
-                        }}
-                    />
+                    <Alert severity="info">
+                        <Trans
+                            i18nKey='components:delete_work_log_dialog.description_text'
+                            values={{createdByDisplay, value: humanize(value, {[createdById]: value}), issueTitle}}
+                            components={{
+                                issue: <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank"
+                                             rel="nofollow noopener"/>
+                            }}
+                        />
+                    </Alert>
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

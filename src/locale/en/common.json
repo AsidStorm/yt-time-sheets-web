@@ -31,6 +31,9 @@
   "language.ru": "Russian",
   "language.en": "English",
 
+  "color_theme.light": "Light",
+  "color_theme.dark":  "Dark",
+
   "month.0": "January",
   "month.1": "February",
   "month.2": "March",

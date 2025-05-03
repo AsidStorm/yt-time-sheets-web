@@ -6,22 +6,22 @@ import {
     Container,
     Grid2 as Grid,
     FormControl,
-    Select,
-    MenuItem, InputLabel, Button
+    Button, FormGroup, FormControlLabel, Checkbox, FormLabel, RadioGroup, Radio
 } from "@mui/material";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {COLOR_THEMES, LOCALES} from "../../constants";
 import {useAtom} from "jotai";
-import {colorThemeAtom, localeAtom} from "../../jotai/atoms";
+import {colorThemeAtom, insightsEnabledAtom, localeAtom} from "../../jotai/atoms";
 
 export function DialogsSettings() {
     const {t, i18n} = useTranslation();
 
     const [locale, setLocale] = useAtom(localeAtom);
     const [colorTheme, setColorTheme] = useAtom(colorThemeAtom);
+    const [insightsEnabled, setInsightsEnabled] = useAtom(insightsEnabledAtom);
 
-    const { isOpen, close } = useSettingsDialog();
+    const {isOpen, close} = useSettingsDialog();
 
     const handleLocaleChange = event => {
         const nextLocale = event.target.value;
@@ -43,31 +43,41 @@ export function DialogsSettings() {
                 <Grid container spacing={2}>
                     <Grid size={{xs: 12}}>
                         <FormControl fullWidth>
-                            <InputLabel>{t('components:dialogs.settings.fields.locale.label')}</InputLabel>
-                            <Select
+                            <FormLabel>{t('components:dialogs.settings.fields.locale.label')}</FormLabel>
+                            <RadioGroup
+                                row
+                                name="locale"
                                 value={locale}
-                                label={t('components:dialogs.settings.fields.locale.label')}
                                 onChange={handleLocaleChange}
                             >
-                                {LOCALES.map( l => <MenuItem key={`locale-${l}`} value={l}>
-                                    {t(`common:language.${l}`)}
-                                </MenuItem>)}
-                            </Select>
+                                {LOCALES.map(l => <FormControlLabel value={l} control={<Radio/>}
+                                                                    label={t(`common:language.${l}`)}
+                                                                    key={`locale-${l}`}/>)}
+                            </RadioGroup>
                         </FormControl>
                     </Grid>
                     <Grid size={{xs: 12}}>
                         <FormControl fullWidth>
-                            <InputLabel>{t('components:dialogs.settings.fields.color_theme.label')}</InputLabel>
-                            <Select
+                            <FormLabel>{t('components:dialogs.settings.fields.color_theme.label')}</FormLabel>
+                            <RadioGroup
+                                row
+                                name="color-theme"
                                 value={colorTheme}
-                                label={t('components:dialogs.settings.fields.color_theme.label')}
                                 onChange={handleColorThemeChange}
                             >
-                                {COLOR_THEMES.map( theme => <MenuItem key={`color-theme-${theme}`} value={theme}>
-                                    {t(`common:color_theme.${theme}`)}
-                                </MenuItem>)}
-                            </Select>
+                                {COLOR_THEMES.map(theme => <FormControlLabel value={theme} control={<Radio/>}
+                                                                             label={t(`common:color_theme.${theme}`)}
+                                                                             key={`color-theme-${theme}`}/>)}
+                            </RadioGroup>
                         </FormControl>
+                    </Grid>
+                    <Grid size={{xs: 12}}>
+                        <FormGroup>
+                            <FormControlLabel control={<Checkbox/>}
+                                              label={t('components:dialogs.settings.fields.insights_enabled.label')}
+                                              checked={insightsEnabled}
+                                              onChange={(e) => setInsightsEnabled(e.target.checked)}/>
+                        </FormGroup>
                     </Grid>
                     <Grid size={{xs: 12}}>
                         <FormControl fullWidth>

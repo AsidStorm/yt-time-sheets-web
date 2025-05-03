@@ -188,7 +188,7 @@ export const processRows = (workLogs, queuesMap, dateFormat, resultGroups, highl
                     queue: workLog.queue,
                     queueName: queue ? queue.title : workLog.queue,
 
-                    exactDate: moment(workLog.createdAt).format(DATE_FORMAT),
+                    exactDate: moment(workLog.createdAt).format(DATE_FORMAT), // TODO: REPLACE ME
 
                     isDetails: true
                 });

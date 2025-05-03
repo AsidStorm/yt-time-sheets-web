@@ -4,8 +4,8 @@
   "groups_dialog.users_one": "{{count}} user",
   "groups_dialog.users_other": "{{count}} users",
 
-  "delete_work_log_dialog.title": "Удаление рабочего времени",
-  "delete_work_log_dialog.text": "Вы уверены, что хотите удалить эту запись о времени?",
+  "delete_work_log_dialog.title": "Delete work log",
+  "delete_work_log_dialog.text": "Are you sure you want to delete this work log?",
   "delete_work_log_dialog.description_text": "{{createdByDisplay}}, <issue>{{issueTitle}}</issue>: {{value}}",
 
   "update_work_log_dialog.title": "Change work log",
@@ -110,6 +110,7 @@
   "details_table.caption_issue_with_user": "<issueLink>{{issueDisplay}}</issueLink>. Author: {{createdByDisplay}}",
   "details_table.caption_only_author": "Author: {{createdByDisplay}}" ,
   "details_table.title": "{{title}} | <tooltip />",
+  "details_table.delete_tooltip": "Remove work log, will ask for confirmation",
 
   "row_title.insights_tooltip": "Insights",
   "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}",
@@ -118,6 +119,7 @@
   "app.not_enough_data": "No data to build analytics, use <filterLink>filter</filterLink>",
 
   "dialogs.settings.title": "Settings",
-  "dialogs.settings.fields.locale.label": "App locale",
-  "dialogs.settings.fields.color_theme.label": "Color theme"
+  "dialogs.settings.fields.locale.label": "Application locale",
+  "dialogs.settings.fields.color_theme.label": "Color theme",
+  "dialogs.settings.fields.insights_enabled.label": "Insights enabled"
 }

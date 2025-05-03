@@ -112,6 +112,7 @@
   "details_table.caption_issue_with_user": "<issueLink>{{issueDisplay}}</issueLink>. Автор: {{createdByDisplay}}",
   "details_table.caption_only_author": "Автор: {{createdByDisplay}}" ,
   "details_table.title": "{{title}} | <tooltip />",
+  "details_table.delete_tooltip": "Удалить запись, мы запросим дополнительное подтверждение",
 
   "row_title.insights_tooltip": "Инсайты",
   "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}",
@@ -121,5 +122,6 @@
 
   "dialogs.settings.title": "Настройки",
   "dialogs.settings.fields.locale.label": "Язык приложения",
-  "dialogs.settings.fields.color_theme.label": "Цветовая схема"
+  "dialogs.settings.fields.color_theme.label": "Цветовая схема",
+  "dialogs.settings.fields.insights_enabled.label": "Инсайты включены"
 }

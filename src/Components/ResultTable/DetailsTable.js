@@ -9,7 +9,7 @@ import {
     TableBody,
     Link,
     IconButton,
-    Button
+    Button, Tooltip
 } from "@mui/material";
 import {useAtomValue} from "jotai";
 import {calculateDetailsCols, rowHaveDetails, yandexTrackerIssueUrl} from "../../helpers";
@@ -127,10 +127,11 @@ export function ResultDetailsTable({index, row, date}) {
                                         onClick={() => openWorkLogUpdateDialog(detail)}>
                                 <EditIcon fontSize="inherit"/>
                             </IconButton>
-                            <IconButton size="small" color="error"
-                                        onClick={() => openWorkLogDeleteDialog(detail)}>
-                                <DeleteIcon fontSize="inherit"/>
-                            </IconButton>
+                            <Tooltip title={t('components:details_table.delete_tooltip')}>
+                                <IconButton size="small" color="error" onClick={() => openWorkLogDeleteDialog(detail)}>
+                                    <DeleteIcon fontSize="inherit"/>
+                                </IconButton>
+                            </Tooltip>
                         </TableCell>}
                     </TableRow>)}
 

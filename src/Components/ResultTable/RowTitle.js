@@ -15,6 +15,8 @@ import {yandexTrackerIssueUrl, yandexTrackerProjectUrl, yandexTrackerQueueUrl} f
 import {makeStyles} from "@mui/styles";
 import {useTranslation} from "react-i18next";
 import {useInsightsDialog} from "../../hooks";
+import {useAtomValue} from "jotai";
+import {insightsEnabledAtom} from "../../jotai/atoms";
 
 const useStyles = makeStyles({
     table: {
@@ -33,6 +35,8 @@ const useStyles = makeStyles({
 export function ResultTableRowTitle({ row }) {
     const {t} = useTranslation();
 
+    const insightsEnabled = useAtomValue(insightsEnabledAtom);
+
     const { open: openInsightsDialog } = useInsightsDialog();
 
     const classes = useStyles();
@@ -49,7 +53,7 @@ export function ResultTableRowTitle({ row }) {
 
     const { parameters: { resultGroup, key } } = row;
 
-    const insights = (row) => row.isMaxDepth ? <Tooltip title={t('components:row_title.insights_tooltip')}>
+    const insights = (row) => row.isMaxDepth && insightsEnabled ? <Tooltip title={t('components:row_title.insights_tooltip')}>
         <IconButton size="small" onClick={() => { openInsightsDialog(row); }}>
             <AnalyticsIcon />
         </IconButton>

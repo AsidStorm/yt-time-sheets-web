@@ -33,7 +33,7 @@ function ChartsDialog({state, handleClose}) {
     const dates = useAtomValue(datesAtom);
     const workLogs = useAtomValue(workLogsAtom);
 
-    const { formatDate } = useDateFormatter();
+    const {formatDate} = useDateFormatter();
 
     const [category, setCategory] = useState("");
     const [subCategory, setSubCategory] = useState("");

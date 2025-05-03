@@ -22,8 +22,8 @@ import {useLoader, useMessage} from "../hooks";
 function InitialConfigDialog({state, handleClose, handleComplete}) {
     const {t, i18n} = useTranslation();
 
-    const { startLoading, endLoading } = useLoader();
-    const { showError } = useMessage();
+    const {startLoading, endLoading} = useLoader();
+    const {showError} = useMessage();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -72,8 +72,10 @@ function InitialConfigDialog({state, handleClose, handleComplete}) {
                             <Trans
                                 i18nKey='components:initial_config_dialog.fields.organization_id.description_row_2'
                                 components={{
-                                    trackerSettings: <Link href="https://tracker.yandex.ru/settings" target="_blank" rel="nofollow noopener" />,
-                                    cloudSettings: <Link href="https://org.cloud.yandex.ru/settings" target="_blank" rel="nofollow noopener" />
+                                    trackerSettings: <Link href="https://tracker.yandex.ru/settings" target="_blank"
+                                                           rel="nofollow noopener"/>,
+                                    cloudSettings: <Link href="https://org.cloud.yandex.ru/settings" target="_blank"
+                                                         rel="nofollow noopener"/>
                                 }}
                             />
                         </Alert>
@@ -93,12 +95,13 @@ function InitialConfigDialog({state, handleClose, handleComplete}) {
                     </Grid>
                     <Grid size={{xs: 12, md: 6}}>
                         <Alert severity="info">
-                            {t('components:initial_config_dialog.fields.federation_id.description_row_1')}<br />
-                            {t('components:initial_config_dialog.fields.federation_id.description_row_2')}<br />
+                            {t('components:initial_config_dialog.fields.federation_id.description_row_1')}<br/>
+                            {t('components:initial_config_dialog.fields.federation_id.description_row_2')}<br/>
                             <Trans
                                 i18nKey='components:initial_config_dialog.fields.federation_id.description_row_3'
                                 components={{
-                                    cloudFederations: <Link href="https://org.cloud.yandex.ru/federations" target="_blank" rel="nofollow noopener" />
+                                    cloudFederations: <Link href="https://org.cloud.yandex.ru/federations"
+                                                            target="_blank" rel="nofollow noopener"/>
                                 }}
                             />
                         </Alert>
@@ -149,7 +152,8 @@ function InitialConfigDialog({state, handleClose, handleComplete}) {
                             <Trans
                                 i18nKey='components:initial_config_dialog.fields.oauth_client_id.description_row_4'
                                 components={{
-                                    yandexOauth: <Link href="https://oauth.yandex.ru/" target="_blank" rel="nofollow noopener" />
+                                    yandexOauth: <Link href="https://oauth.yandex.ru/" target="_blank"
+                                                       rel="nofollow noopener"/>
                                 }}
                             />
                         </Alert>
