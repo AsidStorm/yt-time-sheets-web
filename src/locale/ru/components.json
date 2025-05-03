@@ -48,7 +48,7 @@
 
   "insights_dialog.title": "Идеи",
   "insights_dialog.boxes.total_time.sub_header": "Всего затрачено",
-  "insights_dialog.boxes.total_users.sub_header": "Всего затрачено",
+  "insights_dialog.boxes.total_users.sub_header": "Всего пользователей",
   "insights_dialog.boxes.total_issues.sub_header": "Всего задач",
   "insights_dialog.boxes.avg_time_by_user.sub_header": "В среднем затрачено пользователем",
   "insights_dialog.boxes.avg_time_by_issue.sub_header": "В среднем на задачу",

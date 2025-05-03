@@ -33,14 +33,16 @@ import {renderTimeViewClock} from "@mui/x-date-pickers/timeViewRenderers";
 import {useTranslation} from "react-i18next";
 import {useAtomValue, useSetAtom} from "jotai";
 import {usersAtom, boardsAtom, resultGroupsAtom, myUserAtom, selectedUsersAtom, workLogsAtom} from "../jotai/atoms";
-import {useCreateWorkLogDialog, useLoader, useMessage} from "../hooks";
+import {useCreateWorkLogDialog, useDateFormatter, useLoader, useMessage} from "../hooks";
 import {DialogsIssueSearch} from "./Dialogs/IssueSearch";
+import Box from "@mui/material/Box";
 
 function CreateWorkLogDialog() {
     const {t} = useTranslation();
 
     const {showSuccess, showError} = useMessage();
     const {startLoading, endLoading} = useLoader();
+    const {formatDateExact} = useDateFormatter();
     const {
         close,
         isOpen,
@@ -221,6 +223,19 @@ function CreateWorkLogDialog() {
                             value={sprints.find(u => u.value === sprint) || null}
                             options={sprints}
                             label={t('components:create_work_log_dialog.fields.sprint.label')}
+                            renderOption={(props, option) => {
+                                const {key, ...optionProps} = props;
+
+                                return <Box
+                                    key={key}
+                                    component="li"
+                                    {...optionProps}
+                                >{t('components:create_work_log_dialog.sprint_name', {
+                                    name: option.properties.name,
+                                    startDate: formatDateExact(option.properties.startDate),
+                                    endDate: formatDateExact(option.properties.endDate)
+                                })}</Box>
+                            }}
                         />
                     </Grid>}
                 </Grid>
@@ -288,11 +303,12 @@ function CreateWorkLogDialog() {
 
                     setSprints(response.data.map(sprint => ({
                         value: sprint.id,
-                        label: t('components:create_work_log_dialog.sprint_name', {
+                        properties: {
                             name: sprint.attributes.name,
-                            startDate: moment(sprint.attributes.startDate).format(DATE_FORMAT),
-                            endDate: moment(sprint.attributes.endDate).format(DATE_FORMAT)
-                        })
+                            startDate: moment(sprint.attributes.startDate),
+                            endDate: moment(sprint.attributes.endDate)
+                        },
+                        label: sprint.attributes.name
                     })));
                 }).catch(showError).finally(endLoading);
         }
@@ -310,11 +326,11 @@ function CreateWorkLogDialog() {
 
     return <Dialog open={isOpen} onClose={() => close()} maxWidth="md" fullWidth>
         <DialogsIssueSearch state={taskSearchDialogState} handleClose={() => setTaskSearchDialogState(false)}
-                          tasks={tasks}
-                          onSelect={task => {
-                              setTaskSearchDialogState(false);
-                              setNewIssue({key: task.id, title: `${task.id}: ${task.attributes.summary}`})
-                          }}/>
+                            tasks={tasks}
+                            onSelect={task => {
+                                setTaskSearchDialogState(false);
+                                setNewIssue({key: task.id, title: `${task.id}: ${task.attributes.summary}`})
+                            }}/>
 
         <form onSubmit={(e) => handleSubmit(e)}>
             <DialogTitle>{t('components:create_work_log_dialog.title')}</DialogTitle>

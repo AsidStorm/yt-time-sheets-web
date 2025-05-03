@@ -17,7 +17,6 @@ import {
     VIRTUOSO_MIN_LENGTH,
 } from "../constants";
 import {
-    daySx,
     pushAnalytics,
     rowSx,
 } from "../helpers";
@@ -37,17 +36,11 @@ import {ExportButton} from "./ExportButton";
 import {ResultTableRowContent} from "./ResultTable/RowContent";
 import {useDateFormatter} from "../hooks";
 import {DialogsRestrictions} from "./Dialogs/Restrictions";
+import {ResultTableHeader} from "./ResultTable/Header";
 
 const useStyles = makeStyles({
     table: {
         minWidth: 650
-    },
-    stickyHeader: {
-        position: "sticky",
-        left: 0,
-        borderRight: "1px solid black",
-        width: 500,
-        zIndex: "5 !important"
     }
 });
 
@@ -70,19 +63,6 @@ const VirtuosoTableComponents = {
         <TableBody {...props} ref={ref}/>
     )),
 };
-
-function fixedHeaderContent(dates, classes, t, formatDate) {
-    return () => {
-        return <TableRow sx={{background: "white"}}>
-            <TableCell className={classes.stickyHeader}/>
-            {dates.map((date) => <TableCell align="center" sx={daySx(date, true, false)}
-                                                   key={`table-head-${date.index}`}>
-                {formatDate(date)}
-            </TableCell>)}
-            <TableCell align="right" sx={{width: 120}}>{t('common:total')}</TableCell>
-        </TableRow>
-    };
-}
 
 function ResultTable() {
     const {t} = useTranslation();
@@ -148,23 +128,13 @@ function ResultTable() {
                         context={{rows}}
                         data={rows}
                         itemContent={(index, row) => <ResultTableRowContent row={row} index={index} />}
-                        fixedHeaderContent={fixedHeaderContent(dates, classes, t, formatDate)}
+                        fixedHeaderContent={() => <ResultTableHeader />}
                         components={VirtuosoTableComponents}/>
                 </Paper>}
                 {!useVirtuoso && <TableContainer component={Paper} sx={{maxHeight: 670}}>
                     <Table stickyHeader className={classes.table} style={{tableLayout: "fixed"}}>
                         <TableHead>
-                            <TableRow>
-                                <TableCell className={classes.stickyHeader}>
-                                    &nbsp;
-                                </TableCell>
-                                {dates.map(date => <TableCell align="center" sx={daySx(date, true, false)}
-                                                              key={`table-head-${date.index}`}>
-                                    {formatDate(date)}
-                                </TableCell>)}
-                                <TableCell align="right"
-                                           sx={{minWidth: 120, width: 120}}>{t('common:total')}</TableCell>
-                            </TableRow>
+                            <ResultTableHeader />
                         </TableHead>
                         <TableBody>
                             {rows.map((row, index) => <TableRow sx={rowSx(row, row.realIndex)}

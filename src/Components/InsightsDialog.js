@@ -1,15 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {Dialog, DialogTitle, Grid2 as Grid, Container, Avatar, Tooltip, Typography, Link} from "@mui/material";
+import {Dialog, Grid2 as Grid, Container, Avatar, Tooltip, Link} from "@mui/material";
 import {
+    RESULT_GROUP_ISSUE,
     RESULT_GROUP_WORKER,
     TIME_FORMAT_HOURS
 } from "../constants";
-import {Card, CardContent, CardHeader} from "@mui/material";
+import {Card, CardHeader} from "@mui/material";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
 import {red} from "@mui/material/colors";
-import {humanizeDuration, yandexTrackerIssueUrl, yandexTrackerQueueUrl} from "../helpers";
+import {yandexTrackerIssueUrl, yandexTrackerQueueUrl} from "../helpers";
 import {Chart as ChartJS, registerables} from 'chart.js';
 import {Pie} from 'react-chartjs-2';
 import {useTranslation} from "react-i18next";
@@ -80,7 +81,7 @@ const buildComparison = (valueFormatter) => (data, userValue) => {
     return null;
 };
 
-const generateTotalTimeBox = ({row, rows, durationValueFormatter}) => {
+const generateTotalTimeBox = ({row, rows, durationValueFormatter, humanizeDuration}) => {
     const calculateTotalByRow = row => {
         let total = 0;
 
@@ -183,7 +184,7 @@ const generateTotalIssuesBox = ({row, rows}) => {
 
     const total = calculateTotalByRow(row);
 
-    if (total <= 1 && row.parameters.resultGroup !== RESULT_GROUP_WORKER) {
+    if (total <= 1 && row.parameters.resultGroup === RESULT_GROUP_ISSUE) {
         return null;
     }
 
@@ -439,11 +440,19 @@ function InsightsDialog() {
             return humanizeDuration(0);
         };
 
+        // По каждому из элементов по 3 графика и 3 коробки
+        // ЗАДАЧА - [Общее время, Кол-во пользователей]
+        // ОЧЕРЕДЬ - [Общее время, Кол-во пользователей, Кол-во задач]
+        // ПОЛЬЗОВАТЕЛЬ - [Общее время, Кол-во задач]
+        // ТИП ЗАДАЧИ - [Общее время, Кол-во пользователей, Кол-во задач]
+        // ЭПИК - [Общее время, Кол-во пользователей, Кол-во задач]
+        // ПРОЕКТ - [Общее время, Кол-во пользователей, Кол-во задач]
+
         const boxes = [
             generateTotalTimeBox,
             generateTotalUsersBox,
-            generateAvgTimeByUserBox,
             generateTotalIssuesBox,
+            generateAvgTimeByUserBox,
             generateAvgTimeByIssueBox,
         ];
 
@@ -485,7 +494,6 @@ function InsightsDialog() {
     }, [row, rows]);
 
     return <Dialog open={isOpen} onClose={() => close()} fullWidth maxWidth="lg">
-        <DialogTitle>{t('components:insights_dialog.title')}</DialogTitle>
         {isOpen && row && <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
             <Grid container spacing={2}>
                 {boxes.map(box => {
@@ -500,11 +508,11 @@ function InsightsDialog() {
                                 title={box.title}
                                 subheader={t(`components:${box.subheader}`)}
                             />
-                            {box.comparison && <CardContent>
+                            {/*box.comparison && <CardContent>
                                 <Typography sx={{color: 'text.secondary'}}>
                                     {box.comparison}
                                 </Typography>
-                            </CardContent>}
+                            </CardContent>*/}
                         </Card>
                     </Grid>
                 })}
