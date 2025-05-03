@@ -33,9 +33,7 @@ function DonateCard() {
             <Card>
                 <CardHeader
                     avatar={
-                        <Avatar>
-                            R
-                        </Avatar>
+                        <Avatar src="assets/author.jpg" />
                     }
                     action={
                         <Tooltip title={t('components:donate_card.dialog.telegram.tooltip')}>
