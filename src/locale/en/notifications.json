@@ -1,0 +1,17 @@
+{
+  "please_choose_issue": "Please, choose issue",
+  "unable_to_use_negative_time": "Negative time cannot be specified.",
+  "work_log_deleted": "Work log deleted",
+  "setup_federation_id": "Please enter your federation ID",
+  "enter_organization_id": "Please enter your organization ID",
+  "unable_to_authorize": "Unable to authorize. Please check credentials.",
+  "invalid_filter_dates": "Dates incorrect",
+  "work_log_created": "Work log created",
+  "work_log_created_with_restrictions": "Working hours have been added, but cannot be shown due to filter settings.",
+  "minimum_search_term_is_3_symbols": "Enter 3 characters to start search",
+  "issues_not_found": "Issues not found",
+  "no_sprints_found_on_board": "Selected board without sprints. Please, choose other board.",
+  "work_log_updated": "Work log updated",
+  "success_authorization": "You have successfully logged in.",
+  "logout": "You have successfully logged out. Don't forget to revoke the token, as there is no API for that."
+}

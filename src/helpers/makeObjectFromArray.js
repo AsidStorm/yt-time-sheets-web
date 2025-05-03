@@ -1,0 +1,1 @@
+export const makeObjectFromArray = (array, keyFn, objectFn) => Object.fromEntries(array.map(object => ([keyFn(object), objectFn(object)])));

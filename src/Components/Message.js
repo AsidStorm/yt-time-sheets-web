@@ -1,15 +1,20 @@
 import React from "react";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import {
+    Snackbar,
+    Alert
+} from "@mui/material";
+import {useMessage} from "../hooks";
 
-function Message({ state, handleClose, message, type }) {
+function Message() {
+    const { isOpen, message, type, close } = useMessage();
+
     return <Snackbar
-        open={state}
+        open={isOpen}
         autoHideDuration={4000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={close}
+        anchorOrigin={{vertical: "top", horizontal: "center"}}
     >
-        <Alert onClose={handleClose} severity={type} sx={{ width: '100%' }}>
+        <Alert onClose={close} severity={type} sx={{width: '100%'}}>
             {message}
         </Alert>
     </Snackbar>

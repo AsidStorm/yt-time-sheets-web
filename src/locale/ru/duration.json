@@ -1,0 +1,5 @@
+{
+  "minutes": "{{minutes}} м.",
+  "hours": "{{hours}} ч.",
+  "hours_and_minutes": "{{hours}} ч. {{minutes}} м."
+}

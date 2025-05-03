@@ -1,17 +1,43 @@
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid2";
-import TextField from "@mui/material/TextField";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
 import React from "react";
-import DialogContentText from "@mui/material/DialogContentText";
+import {
+    DialogTitle,
+    DialogContent,
+    Grid2 as Grid,
+    TextField,
+    DialogActions,
+    Button,
+    Dialog,
+    DialogContentText,
+    Link, Alert
+} from "@mui/material";
+import {Trans, useTranslation} from "react-i18next";
 import {patch} from "../requests";
-import {pushAnalytics, replaceRuDuration} from "../helpers";
+import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
+import {useHumanizeDuration, useLoader, useMessage, useUpdateWorkLogDialog} from "../hooks";
+import {useSetAtom} from "jotai/index";
+import {workLogsAtom} from "../jotai/atoms";
 
-function UpdateWorkLogDialog({state, handleClose, onSubmit, data, title, issueKey, workLogId, showError, showSuccess, startLoading, endLoading}) {
-    const { comment, duration } = data;
+function UpdateWorkLogDialog() {
+    const {t} = useTranslation();
+
+    const setWorkLogs = useSetAtom(workLogsAtom);
+
+    const {showSuccess, showError} = useMessage();
+    const humanize = useHumanizeDuration();
+    const {
+        isOpen,
+        close,
+        comment,
+        duration,
+        issueKey,
+        workLogId,
+        createdByDisplay,
+        issueTitle,
+        createdById,
+        value
+    } = useUpdateWorkLogDialog();
+
+    const {startLoading, endLoading} = useLoader();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -21,8 +47,8 @@ function UpdateWorkLogDialog({state, handleClose, onSubmit, data, title, issueKe
         const comment = data.get("comment");
         const duration = replaceRuDuration(data.get("duration"));
 
-        if( duration.includes('-') ) {
-            return showError("Нельзя указывать отрицательное время");
+        if (duration.includes('-')) {
+            return showError(t('notifications:unable_to_use_negative_time'));
         }
 
         startLoading();
@@ -33,20 +59,40 @@ function UpdateWorkLogDialog({state, handleClose, onSubmit, data, title, issueKe
             duration,
             comment,
         }).then(response => {
-            showSuccess("Затраченное время успешно изменено");
-            onSubmit(response.data);
+            showSuccess(t('notifications:work_log_updated'));
+
+            const workLog = response.data;
+
+            setWorkLogs(prev => prev.map(log => {
+                if (log.workLogId === workLog.workLogId) {
+                    return workLog;
+                }
+
+                return log;
+            }));
 
             pushAnalytics('workLogUpdated');
-        }).catch( showError ).finally( endLoading );
+
+            close();
+        }).catch(showError).finally(endLoading);
     };
 
-    return <Dialog open={state} onClose={() => handleClose()}>
+    return <Dialog open={isOpen} onClose={() => close()}>
         <form onSubmit={(e) => handleSubmit(e)}>
-            <DialogTitle>Изменение рабочего времени</DialogTitle>
+            <DialogTitle>{t('components:update_work_log_dialog.title')}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Вы уверены, что хотите изменить эту запись о времени?<br/>
-                    {title}
+                    {t('components:update_work_log_dialog.text')}<br/>
+                    <Alert severity="info">
+                        <Trans
+                            i18nKey='components:update_work_log_dialog.description_text'
+                            values={{createdByDisplay, value: humanize(value, {[createdById]: value}), issueTitle}}
+                            components={{
+                                issue: <Link href={yandexTrackerIssueUrl(issueKey)} target="_blank"
+                                             rel="nofollow noopener"/>
+                            }}
+                        />
+                    </Alert>
                 </DialogContentText>
 
                 <Grid container spacing={2}>
@@ -54,7 +100,7 @@ function UpdateWorkLogDialog({state, handleClose, onSubmit, data, title, issueKe
                         <TextField
                             autoFocus
                             margin="dense"
-                            label="Время"
+                            label={t('components:update_work_log_dialog.fields.duration.label')}
                             fullWidth
                             name="duration"
                             variant="standard"
@@ -65,7 +111,7 @@ function UpdateWorkLogDialog({state, handleClose, onSubmit, data, title, issueKe
                 <Grid container spacing={2}>
                     <Grid size={{xs: 12}}>
                         <TextField
-                            label="Комментарий"
+                            label={t('components:update_work_log_dialog.fields.comment.label')}
                             multiline
                             fullWidth
                             rows={5}
@@ -77,8 +123,8 @@ function UpdateWorkLogDialog({state, handleClose, onSubmit, data, title, issueKe
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => handleClose()} color="warning">Отмена</Button>
-                <Button type="submit" color="success">Изменить</Button>
+                <Button onClick={() => close()} color="warning">{t('common:button.cancel')}</Button>
+                <Button type="submit" color="success">{t('common:button.update')}</Button>
             </DialogActions>
         </form>
     </Dialog>

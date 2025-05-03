@@ -1,5 +1,4 @@
 import React, {useEffect, useMemo, useState} from "react";
-import moment from "moment";
 import createTheme from "@mui/material/styles/createTheme";
 import CssBaseline from "@mui/material/CssBaseline";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -9,7 +8,6 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
 import {get} from "./requests";
 import FilterDialog from "./Components/FilterDialog";
 import Loader from "./Components/Loader";
@@ -17,76 +15,64 @@ import Message from "./Components/Message";
 import ResultTable from "./Components/ResultTable";
 import {
     AUTHORIZED_STATE_DONE, AUTHORIZED_STATE_NO_ORG_ID,
-    AUTHORIZED_STATE_NONE, DATE_FORMAT_DATE, RESULT_GROUP_ISSUE,
-    RESULT_GROUP_NONE,
-    TIME_FORMAT_HOURS
+    AUTHORIZED_STATE_NONE,
 } from "./constants";
 import Link from "@mui/material/Link";
-import YandexId from "./yandex-id-big.svg"
-import YandexSso from "./yandex-sso.svg";
-import TextField from "@mui/material/TextField";
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import IconButton from "@mui/material/IconButton";
-import SsoDialog from "./Components/SsoDialog";
 import InitialConfigDialog from "./Components/InitialConfigDialog";
 import './App.css';
-import {orgIdOwner, pushAnalytics} from "./helpers";
+import {makeObjectFromArray, pushAnalytics} from "./helpers";
 import ChangelogDialog from "./Components/ChangelogDialog";
 import CopyrightCard from "./Components/CopyrightCard";
+import DonateCard from "./Components/DonateCard";
+import {Trans, useTranslation} from 'react-i18next';
+import {
+    usersMapAtom,
+    queuesMapAtom,
+    groupsMapAtom,
+    projectsMapAtom,
+    boardsMapAtom,
+    issueTypesMapAtom,
+    issueStatusesMapAtom,
+    haveWorkLogsAtom, myUserAtom, colorThemeAtom, localeAtom, insightsEnabledAtom,
+} from "./jotai/atoms";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
+import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer";
+import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorContainer";
+import {useLoader, useMessage} from "./hooks";
+import {SettingsButton} from "./Components/SettingsButton";
+import {Button} from "@mui/material";
 
 function App() {
-    const [users, setUsers] = useState([]);
-    const [queues, setQueues] = useState([]);
-    const [groups, setGroups] = useState([]);
-    const [boards, setBoards] = useState([]);
-    const [issueTypes, setIssueTypes] = useState([]);
-    const [userIdentities, setUserIdentities] = useState([]);
-    const [dateFormat, setDateFormat] = useState(DATE_FORMAT_DATE);
-    const [projects, setProjects] = useState([]);
-    const [ issueStatuses, setIssueStatuses ] = useState([]);
+    const {t} = useTranslation();
+
+    const {startLoading, endLoading} = useLoader();
+    const {showSuccess, showError} = useMessage();
+
+    const setUsersMap = useSetAtom(usersMapAtom);
+    const setQueuesMap = useSetAtom(queuesMapAtom);
+    const setGroupsMap = useSetAtom(groupsMapAtom);
+    const setProjectsMap = useSetAtom(projectsMapAtom);
+    const setBoardsMap = useSetAtom(boardsMapAtom);
+    const setIssueTypesMap = useSetAtom(issueTypesMapAtom);
+    const setIssueStatusesMap = useSetAtom(issueStatusesMapAtom);
+    const haveDataToDisplay = useAtomValue(haveWorkLogsAtom);
+    const colorTheme  = useAtomValue(colorThemeAtom);
+    const locale = useAtomValue(localeAtom);
+    const insightsEnabled = useAtomValue(insightsEnabledAtom);
+
+    const [myUser, setMyUser] = useAtom(myUserAtom);
+
 
     const [filtered, setFiltered] = useState(false);
     const [reload, setReload] = useState(false);
-    const [hideDetails, setHideDetails] = useState(false);
-
-    const [readOnly, setReadOnly] = useState(true);
-    const [admin, setAdmin] = useState(false);
-
-    const [highlightTime, setHighlightTime] = useState(moment());
-
-    const [ssoDialog, setSsoDialog] = useState({
-        open: false
-    });
-
-    const [ colorMode, setColorMode ] = useState(false);
 
     const [authorized, setAuthorized] = useState(AUTHORIZED_STATE_NONE);
 
-    const [me, setMe] = useState({
-        id: 0,
-        display: ""
-    });
-
-    const [ messageState, setMessageState ] = useState({
-        open: false,
-        message: "",
-        type: "info" // error, warning, info, success
-    });
-
-    const [ filterDialogState, setFilterDialogState ] = useState(false);
-    const [ loading, setLoading ] = useState(false);
-    const [ loadingValue, setLoadingValue ] = useState(-1);
-
-    const [ workLogs, setWorkLogs ] = useState([]);
-    const [ dates, setDates ] = useState([]);
-
-    const [timeFormat, setTimeFormat] = useState(TIME_FORMAT_HOURS);
-    const [resultGroups, setResultGroups] = useState([RESULT_GROUP_ISSUE, RESULT_GROUP_NONE]);
+    const [filterDialogState, setFilterDialogState] = useState(false);
 
     const [OAuthClientId, setOAuthClientId] = useState("");
 
-    const [ initialConfigDialogState, setInitialConfigDialogState ] = useState(false);
+    const [initialConfigDialogState, setInitialConfigDialogState] = useState(false);
 
     const [allowManualInput, setAllowManualInput] = useState(false);
     const [defaultOrgId, setDefaultOrgId] = useState("");
@@ -96,14 +82,11 @@ function App() {
         startLoading();
 
         get("/api/v1/config")
-            .then( data => {
-                // Здесь мы получаем данные.
-
-                if( !data.haveConfig ) {
+            .then(data => {
+                if (!data.haveConfig) {
                     setInitialConfigDialogState(true);
-                }
-                else {
-                    if( data.organizationId !== '' ) {
+                } else {
+                    if (data.organizationId !== '') {
                         localStorage.setItem("orgId", data.organizationId); // У нас МОЖЕТ быть установлена организация
                         setDefaultOrgId(data.organizationId);
                     }
@@ -117,50 +100,56 @@ function App() {
                     const orgId = localStorage.getItem("orgId");
                     const iAmToken = localStorage.getItem("iAmToken");
 
-                    if ( (token || iAmToken) && orgId && !allowManualInput ) {
+                    if ((token || iAmToken) && orgId && !allowManualInput) {
                         return setAuthorized(AUTHORIZED_STATE_DONE);
                     }
 
-                    if ( token || iAmToken ) {
+                    if (token || iAmToken) {
                         return setAuthorized(AUTHORIZED_STATE_NO_ORG_ID);
                     }
 
-                    if( window.location.hash ) {
+                    if (window.location.hash) {
                         const urlSearchParams = new URLSearchParams(window.location.hash.replace("#", "?"));
                         const params = Object.fromEntries(urlSearchParams.entries());
 
-                        if ( params.error_description ) {
+                        if (params.error_description) {
                             showError(params.error_description);
                         } else {
                             window.history.replaceState({}, document.title, "/");
                             localStorage.setItem("authToken", params.access_token);
 
-                            if( orgId && !data.allowManualInput ) {
+                            if (orgId && !data.allowManualInput) {
                                 setAuthorized(AUTHORIZED_STATE_DONE);
                             } else {
                                 setAuthorized(AUTHORIZED_STATE_NO_ORG_ID);
                             }
 
-                            showSuccess("Вы успешно авторизованы");
+                            showSuccess(t('notifications:success_authorization'));
                         }
                     }
                 }
             })
             .catch(showError)
-            .finally( endLoading );
+            .finally(endLoading);
     };
 
-    const handleInitialConfigComplete= () => {
+    const handleInitialConfigComplete = () => {
         setInitialConfigDialogState(false);
         boot();
     };
 
-    useEffect( () => {
+    useEffect(() => {
         boot();
+
+        pushAnalytics('applicationBooted', {
+            locale,
+            colorTheme,
+            insightsEnabled
+        });
     }, []);
 
     useEffect(() => {
-        if( authorized === AUTHORIZED_STATE_DONE ) {
+        if (authorized === AUTHORIZED_STATE_DONE) {
             startLoading();
 
             const fetchData = async () => {
@@ -174,50 +163,62 @@ function App() {
                     get("/api/v1/issue_statuses")
                 ]);
 
-                return {me: me.data, users: usersAndGroups.users, queues: queues.data, groups: usersAndGroups.groups, boards: boards.data, projects: projects.data, issueTypes: issueTypes.data, issueStatuses: issueStatuses.issueStatuses};
+                return {
+                    me: me.data,
+                    users: usersAndGroups.users,
+                    queues: queues.data,
+                    groups: usersAndGroups.groups,
+                    boards: boards.data,
+                    projects: projects.data,
+                    issueTypes: issueTypes.data,
+                    issueStatuses: issueStatuses.issueStatuses
+                };
             };
 
             get("/api/v1/ping")
-                .then( () => {
+                .then(() => {
                     fetchData()
                         .then(({me, users, queues, groups, boards, projects, issueTypes, issueStatuses}) => {
-                            setMe(me);
-                            setReadOnly(!me.hasLicense);
-                            setAdmin(me.isAdministrator);
+                            setMyUser({
+                                value: me.id,
+                                label: me.display,
+                                isAdmin: me.isAdministrator,
+                                isReadOnly: !me.hasLicense
+                            });
 
-                            setBoards(boards.map(board => ({
+                            setBoardsMap(makeObjectFromArray(boards, board => board.id, board => ({
                                 value: board.id,
                                 label: `[${board.id}]: ${board.attributes.name}`
                             })));
 
-                            setIssueStatuses(issueStatuses.map( status => ({
+                            setIssueStatusesMap(makeObjectFromArray(issueStatuses, status => status.key, status => ({
                                 value: status.key,
                                 label: `[${status.key}] ${status.name}`
-                            })));
+                            })))
 
-                            setIssueTypes(issueTypes.map(type => ({
+                            setIssueTypesMap(makeObjectFromArray(issueTypes, type => type.id, type => ({
                                 value: type.id,
                                 label: `[${type.key}] ${type.name}`
                             })));
 
-                            setUsers(users.map(user => ({
+                            setUsersMap(makeObjectFromArray(users, user => user.id, user => ({
                                 value: user.id,
                                 label: user.display ? `${user.display}, ${user.email}` : user.email,
                                 email: user.email
                             })));
 
-                            setProjects(projects.map(project => ({
+                            setProjectsMap(makeObjectFromArray(projects, project => project.id, project => ({
                                 value: project.id,
                                 label: project.name
                             })));
 
-                            setQueues(queues.map(queue => ({
+                            setQueuesMap(makeObjectFromArray(queues, queue => queue.id, queue => ({
                                 value: queue.id,
                                 label: `${queue.id}: ${queue.attributes.name}`,
                                 title: queue.attributes.name
                             })));
 
-                            setGroups(groups.map(group => ({
+                            setGroupsMap(makeObjectFromArray(groups, group => group.id, group => ({
                                 value: group.id,
                                 label: group.attributes.label,
                                 members: group.attributes.members
@@ -225,103 +226,21 @@ function App() {
 
                             setFilterDialogState(true);
                         }).catch((e) => {
-                            showError(e);
-                            exit();
-                        }).finally(endLoading);
-                }).catch( () => {
-                    exit();
-                    endLoading();
-                });
+                        showError(e);
+                        exit();
+                    }).finally(endLoading);
+                }).catch(() => {
+                exit();
+                endLoading();
+            });
         }
     }, [authorized]);
 
-    const toggleColorMode = () => {
-        setColorMode(!colorMode);
-    };
-
-    const startLoading = () => setLoading(true);
-    const endLoading = () => {
-        setLoadingValue(-1);
-        setLoading(false);
-    };
-
-    const showError = message => {
-        setMessageState({
-            open: true,
-            message: message instanceof Error ? message.message : message,
-            type: "error"
-        });
-    };
-
-    const showSuccess = message => {
-        setMessageState({
-            open: true,
-            message: message,
-            type: "success"
-        });
-    };
-
-    const onFilterApply = ({dates, hideDetails, dateFormat, workLogs, timeFormat, resultGroups, userIdentities, highlightTime}) => {
-        setWorkLogs(workLogs);
-        setDates(dates);
-        setTimeFormat(timeFormat);
-        setResultGroups(resultGroups);
-        setUserIdentities(userIdentities);
-        setHideDetails(hideDetails);
-
-        setDateFormat(dateFormat);
-
-        setHighlightTime(highlightTime);
-
+    const onFilterApply = () => {
         setFiltered(true);
         setReload(false);
 
         setFilterDialogState(false); // Закрываем диалоговое окно
-    };
-
-    const haveDataToDisplay = () => {
-        if( workLogs.length > 0 ) {
-            return true;
-        }
-
-        return false;
-    };
-
-    const redirectToYandexOAuth = () => {
-        window.location.href = `https://oauth.yandex.ru/authorize?response_type=token&client_id=${OAuthClientId}`
-    };
-
-    const onOrgSubmit = e => {
-        e.preventDefault();
-
-        const data = new FormData(e.currentTarget);
-
-        const orgId = data.get("orgId").trim();
-
-        if( orgId === "" ) {
-            return showError("Введите ID Организации");
-        }
-
-        pushAnalytics('orgApplied', {
-            owner: orgIdOwner(orgId)
-        });
-
-        // Делаем запросы
-
-        get("/api/v1/ping", orgId)
-            .then( (response) => {
-                if( response.data === "HAVE_ACCESS" ) {
-                    localStorage.setItem("orgId", orgId);
-                    setFilterDialogState(true);
-                    setAuthorized(AUTHORIZED_STATE_DONE);
-                } else {
-                    localStorage.removeItem("orgId");
-                    showError("Не удалось авторизоваться. Проверьте данные.");
-                }
-            }).catch(() => {
-                localStorage.removeItem("orgId");
-                showError("Не удалось авторизоваться. Проверьте данные.");
-            });
     };
 
     const exit = () => {
@@ -334,75 +253,56 @@ function App() {
 
         setAuthorized(AUTHORIZED_STATE_NONE);
 
-        showSuccess("Вы успешно вышли. Не забудьте отозвать токен, т.к. для этого нет API.");
-    };
-
-    const handleIAmToken = (iAmToken) => {
-        localStorage.setItem("iAmToken", iAmToken);
-
-        if( !allowManualInput && defaultOrgId !== "" ) {
-            setAuthorized(AUTHORIZED_STATE_DONE);
-        } else {
-            setAuthorized(AUTHORIZED_STATE_NO_ORG_ID);
-        }
-
-        setSsoDialog(prev => ({
-            ...prev,
-            open: false
-        }));
+        showSuccess(t('notifications:logout'));
     };
 
     const theme = useMemo(
         () =>
             createTheme({
                 palette: {
-                    mode: colorMode ? 'dark' : 'light',
+                    mode: colorTheme,
+                    weekend: {
+                        main: '#F9F7F2',
+                        light: '#F9F7F2',
+                        dark: '#757575',
+                        contrastText: '#242105',
+                    },
+                    yandex: {
+                        main: '#000000',
+                        light: '#F9F7F2',
+                        dark: '#9E9E9E',
+                        contrastText: '#FFFFFF',
+
+                        contrastThreshold: 4.5,
+                        tonalOffset: 0.3,
+                    }
                 },
             }),
-        [colorMode],
+        [colorTheme],
     );
 
     return <ThemeProvider theme={theme}>
         <CssBaseline/>
 
-        <Loader state={loading} value={loadingValue} />
+        <Loader/>
+        <Message/>
 
-        <Message state={messageState.open} message={messageState.message} type={messageState.type} handleClose={() => setMessageState(prev => ({...prev, open: false}))} />
-
-        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)} startLoading={startLoading} endLoading={endLoading} showError={showError} handleComplete={handleInitialConfigComplete} />
+        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)} handleComplete={handleInitialConfigComplete}/>
 
         <FilterDialog
-            setLoadingValue={setLoadingValue}
             handleClose={() => setFilterDialogState(false)}
             state={filterDialogState}
-            users={users}
-            issueTypes={issueTypes}
-            issueStatuses={issueStatuses}
-            groups={groups}
-            queues={queues}
-            startLoading={startLoading}
-            endLoading={endLoading}
             showError={showError}
             onApply={onFilterApply}
-            myUserIdentity={me.id}
-            projects={projects}
             reload={reload}
         />
 
-        <SsoDialog
-            showError={showError}
-            state={ssoDialog.open}
-            handleClose={() => setSsoDialog(prev => ({...prev, open: false}))}
-            handleIAmToken={handleIAmToken}
-            federationId={federationId}
-            allowManualInput={allowManualInput}
-        />
-
-        <ChangelogDialog state={false} handleClose={() => {}}/>
+        <ChangelogDialog />
 
         <Box
             sx={{
                 display: 'flex',
+                position: 'relative',
                 flexDirection: 'column',
                 minHeight: '100vh',
             }}
@@ -417,117 +317,60 @@ function App() {
                 }}
             >
                 <Toolbar sx={{flexWrap: 'wrap'}}>
-                    <Typography variant="h6" color="inherit" noWrap sx={{flexGrow: 1, display: {xs: 'none', md: 'block'}}}>
-                        {/*<IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
-                            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-                        </IconButton>*/}
-
-                        Добро пожаловать, {me.display}
+                    <Typography variant="h6" color="inherit" noWrap
+                                sx={{flexGrow: 1, display: {xs: 'none', md: 'block'}}}>
+                        {t('components:app.welcome', {userLabel: myUser.label})}
                     </Typography>
                     <nav>
-                        {filtered && <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            onClick={() => { setReload(true); pushAnalytics('reloadButtonClick'); }}
-                            sx={{ my: 1, mx: 1.5 }}
-                        >
-                            Обновить
-                        </Link>}
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            onClick={() => {setFilterDialogState(true); pushAnalytics('filterButtonClick'); }}
-                            sx={{ my: 1, mx: 1.5 }}
-                        >
-                            Фильтр
-                        </Link>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            onClick={() => { exit(); pushAnalytics('exitButtonClick') }}
-                            sx={{ my: 1, mx: 1.5 }}
-                        >
-                            Выход
-                        </Link>
+                        {filtered && <Button color="inherit" onClick={() => {
+                            setReload(true);
+                            pushAnalytics('reloadButtonClick');
+                        }}>
+                            {t('common:button.reload')}
+                        </Button>}
+                        <Button color="inherit" onClick={() => {
+                            setFilterDialogState(true);
+                            pushAnalytics('filterButtonClick');
+                        }}>
+                            {t('common:button.filter')}
+                        </Button>
+                        <Button color="inherit" onClick={() => {
+                            exit();
+                            pushAnalytics('exitButtonClick')
+                        }}>
+                            {t('common:button.exit')}
+                        </Button>
                     </nav>
                 </Toolbar>
             </AppBar>}
             <Container component="main" sx={{mt: 2, mb: 2}} maxWidth={false}>
                 {authorized === AUTHORIZED_STATE_DONE && <Grid container spacing={2}>
                     <Grid size={12}>
-                        {!haveDataToDisplay() && <div>Недостаточно данных для построения аналитики, используйте <Link href="#" onClick={() => setFilterDialogState(true)}>фильтр</Link></div>}
-                        {haveDataToDisplay() && <ResultTable
-                            hideDetails={hideDetails}
-                            dateFormat={dateFormat}
-                            queues={queues}
-                            userIdentities={userIdentities}
-                            boards={boards}
-                            workLogs={workLogs}
-                            dates={dates}
-                            timeFormat={timeFormat}
-                            myUserIdentity={me.id}
-                            users={users}
-                            showError={showError}
-                            showSuccess={showSuccess}
-                            startLoading={startLoading}
-                            endLoading={endLoading}
-                            resultGroups={resultGroups}
-                            setWorkLogs={setWorkLogs}
-                            readOnly={readOnly}
-                            admin={admin}
-                            highlightTime={highlightTime}
-                        />}
+                        {!haveDataToDisplay && <div><Trans
+                            i18nKey='components:app.not_enough_data'
+                            components={{
+                                filterLink: <Link href="#" onClick={() => setFilterDialogState(true)}/>
+                            }}
+                        /></div>}
+                        {haveDataToDisplay && <ResultTable/>}
                     </Grid>
-                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 4, xl: 2}} offset={{xs: 0, sm: 2, md: 4, lg: 4, xl: 5}}>
-                        <CopyrightCard />
-                    </Grid>
-                </Grid>}
-                {authorized === AUTHORIZED_STATE_NONE && <Grid container spacing={2} direction="column"
-                                      alignItems="center"
-                                                               alignContent="center"
-                                      justifyContent="center">
-                    {OAuthClientId !== '' && <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
-                        <img src={YandexId} style={{cursor: "pointer"}} onClick={() => { pushAnalytics('yandexButtonClick'); redirectToYandexOAuth(); }} />
-                    </Grid>}
-                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
-                        <img src={YandexSso} style={{cursor: "pointer"}} onClick={() => {
-                            setSsoDialog(prev => ({...prev, open: true}));
-                            pushAnalytics('ssoButtonClick');
-                        }}/>
-                    </Grid>
-                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
+                    <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}} offset={{xs: 0, sm: 2, md: 0, lg: 2, xl: 3}}>
                         <CopyrightCard/>
                     </Grid>
+                    <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}} offset={{xs: 0, sm: 2, md: 0}}>
+                        <DonateCard/>
+                    </Grid>
                 </Grid>}
-                {authorized === AUTHORIZED_STATE_NO_ORG_ID && <form onSubmit={onOrgSubmit}><Grid container spacing={2}>
-                    <Grid size={{xs: 12, sm: 6, md: 4, lg: 4, xl: 4}} offset={{xs: 0, sm: 3, md: 4, lg: 4, xl: 4}}>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            label="ID организации"
-                            fullWidth
-                            name="orgId"
-                            variant="standard"
-                            defaultValue={defaultOrgId}
-                        />
-                    </Grid>
-                    <Grid size={{xs: 12, sm: 6, md: 6, lg: 6, xl: 6}} offset={{xs: 0, sm: 3, md: 3, lg: 3, xl: 3}}>
-                        Чтобы узнать идентификатор организации, перейдите на <Link href="https://tracker.yandex.ru/settings" target="_blank">страницу настроек Tracker</Link> или в <Link href="https://org.cloud.yandex.ru/settings" target="_blank">настройки Cloud организации</Link>. Идентификатор указан в поле <strong>ID организации для API</strong>.
-                    </Grid>
-                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 4, xl: 2}} offset={{xs: 0, sm: 2, md: 2, lg: 2, xl: 4}}>
-                        <Button fullWidth type="submit">Продолжить</Button>
-                    </Grid>
-                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 4, xl: 2}} offset={{xs: 0, sm: 2, md: 0, lg: 0, xl: 0}}>
-                        <Button fullWidth onClick={() => exit()}>Отменить</Button>
-                    </Grid>
-                    <Grid size={{xs: 12, sm: 8, md: 4, lg: 4, xl: 2}} offset={{xs: 0, sm: 2, md: 4, lg: 4, xl: 5}}>
-                        <CopyrightCard />
-                    </Grid>
-                </Grid></form>}
+                {authorized === AUTHORIZED_STATE_NONE &&
+                    <AuthorizeButtonsContainer OAuthClientId={OAuthClientId} allowManualInput={allowManualInput}
+                                               federationId={federationId} defaultOrgId={defaultOrgId}
+                                               setAuthorized={setAuthorized}/>}
+                {authorized === AUTHORIZED_STATE_NO_ORG_ID &&
+                    <OrganizationSelectorContainer defaultOrgId={defaultOrgId} setAuthorized={setAuthorized}
+                                                   setFilterDialogState={setFilterDialogState} exit={exit}/>}
             </Container>
+
+            <SettingsButton />
         </Box>
     </ThemeProvider>
 }

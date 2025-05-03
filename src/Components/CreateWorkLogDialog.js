@@ -1,57 +1,106 @@
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid2";
-import FormControl from "@mui/material/FormControl";
-import {DatePicker, TimePicker} from "@mui/x-date-pickers";
-import TextField from "@mui/material/TextField";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
 import React, {useEffect, useRef, useState} from "react";
+import {
+    DialogTitle,
+    DialogContent,
+    Grid2 as Grid,
+    FormControl,
+    TextField,
+    DialogActions,
+    Button,
+    Dialog,
+    FormLabel,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    Typography,
+    Link,
+    FormGroup,
+    Checkbox
+} from "@mui/material";
+import {DatePicker, TimePicker} from "@mui/x-date-pickers";
 import CustomAutocomplete from "./CustomAutocomplete";
 import {
-    CREATE_WORK_LOG_FORM_TYPE_ADVANCED,
+    CREATE_WORK_LOG_FORM_TYPE_ADVANCED, CREATE_WORK_LOG_FORM_TYPE_BASIC,
     DATE_FORMAT, RESULT_GROUP_EPIC, RESULT_GROUP_ISSUE,
     RESULT_GROUP_WORKER,
     TASK_SEARCH_TYPE_BASE,
     TASK_SEARCH_TYPE_BOARD,
 } from "../constants";
-import Typography from "@mui/material/Typography";
 import {post, get} from "../requests";
-import FormLabel from "@mui/material/FormLabel";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Radio from "@mui/material/Radio";
-import TaskSearchDialog from "./TaskSearchDialog";
-import Link from "@mui/material/Link";
 import moment from "moment";
-import {pushAnalytics, replaceRuDuration} from "../helpers";
-import FormGroup from "@mui/material/FormGroup";
-import Checkbox from "@mui/material/Checkbox";
+import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
 import {renderTimeViewClock} from "@mui/x-date-pickers/timeViewRenderers";
+import {useTranslation} from "react-i18next";
+import {useAtomValue, useSetAtom} from "jotai";
+import {usersAtom, boardsAtom, resultGroupsAtom, myUserAtom, selectedUsersAtom, workLogsAtom} from "../jotai/atoms";
+import {useCreateWorkLogDialog, useDateFormatter, useLoader, useMessage} from "../hooks";
+import {DialogsIssueSearch} from "./Dialogs/IssueSearch";
+import Box from "@mui/material/Box";
 
-function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, users, showError, admin, showSuccess, startLoading, endLoading, myUserIdentity, resultGroups, boards }) {
-    const [ taskSearchType, setTaskSearchType ] = useState(TASK_SEARCH_TYPE_BASE);
-    const [ taskSearchDialogState, setTaskSearchDialogState ] = useState(false);
-    const [ tasks, setTasks ] = useState([]);
-    const [ taskSearch, setTaskSearch ] = useState("");
+function CreateWorkLogDialog() {
+    const {t} = useTranslation();
 
-    const [ taskBoard, setTaskBoard ] = useState(0);
-    const [ sprints, setSprints ] = useState([]);
-    const [ sprint, setSprint ] = useState(0);
+    const {showSuccess, showError} = useMessage();
+    const {startLoading, endLoading} = useLoader();
+    const {formatDateExact} = useDateFormatter();
+    const {
+        close,
+        isOpen,
+        createdById,
+        issueKey,
+        issueTitle,
+        duration,
+        comment,
+        date: rawDate
+    } = useCreateWorkLogDialog();
 
-    const [ newIssue, setNewIssue ] = useState({ key: "", title: "" });
+    const users = useAtomValue(usersAtom);
+    const boards = useAtomValue(boardsAtom);
+    const resultGroups = useAtomValue(resultGroupsAtom);
+    const myUser = useAtomValue(myUserAtom);
+    const selectedUsers = useAtomValue(selectedUsersAtom);
+    const setWorkLogs = useSetAtom(workLogsAtom);
+
+    const [userIdentity, setUserIdentity] = useState(null);
+
+    useEffect(() => {
+        if (resultGroups.includes(RESULT_GROUP_WORKER)) {
+            if (myUser.isAdmin) {
+                if (createdById) {
+                    setUserIdentity(createdById);
+                    return;
+                }
+            }
+        }
+
+        if (createdById) {
+            setUserIdentity(createdById);
+            return;
+        }
+
+        setUserIdentity(myUser.value);
+    }, [createdById, myUser, resultGroups]);
+
+    const form = resultGroups.includes(RESULT_GROUP_ISSUE) ? CREATE_WORK_LOG_FORM_TYPE_BASIC : CREATE_WORK_LOG_FORM_TYPE_ADVANCED;
+    const date = rawDate && rawDate.includes[0] ? rawDate.includes[0] : moment();
+
+    const [taskSearchType, setTaskSearchType] = useState(TASK_SEARCH_TYPE_BASE);
+    const [taskSearchDialogState, setTaskSearchDialogState] = useState(false);
+    const [tasks, setTasks] = useState([]);
+    const [taskSearch, setTaskSearch] = useState("");
+
+    const [taskBoard, setTaskBoard] = useState(0);
+    const [sprints, setSprints] = useState([]);
+    const [sprint, setSprint] = useState(0);
+
+    const [newIssue, setNewIssue] = useState({key: "", title: ""});
 
     const taskSearchTimer = useRef(0);
 
-    const [ withComment, setWithComment ] = useState(false);
+    const [withComment, setWithComment] = useState(false);
 
-    const { form, date: rawDate, duration, comment, userIdentity, issueTitle, issueKey } = data;
-
-    const date = rawDate.includes[0];
-
-    const [ issuePlaceholder, setIssuePlaceholder ] = useState("");
-    const [ issueDate, setIssueDate ] = useState( date );
+    const [issuePlaceholder, setIssuePlaceholder] = useState("");
+    const [issueDate, setIssueDate] = useState(date);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -60,47 +109,57 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
 
         const realIssueKey = resultGroups.includes(RESULT_GROUP_ISSUE) || resultGroups.includes(RESULT_GROUP_EPIC) ? issueKey : newIssue.key;
 
-        if( !realIssueKey ) {
-            return showError("Пожалуйста, выберите задачу");
+        if (!realIssueKey) {
+            return showError(t('notifications:please_choose_issue'));
         }
 
         const request = {
             userIdentity: String(userIdentity),
-            myUser: userIdentity === myUserIdentity,
+            myUser: userIdentity === myUser.value,
             issueKey: realIssueKey,
             duration: replaceRuDuration(data.get("duration")),
             comment: data.get("comment"),
             date: issueDate.format()
         };
 
-        if( withComment ) {
+        if (withComment) {
             const rawIssueComment = data.get("issueComment") || data.get("issueComment").trim();
 
-            if( rawIssueComment === "" ) {
+            if (rawIssueComment === "") {
                 request.issueComment = data.get("comment");
             } else {
                 request.issueComment = rawIssueComment;
             }
         }
 
-        if( request.duration.includes('-') ) {
-            return showError("Нельзя указывать отрицательное время");
+        if (request.duration.includes('-')) {
+            return showError(t('notifications:unable_to_use_negative_time'));
         }
 
         startLoading();
 
-        post("/api/v1/work_logs", request).then( response => {
-            onSubmit(response.data);
+        post("/api/v1/work_logs", request).then(response => {
+            const workLog = response.data;
+
+            if (selectedUsers.length > 0 && !selectedUsers.includes(String(workLog.createdById))) {
+                showSuccess(t('notifications:work_log_created_with_restrictions'));
+            } else {
+                showSuccess(t('notifications:work_log_created'));
+                setWorkLogs(prev => [...prev, workLog]);
+            }
+
+            close();
+
             pushAnalytics('workLogCreated', {
                 withComment: withComment
             });
-        }).catch( showError ).finally( endLoading );
+        }).catch(showError).finally(endLoading);
     };
 
     const handleTaskSearch = (e) => {
         const value = e.target.value.trim();
 
-        if( value.length >= 3 ) {
+        if (value.length >= 3) {
             setTaskSearch(value);
         }
     };
@@ -108,24 +167,24 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
     useEffect(() => {
         clearTimeout(taskSearchTimer.current);
 
-        if( taskSearch.length >= 3 ) {
-            taskSearchTimer.current = setTimeout( () => {
+        if (taskSearch.length >= 3) {
+            taskSearchTimer.current = setTimeout(() => {
                 startLoading();
 
                 post("/api/v1/filter_tasks", {
                     query: taskSearch
-                }).then( response => {
+                }).then(response => {
                     setTasks(response.data);
                     setTaskSearchDialogState(true);
-                }).catch( showError ).finally( endLoading );
-            }, 350 );
+                }).catch(showError).finally(endLoading);
+            }, 350);
         }
 
     }, [taskSearch]);
 
     useEffect(() => {
-        if( data.date && data.date.includes && data.date.includes[0] ) {
-            const realDate = data.date.includes[0];
+        if (rawDate && rawDate.includes && rawDate.includes[0]) {
+            const realDate = rawDate.includes[0];
             const nowDate = moment();
 
             realDate.set('hour', nowDate.hour());
@@ -133,16 +192,17 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
 
             setIssueDate(realDate);
         }
-    }, [data]);
+    }, [rawDate]);
 
     useEffect(() => {
-        setIssuePlaceholder(data.comment);
-    }, [state]);
+        setIssuePlaceholder(comment);
+    }, [isOpen]);
 
     const taskFilter = () => {
         const taskFilterBase = () => {
             return <Grid size={{xs: 12}}>
-                <TextField label="Поиск задач" variant="outlined" fullWidth onChange={e => handleTaskSearch(e)} />
+                <TextField label={t('components:create_work_log_dialog.fields.search.label')} variant="outlined"
+                           fullWidth onChange={e => handleTaskSearch(e)}/>
             </Grid>
         };
 
@@ -154,7 +214,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                             onChange={(e, newValue) => setTaskBoard(newValue ? newValue.value : 0)}
                             value={boards.find(u => u.value === taskBoard) || null}
                             options={boards}
-                            label="Доска"
+                            label={t('components:create_work_log_dialog.fields.board.label')}
                         />
                     </Grid>
                     {sprints.length > 0 && <Grid size={{xs: 12}}>
@@ -162,7 +222,20 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                             onChange={(e, newValue) => setSprint(newValue ? newValue.value : 0)}
                             value={sprints.find(u => u.value === sprint) || null}
                             options={sprints}
-                            label="Спринт"
+                            label={t('components:create_work_log_dialog.fields.sprint.label')}
+                            renderOption={(props, option) => {
+                                const {key, ...optionProps} = props;
+
+                                return <Box
+                                    key={key}
+                                    component="li"
+                                    {...optionProps}
+                                >{t('components:create_work_log_dialog.sprint_name', {
+                                    name: option.properties.name,
+                                    startDate: formatDateExact(option.properties.startDate),
+                                    endDate: formatDateExact(option.properties.endDate)
+                                })}</Box>
+                            }}
                         />
                     </Grid>}
                 </Grid>
@@ -173,13 +246,15 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
             <Grid container spacing={2}>
                 {boards.length > 0 && <Grid size={{xs: 12}}>
                     <FormControl fullWidth>
-                        <FormLabel>Будем искать задачи</FormLabel>
+                        <FormLabel>{t('components:create_work_log_dialog.issues_search_type')}</FormLabel>
                         <RadioGroup row
                                     value={taskSearchType}
                                     onChange={(e, newValue) => setTaskSearchType(newValue)}
                         >
-                            <FormControlLabel value={TASK_SEARCH_TYPE_BASE} control={<Radio/>} label="По фильтру" />
-                            <FormControlLabel value={TASK_SEARCH_TYPE_BOARD} control={<Radio/>} label="На досках" />
+                            <FormControlLabel value={TASK_SEARCH_TYPE_BASE} control={<Radio/>}
+                                              label={t('components:create_work_log_dialog.fields.search_type.values.BASE')}/>
+                            <FormControlLabel value={TASK_SEARCH_TYPE_BOARD} control={<Radio/>}
+                                              label={t('components:create_work_log_dialog.fields.search_type.values.BOARD')}/>
                         </RadioGroup>
                     </FormControl>
                 </Grid>}
@@ -187,11 +262,11 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                 {taskSearchType === TASK_SEARCH_TYPE_BOARD && taskFilterBoards()}
                 <Grid size={{xs: 12}}>
                     {newIssue.key === "" && <div>
-                        {taskSearch.length <= 2 && "Введите 3 символа для поиска задачи"}
+                        {taskSearch.length <= 2 && t('notifications:minimum_search_term_is_3_symbols')}
                     </div>}
                     {newIssue.key !== "" && <div>
-                        Выбрана задача:<br />
-                        <Link href={`https://tracker.yandex.ru/${newIssue.key}`} target="_blank">
+                        {t('components:create_work_log_dialog.selected_issue')}<br/>
+                        <Link href={yandexTrackerIssueUrl(newIssue.key)} target="_blank" rel="nofollow noreferer">
                             {newIssue.title}
                         </Link>
                     </div>}
@@ -200,102 +275,106 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
         </Grid>
     };
 
-    useEffect( () => {
-        if( taskBoard > 0 && sprint > 0 ) {
+    useEffect(() => {
+        if (taskBoard > 0 && sprint > 0) {
             startLoading();
 
             get(`/api/v1/boards/${taskBoard}/sprints/${sprint}/tasks`)
-                .then( response => {
-                    if( response.data.length === 0 ) {
-                        return showError("Задач не найдено");
+                .then(response => {
+                    if (response.data.length === 0) {
+                        return showError(t('notifications:issues_not_found'));
                     }
 
                     setTasks(response.data);
                     setTaskSearchDialogState(true);
-                }).catch( showError ).finally( endLoading );
+                }).catch(showError).finally(endLoading);
         }
     }, [sprint]);
 
-    useEffect( () => {
-        if( taskBoard > 0 ) {
+    useEffect(() => {
+        if (taskBoard > 0) {
             startLoading();
 
             get(`/api/v1/boards/${taskBoard}/sprints`)
-                .then( response => {
-                    if( response.data.length === 0 ) {
-                        showError("Указанная доска не содержит спринтов. Выберите другую.");
+                .then(response => {
+                    if (response.data.length === 0) {
+                        showError(t('notifications:no_sprints_found_on_board'));
                     }
 
                     setSprints(response.data.map(sprint => ({
                         value: sprint.id,
-                        label: `${sprint.attributes.name} (с ${moment(sprint.attributes.startDate).format(DATE_FORMAT)} по ${moment(sprint.attributes.endDate).format(DATE_FORMAT)})`
-                    })))
-                }).catch( showError ).finally( endLoading );
+                        properties: {
+                            name: sprint.attributes.name,
+                            startDate: moment(sprint.attributes.startDate),
+                            endDate: moment(sprint.attributes.endDate)
+                        },
+                        label: sprint.attributes.name
+                    })));
+                }).catch(showError).finally(endLoading);
         }
     }, [taskBoard]);
 
     useEffect(() => {
-        if( !state ) {
-            setNewIssue({ key: "", title: ""});
+        if (!isOpen) {
+            setNewIssue({key: "", title: ""});
             setTaskBoard(0);
             setSprints([]);
             setSprint(0);
             setTaskSearchType(TASK_SEARCH_TYPE_BASE);
         }
-    }, [state]);
+    }, [isOpen]);
 
-    return <Dialog open={state} onClose={() => handleClose()} maxWidth="md" fullWidth>
-        <TaskSearchDialog state={taskSearchDialogState} handleClose={() => setTaskSearchDialogState(false)} tasks={tasks}
-                          onSelect={task => {
-                              setTaskSearchDialogState(false);
-                              setNewIssue({ key: task.id, title: `${task.id}: ${task.attributes.summary}`})
-                          }} />
+    return <Dialog open={isOpen} onClose={() => close()} maxWidth="md" fullWidth>
+        <DialogsIssueSearch state={taskSearchDialogState} handleClose={() => setTaskSearchDialogState(false)}
+                            tasks={tasks}
+                            onSelect={task => {
+                                setTaskSearchDialogState(false);
+                                setNewIssue({key: task.id, title: `${task.id}: ${task.attributes.summary}`})
+                            }}/>
 
         <form onSubmit={(e) => handleSubmit(e)}>
-            <DialogTitle>Создание рабочего времени</DialogTitle>
+            <DialogTitle>{t('components:create_work_log_dialog.title')}</DialogTitle>
             <DialogContent>
                 <Grid container spacing={2} sx={{paddingTop: 1}}>
                     {form !== CREATE_WORK_LOG_FORM_TYPE_ADVANCED && <Grid size={{xs: 12}}>
-                        <Typography varian="h4">{issueTitle}</Typography>
+                        <Typography varian="h4"><Link href={yandexTrackerIssueUrl(issueKey)} target="_blank"
+                                                      rel="nofollow noreferer">{issueTitle}</Link></Typography>
                     </Grid>}
                     <Grid size={{xs: 12, md: 6}}>
                         <FormControl fullWidth>
                             <DatePicker
                                 disabled
-                                label="Дата"
+                                label={t('components:create_work_log_dialog.fields.date.label')}
                                 value={date}
                                 renderInput={(params) => <TextField {...params} />}
                             />
                         </FormControl>
                     </Grid>
                     <Grid size={{xs: 12, md: 6}}>
-                            <FormControl fullWidth>
-                                <TimePicker
-                                    label="Время"
-                                    value={issueDate}
-                                    viewRenderers={{
-                                        hours: renderTimeViewClock,
-                                        minutes: renderTimeViewClock,
-                                        seconds: renderTimeViewClock,
-                                    }}
-                                    onChange={(newValue) => {
-                                        setIssueDate(newValue);
-                                    }}
-                                    renderInput={(params) => <TextField {...params} />}
-                                />
-                            </FormControl>
+                        <FormControl fullWidth>
+                            <TimePicker
+                                label={t('components:create_work_log_dialog.fields.time.label')}
+                                value={issueDate}
+                                viewRenderers={{
+                                    hours: renderTimeViewClock,
+                                    minutes: renderTimeViewClock,
+                                    seconds: renderTimeViewClock,
+                                }}
+                                onChange={(newValue) => {
+                                    setIssueDate(newValue);
+                                }}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </FormControl>
                     </Grid>
                     <Grid size={{xs: 12}}>
                         <FormControl fullWidth>
                             <CustomAutocomplete
-                                onChange={(e, newValue) => setData(prev => ({
-                                    ...prev,
-                                    userIdentity: newValue ? newValue.value : ""
-                                }))}
-                                disabled={resultGroups.includes(RESULT_GROUP_WORKER) || admin === false}
-                                value={users.find(u => u.value === userIdentity) || null}
+                                onChange={(e, newValue) => setUserIdentity(newValue ? newValue.value : null)}
+                                disabled={resultGroups.includes(RESULT_GROUP_WORKER) || !myUser.isAdmin}
+                                value={users.find(u => String(u.value) === String(userIdentity)) || null}
                                 options={users}
-                                label="Пользователь"
+                                label={t('components:create_work_log_dialog.fields.user.label')}
                             />
                         </FormControl>
                     </Grid>
@@ -304,7 +383,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                         <TextField
                             autoFocus
                             margin="dense"
-                            label="Затрачено времени"
+                            label={t('components:create_work_log_dialog.fields.duration.label')}
                             fullWidth
                             name="duration"
                             variant="standard"
@@ -313,7 +392,7 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                     </Grid>
                     <Grid size={{xs: 12}}>
                         <TextField
-                            label="Комментарий"
+                            label={t('components:create_work_log_dialog.fields.comment.label')}
                             multiline
                             fullWidth
                             rows={5}
@@ -323,14 +402,16 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
                             onChange={(e) => setIssuePlaceholder(e.target.value)}
                         />
                     </Grid>
-                    {userIdentity === myUserIdentity && <Grid size={{xs: 12}}>
+                    {String(userIdentity) === String(myUser.value) && !myUser.isReadOnly && <Grid size={{xs: 12}}>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox />} label="Добавить комментарий к задаче?" checked={withComment} onChange={(e) => setWithComment(e.target.checked)} />
+                            <FormControlLabel control={<Checkbox/>}
+                                              label={t('components:create_work_log_dialog.fields.with_comment.label')}
+                                              checked={withComment} onChange={(e) => setWithComment(e.target.checked)}/>
                         </FormGroup>
                     </Grid>}
-                    {(userIdentity === myUserIdentity && withComment) && <Grid size={{xs: 12}}>
+                    {(String(userIdentity) === String(myUser.value) && withComment) && <Grid size={{xs: 12}}>
                         <TextField
-                            label="Комментарий к задаче"
+                            label={t('components:create_work_log_dialog.fields.issue_comment.label')}
                             multiline
                             fullWidth
                             rows={5}
@@ -344,8 +425,8 @@ function CreateWorkLogDialog({ state, handleClose, data, setData, onSubmit, user
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={() => handleClose()} color="warning">Отмена</Button>
-                <Button type="submit" color="success">Создать</Button>
+                <Button onClick={() => close()} color="warning">{t('common:button.cancel')}</Button>
+                <Button type="submit" color="success">{t('common:button.create')}</Button>
             </DialogActions>
         </form>
     </Dialog>
