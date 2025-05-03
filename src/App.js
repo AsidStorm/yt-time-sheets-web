@@ -258,6 +258,15 @@ function App() {
                         light: '#F9F7F2',
                         dark: '#757575',
                         contrastText: '#242105',
+                    },
+                    yandex: {
+                        main: '#000000',
+                        light: '#F9F7F2',
+                        dark: '#9E9E9E',
+                        contrastText: '#FFFFFF',
+
+                        contrastThreshold: 4.5,
+                        tonalOffset: 0.3,
                     }
                 },
             }),

@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Dialog, Grid2 as Grid, Container, Avatar, Tooltip, Link} from "@mui/material";
 import {
-    RESULT_GROUP_ISSUE,
+    RESULT_GROUP_EPIC,
+    RESULT_GROUP_ISSUE, RESULT_GROUP_ISSUE_TYPE, RESULT_GROUP_PROJECT, RESULT_GROUP_QUEUE,
     RESULT_GROUP_WORKER,
     TIME_FORMAT_HOURS
 } from "../constants";
@@ -440,27 +441,34 @@ function InsightsDialog() {
             return humanizeDuration(0);
         };
 
-        // По каждому из элементов по 3 графика и 3 коробки
-        // ЗАДАЧА - [Общее время, Кол-во пользователей]
-        // ОЧЕРЕДЬ - [Общее время, Кол-во пользователей, Кол-во задач]
-        // ПОЛЬЗОВАТЕЛЬ - [Общее время, Кол-во задач]
-        // ТИП ЗАДАЧИ - [Общее время, Кол-во пользователей, Кол-во задач]
-        // ЭПИК - [Общее время, Кол-во пользователей, Кол-во задач]
-        // ПРОЕКТ - [Общее время, Кол-во пользователей, Кол-во задач]
+        // Делаем компановку из элементов визуальных - чисто графики
+        // ЗАДАЧА - [Распределение времени по пользователям (4), Распределение времени по дням по пользователям (8)]
+        // ПОЛЬЗОВАТЕЛЬ - [Распределение по задачам (4), Распределение по дням по задачам (8)]
+        // ОЧЕРЕДЬ - [Кол-во пользователей (4), Кол-во задач (4), Кол-во типов задач (4)]
+        // ТИП ЗАДАЧИ - [Кол-во пользователей (4), Кол-во задач (4), Кол-во очередей (4)]
+        // ЭПИК - [Кол-во пользователей (4), Кол-во задач (4), Кол-во очередей (4)]
+        // ПРОЕКТ - [Кол-во пользователей (4), Кол-во задач (4), Кол-во очередей (4)]
 
         const boxes = [
-            generateTotalTimeBox,
+            /*generateTotalTimeBox,
             generateTotalUsersBox,
             generateTotalIssuesBox,
             generateAvgTimeByUserBox,
-            generateAvgTimeByIssueBox,
+            generateAvgTimeByIssueBox,*/
         ];
 
-        const charts = [ // Здесь идёт приоритет генерации графиков, если значение 1 => график не попадает
-            generateUsersChart,
-            generateIssuesChart,
-            generateQueuesChart,
-        ];
+        const charts = { // Здесь идёт приоритет генерации графиков, если значение 1 => график не попадает
+            [RESULT_GROUP_ISSUE]: [generateUsersChart],
+            [RESULT_GROUP_WORKER]: [generateIssuesChart],
+            [RESULT_GROUP_QUEUE]: [generateUsersChart, generateIssuesChart],
+            [RESULT_GROUP_ISSUE_TYPE]: [generateUsersChart, generateIssuesChart, generateQueuesChart],
+            [RESULT_GROUP_EPIC]: [generateUsersChart, generateIssuesChart, generateQueuesChart],
+            [RESULT_GROUP_PROJECT]: [generateUsersChart, generateIssuesChart, generateQueuesChart],
+
+            //generateUsersChart,
+            //generateIssuesChart,
+            //generateQueuesChart,
+        };
 
         const nextBoxes = [];
         const nextCharts = [];
@@ -477,7 +485,7 @@ function InsightsDialog() {
             }
         }
 
-        for (const chart of charts) {
+        for (const chart of charts[row.parameters.resultGroup]) {
             const generated = chart({row, rows, durationValueFormatter, humanizeDuration});
 
             if (generated !== null) {

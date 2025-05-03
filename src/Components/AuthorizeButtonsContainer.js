@@ -1,12 +1,15 @@
 import React, {useState} from "react";
-import {Grid2 as Grid} from "@mui/material";
+import {Button, Grid2 as Grid, SvgIcon} from "@mui/material";
 import {pushAnalytics} from "../helpers";
-import YandexSso from "../assets/yandex-sso.svg";
-import YandexId from "../assets/yandex-id-big.svg";
 import CopyrightCard from "./CopyrightCard";
 import SsoDialog from "./SsoDialog";
 import {AUTHORIZED_STATE_DONE, AUTHORIZED_STATE_NO_ORG_ID} from "../constants";
 import DonateCard from "./DonateCard";
+import PeopleIcon from '@mui/icons-material/People';
+import Typography from "@mui/material/Typography";
+import {ReactComponent as YandexIcon} from "../assets/yandex.svg";
+import {useTranslation} from "react-i18next";
+
 
 export function AuthorizeButtonsContainer({
                                               OAuthClientId,
@@ -15,6 +18,8 @@ export function AuthorizeButtonsContainer({
                                               defaultOrgId,
                                               setAuthorized
                                           }) {
+    const {t} = useTranslation();
+
     const [ssoDialog, setSsoDialog] = useState({
         open: false
     });
@@ -49,16 +54,28 @@ export function AuthorizeButtonsContainer({
         />
 
         {OAuthClientId !== '' && <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
-            <img src={YandexId} style={{cursor: "pointer"}} onClick={() => {
-                pushAnalytics('yandexButtonClick');
-                redirectToYandexOAuth();
-            }}/>
+            <Button size="large" fullWidth sx={{height: 65, borderRadius: 7, textTransform: 'none'}} variant="contained"
+                    color="yandex" startIcon={<SvgIcon component={YandexIcon} inheritViewBox fontSize="large"/>}
+                    onClick={() => {
+                        pushAnalytics('yandexButtonClick');
+                        redirectToYandexOAuth();
+                    }}>
+                <Typography fontSize="1.2rem">
+                    {t('components:authorize_buttons_container.yandex_id')}
+                </Typography>
+            </Button>
         </Grid>}
+
         <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
-            <img src={YandexSso} style={{cursor: "pointer"}} onClick={() => {
+            <Button size="large" fullWidth sx={{height: 65, borderRadius: 7, textTransform: 'none'}} variant="contained"
+                    startIcon={<PeopleIcon/>} onClick={() => {
                 setSsoDialog(prev => ({...prev, open: true}));
                 pushAnalytics('ssoButtonClick');
-            }}/>
+            }}>
+                <Typography fontSize="1.2rem">
+                    {t('components:authorize_buttons_container.sso')}
+                </Typography>
+            </Button>
         </Grid>
         <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
             <CopyrightCard/>

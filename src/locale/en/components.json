@@ -124,5 +124,8 @@
   "dialogs.settings.fields.insights_enabled.label": "Insights enabled",
 
   "dialogs.groups.tooltip.favorite": "Remove from favorite",
-  "dialogs.groups.tooltip.make_favorite": "Add to favorite. Appears on filter screen"
+  "dialogs.groups.tooltip.make_favorite": "Add to favorite. Appears on filter screen",
+
+  "authorize_buttons_container.yandex_id": "Join with Yandex ID",
+  "authorize_buttons_container.sso": "Join with SSO"
 }
