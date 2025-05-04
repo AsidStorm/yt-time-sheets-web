@@ -4,7 +4,7 @@ import {
     DialogContent,
     DialogTitle,
     Container,
-    Grid2 as Grid,
+    Grid,
     FormControl,
     Button, FormGroup, FormControlLabel, Checkbox, FormLabel, RadioGroup, Radio
 } from "@mui/material";

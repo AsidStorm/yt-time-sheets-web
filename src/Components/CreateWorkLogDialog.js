@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {
     DialogTitle,
     DialogContent,
-    Grid2 as Grid,
+    Grid,
     FormControl,
     TextField,
     DialogActions,
@@ -21,7 +21,7 @@ import {DatePicker, TimePicker} from "@mui/x-date-pickers";
 import CustomAutocomplete from "./CustomAutocomplete";
 import {
     CREATE_WORK_LOG_FORM_TYPE_ADVANCED, CREATE_WORK_LOG_FORM_TYPE_BASIC,
-    DATE_FORMAT, RESULT_GROUP_EPIC, RESULT_GROUP_ISSUE,
+    RESULT_GROUP_EPIC, RESULT_GROUP_ISSUE,
     RESULT_GROUP_WORKER,
     TASK_SEARCH_TYPE_BASE,
     TASK_SEARCH_TYPE_BOARD,
@@ -346,7 +346,6 @@ function CreateWorkLogDialog() {
                                 disabled
                                 label={t('components:create_work_log_dialog.fields.date.label')}
                                 value={date}
-                                renderInput={(params) => <TextField {...params} />}
                             />
                         </FormControl>
                     </Grid>
@@ -363,7 +362,6 @@ function CreateWorkLogDialog() {
                                 onChange={(newValue) => {
                                     setIssueDate(newValue);
                                 }}
-                                renderInput={(params) => <TextField {...params} />}
                             />
                         </FormControl>
                     </Grid>

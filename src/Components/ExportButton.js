@@ -19,14 +19,14 @@ import {datesAtom, resultGroupsAtom, resultRowsAtom, usersMapAtom} from "../jota
 import {useDateFormatter} from "../hooks";
 
 export function ExportButton() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const resultGroups = useAtomValue(resultGroupsAtom);
     const usersMap = useAtomValue(usersMapAtom);
     const rows = useAtomValue(resultRowsAtom);
     const dates = useAtomValue(datesAtom);
 
-    const { formatDate } = useDateFormatter();
+    const {formatDate} = useDateFormatter();
 
     const anchorRef = useRef(null);
 
@@ -39,40 +39,40 @@ export function ExportButton() {
 
         const haveEpicInResultGroups = resultGroups.includes(RESULT_GROUP_EPIC);
 
-        for( const resultGroup of resultGroups ) {
-            if( resultGroup === RESULT_GROUP_NONE ) {
+        for (const resultGroup of resultGroups) {
+            if (resultGroup === RESULT_GROUP_NONE) {
                 break;
             }
 
-            if( resultGroup === RESULT_GROUP_ISSUE ) {
-                if( !haveEpicInResultGroups ) {
+            if (resultGroup === RESULT_GROUP_ISSUE) {
+                if (!haveEpicInResultGroups) {
                     header.push(t('export:fields.issue_epic_key.label'));
                     header.push(t('export:fields.issue_epic_description.label'));
                 }
 
                 header.push(t('export:fields.issue_key.label'));
                 header.push(t('export:fields.issue_description.label'));
-            } else if ( resultGroup === RESULT_GROUP_QUEUE ) {
+            } else if (resultGroup === RESULT_GROUP_QUEUE) {
                 header.push(t('export:fields.queue_key.label'));
                 header.push(t('export:fields.queue_description.label'));
-            } else if( resultGroup === RESULT_GROUP_WORKER ) {
+            } else if (resultGroup === RESULT_GROUP_WORKER) {
                 header.push(t('export:fields.user_id.label'));
                 header.push(t('export:fields.user_email.label'));
                 header.push(t('export:fields.user_full_name.label'));
-            } else if( resultGroup === RESULT_GROUP_EPIC ) {
+            } else if (resultGroup === RESULT_GROUP_EPIC) {
                 header.push(t('export:fields.epic_key.label'));
                 header.push(t('export:fields.epic_description.label'));
-            } else if( resultGroup === RESULT_GROUP_PROJECT ) {
+            } else if (resultGroup === RESULT_GROUP_PROJECT) {
                 header.push(t('export:fields.project_id.label'));
                 header.push(t('export:fields.project_name.label'));
-            } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
+            } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                 header.push(t('export:fields.issue_type_id.label'));
                 header.push(t('export:fields.issue_type_key.label'));
                 header.push(t('export:fields.issue_type.label'));
             }
         }
 
-        for( const date of dates ) {
+        for (const date of dates) {
             header.push(formatDate(date));
         }
 
@@ -82,84 +82,84 @@ export function ExportButton() {
             header.join(";")
         ];
 
-        for( const row of rows ) {
+        for (const row of rows) {
             const parts = [];
 
             // Тут сложность - надо понять что было ДО, и что будет ПОСЛЕ, что бы заполнить пустые места дефисами
 
-            if( row.isSummary ) {
+            if (row.isSummary) {
                 parts.push(t('common:summary'));
                 parts.push(t('common:total'));
 
-                for( const resultGroup of resultGroups ) { // Тут всегда дефисы
-                    if( resultGroup === RESULT_GROUP_NONE ) {
+                for (const resultGroup of resultGroups) { // Тут всегда дефисы
+                    if (resultGroup === RESULT_GROUP_NONE) {
                         break;
                     }
 
-                    if( resultGroup === RESULT_GROUP_ISSUE ) {
-                        if( !haveEpicInResultGroups ) {
+                    if (resultGroup === RESULT_GROUP_ISSUE) {
+                        if (!haveEpicInResultGroups) {
                             parts.push(t('common:no_data'));
                             parts.push(t('common:no_data'));
                         }
 
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
-                    } else if ( resultGroup === RESULT_GROUP_QUEUE ) {
+                    } else if (resultGroup === RESULT_GROUP_QUEUE) {
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_WORKER ) {
+                    } else if (resultGroup === RESULT_GROUP_WORKER) {
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_EPIC ) {
+                    } else if (resultGroup === RESULT_GROUP_EPIC) {
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_PROJECT ) {
+                    } else if (resultGroup === RESULT_GROUP_PROJECT) {
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
+                    } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
                     }
                 }
             } else {
-                const { resultGroup: currentResultGroup } = row.parameters;
+                const {resultGroup: currentResultGroup} = row.parameters;
 
                 parts.push(currentResultGroup);
                 parts.push(t(`filter:result_groups.values.${currentResultGroup}`));
 
                 // А тут мы заполняем ТОЛЬКО в том случае если у нас текущий resultGroup === resultGroup, в противном случае -
 
-                for( const resultGroup of resultGroups ) {
-                    if( resultGroup === RESULT_GROUP_NONE ) {
+                for (const resultGroup of resultGroups) {
+                    if (resultGroup === RESULT_GROUP_NONE) {
                         break;
                     }
 
-                    if( resultGroup === RESULT_GROUP_ISSUE ) {
-                        if( !haveEpicInResultGroups ) {
+                    if (resultGroup === RESULT_GROUP_ISSUE) {
+                        if (!haveEpicInResultGroups) {
                             parts.push(row.extra.epicKey && currentResultGroup === resultGroup ? row.extra.epicKey : t('common:no_data'));
                             parts.push(row.extra.epicDisplay && currentResultGroup === resultGroup ? row.extra.epicDisplay : t('common:no_data'));
                         }
 
                         parts.push(currentResultGroup === resultGroup ? row.extra.issueKey : t('common:no_data'));
                         parts.push(currentResultGroup === resultGroup ? row.extra.issueTitle : t('common:no_data'));
-                    } else if ( resultGroup === RESULT_GROUP_QUEUE ) {
+                    } else if (resultGroup === RESULT_GROUP_QUEUE) {
                         parts.push(currentResultGroup === resultGroup ? row.extra.queue : t('common:no_data'));
                         parts.push(currentResultGroup === resultGroup ? row.extra.queueName : t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_WORKER ) {
+                    } else if (resultGroup === RESULT_GROUP_WORKER) {
                         const user = usersMap[parseInt(row.extra.createdById)];
 
                         parts.push(currentResultGroup === resultGroup ? row.extra.createdById : t('common:no_data'));
                         parts.push(currentResultGroup === resultGroup ? user.email : t('common:no_data'));
                         parts.push(currentResultGroup === resultGroup ? row.extra.createdByDisplay : t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_EPIC ) {
+                    } else if (resultGroup === RESULT_GROUP_EPIC) {
                         parts.push(row.extra.epicKey && currentResultGroup === resultGroup ? row.extra.epicKey : t('common:no_data'));
                         parts.push(row.extra.epicDisplay && currentResultGroup === resultGroup ? row.extra.epicDisplay : t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_PROJECT ) {
+                    } else if (resultGroup === RESULT_GROUP_PROJECT) {
                         parts.push(row.extra.projectId && currentResultGroup === resultGroup ? row.extra.projectId : t('common:no_data'));
                         parts.push(row.extra.projectName && currentResultGroup === resultGroup ? row.extra.projectName : t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
+                    } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                         parts.push(row.extra.issueTypeId && currentResultGroup === resultGroup ? row.extra.issueTypeId : t('common:no_data'));
                         parts.push(row.extra.issueTypeKey && currentResultGroup === resultGroup ? row.extra.issueTypeKey : t('common:no_data'));
                         parts.push(row.extra.issueTypeDisplay && currentResultGroup === resultGroup ? row.extra.issueTypeDisplay : t('common:no_data'));
@@ -168,11 +168,11 @@ export function ExportButton() {
             }
 
             // Мы сдвигаем каждый раз и ставим элементы на свои позиции
-            for( const date of dates ) {
+            for (const date of dates) {
                 parts.push(extractRawMinutesFromDuration(rowDateExists(row, date) ? row.byDate[date.index].value : 0));
             }
 
-            parts.push( extractRawMinutesFromDuration(row.value) );
+            parts.push(extractRawMinutesFromDuration(row.value));
 
             csv.push(parts.join(";"));
         }
@@ -187,40 +187,40 @@ export function ExportButton() {
 
         const haveEpicInResultGroups = resultGroups.includes(RESULT_GROUP_EPIC);
 
-        for( const resultGroup of resultGroups ) {
-            if( resultGroup === RESULT_GROUP_NONE ) {
+        for (const resultGroup of resultGroups) {
+            if (resultGroup === RESULT_GROUP_NONE) {
                 break;
             }
 
-            if( resultGroup === RESULT_GROUP_ISSUE ) {
-                if( !haveEpicInResultGroups ) {
+            if (resultGroup === RESULT_GROUP_ISSUE) {
+                if (!haveEpicInResultGroups) {
                     header.push(t('export:fields.issue_epic_key.label'));
                     header.push(t('export:fields.issue_epic_description.label'));
                 }
 
                 header.push(t('export:fields.issue_key.label'));
                 header.push(t('export:fields.issue_description.label'));
-            } else if ( resultGroup === RESULT_GROUP_QUEUE ) {
+            } else if (resultGroup === RESULT_GROUP_QUEUE) {
                 header.push(t('export:fields.queue_key.label'));
                 header.push(t('export:fields.queue_description.label'));
-            } else if( resultGroup === RESULT_GROUP_WORKER ) {
+            } else if (resultGroup === RESULT_GROUP_WORKER) {
                 header.push(t('export:fields.user_id.label'));
                 header.push(t('export:fields.user_email.label'));
                 header.push(t('export:fields.user_full_name.label'));
-            } else if( resultGroup === RESULT_GROUP_EPIC ) {
+            } else if (resultGroup === RESULT_GROUP_EPIC) {
                 header.push(t('export:fields.epic_key.label'));
                 header.push(t('export:fields.epic_description.label'));
-            } else if( resultGroup === RESULT_GROUP_PROJECT ) {
+            } else if (resultGroup === RESULT_GROUP_PROJECT) {
                 header.push(t('export:fields.project_id.label'));
                 header.push(t('export:fields.project_name.label'));
-            } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
+            } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                 header.push(t('export:fields.issue_type_id.label'));
                 header.push(t('export:fields.issue_type_key.label'));
                 header.push(t('export:fields.issue_type.label'));
             }
         }
 
-        for( const date of dates ) {
+        for (const date of dates) {
             header.push(formatDate(date));
         }
 
@@ -230,14 +230,14 @@ export function ExportButton() {
             header.join(";")
         ];
 
-        for( const row of rows ) {
-            if( !row.isMaxDepth && !row.isSummary ) {
+        for (const row of rows) {
+            if (!row.isMaxDepth && !row.isSummary) {
                 continue;
             }
 
             const parts = [];
 
-            if( row.isSummary ) {
+            if (row.isSummary) {
                 parts.push(t('common:total'));
 
                 let offset = 0;
@@ -249,26 +249,26 @@ export function ExportButton() {
 
                     if (resultGroup === RESULT_GROUP_ISSUE) {
                         if (!haveEpicInResultGroups) {
-                            offset+=2;
+                            offset += 2;
                         }
 
-                        offset+=2;
+                        offset += 2;
                     } else if (resultGroup === RESULT_GROUP_QUEUE) {
-                        offset+=2;
+                        offset += 2;
                     } else if (resultGroup === RESULT_GROUP_WORKER) {
-                        offset+=3;
+                        offset += 3;
                     } else if (resultGroup === RESULT_GROUP_EPIC) {
-                        offset+=2;
+                        offset += 2;
                     } else if (resultGroup === RESULT_GROUP_PROJECT) {
-                        offset+=2;
-                    } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
-                        offset+=3;
+                        offset += 2;
+                    } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
+                        offset += 3;
                     }
                 }
 
                 offset--; // За строчку Итого
 
-                while (offset > 0 ) {
+                while (offset > 0) {
                     offset--;
 
                     parts.push(t('common:no_data'));
@@ -302,7 +302,7 @@ export function ExportButton() {
                     } else if (resultGroup === RESULT_GROUP_PROJECT) {
                         parts.push(row.extra.projectId ? row.extra.projectId : t('common:no_data'));
                         parts.push(row.extra.projectName ? row.extra.projectName : t('common:no_data'));
-                    } else if(resultGroup === RESULT_GROUP_ISSUE_TYPE) {
+                    } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                         parts.push(row.extra.issueTypeId ? row.extra.issueTypeId : t('common:no_data'));
                         parts.push(row.extra.issueTypeKey ? row.extra.issueTypeKey : t('common:no_data'));
                         parts.push(row.extra.issueTypeDisplay ? row.extra.issueTypeDisplay : t('common:no_data'));
@@ -315,7 +315,7 @@ export function ExportButton() {
                 parts.push(extractRawMinutesFromDuration(rowDateExists(row, date) ? row.byDate[date.index].value : 0));
             }
 
-            parts.push( extractRawMinutesFromDuration(row.value) );
+            parts.push(extractRawMinutesFromDuration(row.value));
 
             csv.push(parts.join(";"));
         }
@@ -330,33 +330,33 @@ export function ExportButton() {
 
         const haveEpicInResultGroups = resultGroups.includes(RESULT_GROUP_EPIC);
 
-        for( const resultGroup of resultGroups ) {
-            if( resultGroup === RESULT_GROUP_NONE ) {
+        for (const resultGroup of resultGroups) {
+            if (resultGroup === RESULT_GROUP_NONE) {
                 break;
             }
 
-            if( resultGroup === RESULT_GROUP_ISSUE ) {
-                if( !haveEpicInResultGroups ) {
+            if (resultGroup === RESULT_GROUP_ISSUE) {
+                if (!haveEpicInResultGroups) {
                     header.push(t('export:fields.issue_epic_key.label'));
                     header.push(t('export:fields.issue_epic_description.label'));
                 }
 
                 header.push(t('export:fields.issue_key.label'));
                 header.push(t('export:fields.issue_description.label'));
-            } else if ( resultGroup === RESULT_GROUP_QUEUE ) {
+            } else if (resultGroup === RESULT_GROUP_QUEUE) {
                 header.push(t('export:fields.queue_key.label'));
                 header.push(t('export:fields.queue_description.label'));
-            } else if( resultGroup === RESULT_GROUP_WORKER ) {
+            } else if (resultGroup === RESULT_GROUP_WORKER) {
                 header.push(t('export:fields.user_id.label'));
                 header.push(t('export:fields.user_email.label'));
                 header.push(t('export:fields.user_full_name.label'));
-            } else if( resultGroup === RESULT_GROUP_EPIC ) {
+            } else if (resultGroup === RESULT_GROUP_EPIC) {
                 header.push(t('export:fields.epic_key.label'));
                 header.push(t('export:fields.epic_description.label'));
-            } else if( resultGroup === RESULT_GROUP_PROJECT ) {
+            } else if (resultGroup === RESULT_GROUP_PROJECT) {
                 header.push(t('export:fields.project_id.label'));
                 header.push(t('export:fields.project_name.label'));
-            } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
+            } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                 header.push(t('export:fields.issue_type_id.label'));
                 header.push(t('export:fields.issue_type_key.label'));
                 header.push(t('export:fields.issue_type.label'));
@@ -370,8 +370,8 @@ export function ExportButton() {
             header.join(";")
         ];
 
-        for( const row of rows ) {
-            if( !row.isMaxDepth || row.isSummary ) {
+        for (const row of rows) {
+            if (!row.isMaxDepth || row.isSummary) {
                 continue;
             }
 
@@ -405,7 +405,7 @@ export function ExportButton() {
                 } else if (resultGroup === RESULT_GROUP_PROJECT) {
                     parts.push(row.extra.projectId ? row.extra.projectId : t('common:no_data'));
                     parts.push(row.extra.projectName ? row.extra.projectName : t('common:no_data'));
-                } else if(resultGroup === RESULT_GROUP_ISSUE_TYPE) {
+                } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                     parts.push(row.extra.issueTypeId ? row.extra.issueTypeId : t('common:no_data'));
                     parts.push(row.extra.issueTypeKey ? row.extra.issueTypeKey : t('common:no_data'));
                     parts.push(row.extra.issueTypeDisplay ? row.extra.issueTypeDisplay : t('common:no_data'));
@@ -418,7 +418,7 @@ export function ExportButton() {
 
                 const rawMinutes = extractRawMinutesFromDuration(rowDateExists(row, date) ? row.byDate[date.index].value : 0);
 
-                if( rawMinutes === 0 ) {
+                if (rawMinutes === 0) {
                     continue;
                 }
 
@@ -439,31 +439,31 @@ export function ExportButton() {
 
         const haveEpicInResultGroups = resultGroups.includes(RESULT_GROUP_EPIC);
 
-        for( const resultGroup of resultGroups ) {
-            if( resultGroup === RESULT_GROUP_NONE ) {
+        for (const resultGroup of resultGroups) {
+            if (resultGroup === RESULT_GROUP_NONE) {
                 break;
             }
 
-            if( resultGroup === RESULT_GROUP_ISSUE ) {
-                if( !haveEpicInResultGroups ) {
+            if (resultGroup === RESULT_GROUP_ISSUE) {
+                if (!haveEpicInResultGroups) {
                     header.push(t('export:fields.issue_epic_key.label'));
                     header.push(t('export:fields.issue_epic_description.label'));
                 }
 
                 header.push(t('export:fields.issue_key.label'));
                 header.push(t('export:fields.issue_description.label'));
-            } else if ( resultGroup === RESULT_GROUP_QUEUE ) {
+            } else if (resultGroup === RESULT_GROUP_QUEUE) {
                 header.push(t('export:fields.queue_key.label'));
                 header.push(t('export:fields.queue_description.label'));
-            } else if( resultGroup === RESULT_GROUP_WORKER ) {
+            } else if (resultGroup === RESULT_GROUP_WORKER) {
                 header.push(t('export:fields.user_full_name.label'));
-            } else if( resultGroup === RESULT_GROUP_EPIC ) {
+            } else if (resultGroup === RESULT_GROUP_EPIC) {
                 header.push(t('export:fields.epic_key.label'));
                 header.push(t('export:fields.epic_description.label'));
-            } else if( resultGroup === RESULT_GROUP_PROJECT ) {
+            } else if (resultGroup === RESULT_GROUP_PROJECT) {
                 header.push(t('export:fields.project_id.label'));
                 header.push(t('export:fields.project_name.label'));
-            } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
+            } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                 header.push(t('export:fields.issue_type_id.label'));
                 header.push(t('export:fields.issue_type_key.label'));
                 header.push(t('export:fields.issue_type.label'));
@@ -476,49 +476,49 @@ export function ExportButton() {
             header.join(";")
         ];
 
-        for( const row of rows ) {
+        for (const row of rows) {
             const parts = [];
 
             // Тут сложность - надо понять что было ДО, и что будет ПОСЛЕ, что бы заполнить пустые места дефисами
 
-            if( row.isSummary ) {
+            if (row.isSummary) {
                 parts.push(t('common:summary'));
                 parts.push(t('common:total'));
 
-                for( const resultGroup of resultGroups ) { // Тут всегда дефисы
-                    if( resultGroup === RESULT_GROUP_NONE ) {
+                for (const resultGroup of resultGroups) { // Тут всегда дефисы
+                    if (resultGroup === RESULT_GROUP_NONE) {
                         break;
                     }
 
-                    if( resultGroup === RESULT_GROUP_ISSUE ) {
-                        if( !haveEpicInResultGroups ) {
+                    if (resultGroup === RESULT_GROUP_ISSUE) {
+                        if (!haveEpicInResultGroups) {
                             parts.push(t('common:no_data'));
                             parts.push(t('common:no_data'));
                         }
 
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
-                    } else if ( resultGroup === RESULT_GROUP_QUEUE ) {
+                    } else if (resultGroup === RESULT_GROUP_QUEUE) {
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_WORKER ) {
+                    } else if (resultGroup === RESULT_GROUP_WORKER) {
                         parts.push(t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_EPIC ) {
-                        parts.push(t('common:no_data'));
-                        parts.push(t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_PROJECT ) {
+                    } else if (resultGroup === RESULT_GROUP_EPIC) {
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
+                    } else if (resultGroup === RESULT_GROUP_PROJECT) {
+                        parts.push(t('common:no_data'));
+                        parts.push(t('common:no_data'));
+                    } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
                         parts.push(t('common:no_data'));
                     }
                 }
             } else {
-                const { resultGroup: currentResultGroup } = row.parameters;
+                const {resultGroup: currentResultGroup} = row.parameters;
 
-                if( currentResultGroup === RESULT_GROUP_ISSUE ) {
+                if (currentResultGroup === RESULT_GROUP_ISSUE) {
                     continue;
                 }
 
@@ -527,31 +527,31 @@ export function ExportButton() {
 
                 // А тут мы заполняем ТОЛЬКО в том случае если у нас текущий resultGroup === resultGroup, в противном случае -
 
-                for( const resultGroup of resultGroups ) {
-                    if( resultGroup === RESULT_GROUP_NONE ) {
+                for (const resultGroup of resultGroups) {
+                    if (resultGroup === RESULT_GROUP_NONE) {
                         break;
                     }
 
-                    if( resultGroup === RESULT_GROUP_ISSUE ) {
-                        if( !haveEpicInResultGroups ) {
+                    if (resultGroup === RESULT_GROUP_ISSUE) {
+                        if (!haveEpicInResultGroups) {
                             parts.push(row.extra.epicKey ? row.extra.epicKey : t('common:no_data'));
                             parts.push(row.extra.epicDisplay ? row.extra.epicDisplay : t('common:no_data'));
                         }
 
                         parts.push(row.extra.issueKey);
                         parts.push(row.extra.issueTitle);
-                    } else if ( resultGroup === RESULT_GROUP_QUEUE ) {
+                    } else if (resultGroup === RESULT_GROUP_QUEUE) {
                         parts.push(currentResultGroup === resultGroup ? row.extra.queue : t('common:no_data'));
                         parts.push(currentResultGroup === resultGroup ? row.extra.queueName : t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_WORKER ) {
+                    } else if (resultGroup === RESULT_GROUP_WORKER) {
                         parts.push(currentResultGroup === resultGroup ? row.extra.createdByDisplay : t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_EPIC ) {
+                    } else if (resultGroup === RESULT_GROUP_EPIC) {
                         parts.push(row.extra.epicKey && currentResultGroup === resultGroup ? row.extra.epicKey : t('common:no_data'));
                         parts.push(row.extra.epicDisplay && currentResultGroup === resultGroup ? row.extra.epicDisplay : t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_PROJECT ) {
+                    } else if (resultGroup === RESULT_GROUP_PROJECT) {
                         parts.push(row.extra.projectId && currentResultGroup === resultGroup ? row.extra.projectId : t('common:no_data'));
                         parts.push(row.extra.projectName && currentResultGroup === resultGroup ? row.extra.projectName : t('common:no_data'));
-                    } else if( resultGroup === RESULT_GROUP_ISSUE_TYPE ) {
+                    } else if (resultGroup === RESULT_GROUP_ISSUE_TYPE) {
                         parts.push(row.extra.issueTypeId && currentResultGroup === resultGroup ? row.extra.issueTypeId : t('common:no_data'));
                         parts.push(row.extra.issueTypeKe && currentResultGroup === resultGroup ? row.extra.issueTypeKey : t('common:no_data'));
                         parts.push(row.extra.issueTypeDisplay && currentResultGroup === resultGroup ? row.extra.issueTypeDisplay : t('common:no_data'));
@@ -559,7 +559,7 @@ export function ExportButton() {
                 }
             }
 
-            parts.push( extractRawMinutesFromDuration(row.value) );
+            parts.push(extractRawMinutesFromDuration(row.value));
 
             csv.push(parts.join(";"));
         }
@@ -640,7 +640,8 @@ export function ExportButton() {
                                 id="composition-menu"
                                 aria-labelledby="composition-button"
                             >
-                                {EXPORT_VARIANTS.map( variant => <MenuItem key={`export_variant-${variant}`} onClick={() => exportData(variant)}>
+                                {EXPORT_VARIANTS.map(variant => <MenuItem key={`export_variant-${variant}`}
+                                                                          onClick={() => exportData(variant)}>
                                     {t(`export:variants.${variant}.label`)}
                                 </MenuItem>)}
                             </MenuList>

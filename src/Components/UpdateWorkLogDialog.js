@@ -2,7 +2,7 @@ import React from "react";
 import {
     DialogTitle,
     DialogContent,
-    Grid2 as Grid,
+    Grid,
     TextField,
     DialogActions,
     Button,

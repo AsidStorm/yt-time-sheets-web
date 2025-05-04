@@ -117,6 +117,7 @@
   "details_table.caption_only_author": "Author: {{createdByDisplay}}" ,
   "details_table.title": "{{title}} | <tooltip />",
   "details_table.delete_tooltip": "Remove work log, will ask for confirmation",
+  "details_table.edit_tooltip": "Edit work log",
 
   "row_title.insights_tooltip": "Insights",
   "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}",

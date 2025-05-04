@@ -1,5 +1,4 @@
 import {COLOR_THEME_DARK, DATE_FORMAT_MONTH, DEPTH_COLORS, DEPTH_COLORS_DARK, WEEKEND_WEEK_DAYS} from "../constants";
-import { pink, brown, amber, grey } from '@mui/material/colors';
 
 
 export const isLastRowCaller = rows => index => rows.length - 1 === index;

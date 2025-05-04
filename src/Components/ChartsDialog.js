@@ -1,16 +1,13 @@
 import React, {useEffect, useState} from "react";
-import Grid from "@mui/material/Grid2";
+import {Tab, Alert, Box, Dialog, Grid} from "@mui/material";
+import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {DATE_FORMAT, DATE_FORMAT_DATE, TIME_FORMAT_HOURS, TIME_FORMAT_MINUTES} from "../constants";
 import {pushAnalytics, yandexTrackerIssueUrl, yandexTrackerProjectUrl, yandexTrackerQueueUrl} from "../helpers";
 import moment from "moment";
-
 import {Chart as ChartJS, registerables} from 'chart.js';
-
 import {Pie, Bar} from 'react-chartjs-2';
-import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {useDateFormatter, useHumanizeDuration} from "../hooks";
 import {useTranslation} from "react-i18next";
-import {Tab, Alert, Box, Dialog} from "@mui/material";
 import {useAtomValue} from "jotai";
 import {dateFormatAtom, datesAtom, workLogsAtom} from "../jotai/atoms";
 
@@ -525,7 +522,7 @@ function ChartsDialog({state, handleClose}) {
                                 }}
                             >
                                 <Grid container spacing={2} sx={{width: '100%'}}>
-                                    <Grid item xs={12} sx={{width: '100%'}}>
+                                    <Grid xs={12} sx={{width: '100%'}}>
                                         <Charts category={category}/>
                                     </Grid>
                                 </Grid>

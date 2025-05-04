@@ -5,13 +5,9 @@ import {
     Avatar,
     Link,
     Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     Button,
-    DialogContentText,
     Typography,
-    Tooltip, Alert, IconButton, CardContent, Divider, CardActions
+    Tooltip, IconButton, CardContent, CardActions
 } from "@mui/material";
 import CakeIcon from '@mui/icons-material/Cake';
 import TelegramIcon from '@mui/icons-material/Telegram';

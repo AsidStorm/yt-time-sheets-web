@@ -1,15 +1,6 @@
 import React from 'react';
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid2";
-import Dialog from "@mui/material/Dialog";
+import {Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot, TimelineOppositeContent} from '@mui/lab';
+import {DialogTitle, DialogContent, Grid, Dialog} from "@mui/material";
 import {
     timelineOppositeContentClasses,
 } from '@mui/lab/TimelineOppositeContent';

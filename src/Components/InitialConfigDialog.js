@@ -5,7 +5,7 @@ import {
     Typography,
     Button,
     AppBar,
-    Grid2 as Grid,
+    Grid,
     Container,
     TextField,
     FormGroup,
@@ -20,7 +20,7 @@ import {Trans, useTranslation} from "react-i18next";
 import {useLoader, useMessage} from "../hooks";
 
 function InitialConfigDialog({state, handleClose, handleComplete}) {
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation();
 
     const {startLoading, endLoading} = useLoader();
     const {showError} = useMessage();

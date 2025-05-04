@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     }
 });
 
-export function ResultTableHeader({}) {
+export function ResultTableHeader() {
     const {t} = useTranslation();
     const classes = useStyles();
 

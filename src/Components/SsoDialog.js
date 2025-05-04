@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Trans, useTranslation} from "react-i18next";
-import {DialogTitle, Dialog, DialogContent, Grid2 as Grid, Button, Link, TextField} from "@mui/material";
+import {DialogTitle, Dialog, DialogContent, Grid, Button, Link, TextField} from "@mui/material";
 import {useMessage} from "../hooks";
 
 function SsoDialog({state, handleClose, handleIAmToken, federationId, allowManualInput}) {

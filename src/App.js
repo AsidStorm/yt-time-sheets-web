@@ -1,13 +1,8 @@
 import React, {useEffect, useMemo, useState} from "react";
-import createTheme from "@mui/material/styles/createTheme";
-import CssBaseline from "@mui/material/CssBaseline";
-import ThemeProvider from "@mui/material/styles/ThemeProvider";
-import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid2";
-import Typography from "@mui/material/Typography";
-import Toolbar from "@mui/material/Toolbar";
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {CssBaseline, Box, AppBar, Container, Grid, Typography, Toolbar, Link, Button} from "@mui/material";
+import {Trans, useTranslation} from 'react-i18next';
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {get} from "./requests";
 import FilterDialog from "./Components/FilterDialog";
 import Loader from "./Components/Loader";
@@ -17,14 +12,12 @@ import {
     AUTHORIZED_STATE_DONE, AUTHORIZED_STATE_NO_ORG_ID,
     AUTHORIZED_STATE_NONE,
 } from "./constants";
-import Link from "@mui/material/Link";
 import InitialConfigDialog from "./Components/InitialConfigDialog";
 import './App.css';
 import {makeObjectFromArray, pushAnalytics} from "./helpers";
 import ChangelogDialog from "./Components/ChangelogDialog";
 import CopyrightCard from "./Components/CopyrightCard";
 import DonateCard from "./Components/DonateCard";
-import {Trans, useTranslation} from 'react-i18next';
 import {
     usersMapAtom,
     queuesMapAtom,
@@ -35,12 +28,10 @@ import {
     issueStatusesMapAtom,
     haveWorkLogsAtom, myUserAtom, colorThemeAtom, localeAtom, insightsEnabledAtom,
 } from "./jotai/atoms";
-import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer";
 import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorContainer";
 import {useLoader, useMessage} from "./hooks";
 import {SettingsButton} from "./Components/SettingsButton";
-import {Button} from "@mui/material";
 
 function App() {
     const {t} = useTranslation();
@@ -56,7 +47,7 @@ function App() {
     const setIssueTypesMap = useSetAtom(issueTypesMapAtom);
     const setIssueStatusesMap = useSetAtom(issueStatusesMapAtom);
     const haveDataToDisplay = useAtomValue(haveWorkLogsAtom);
-    const colorTheme  = useAtomValue(colorThemeAtom);
+    const colorTheme = useAtomValue(colorThemeAtom);
     const locale = useAtomValue(localeAtom);
     const insightsEnabled = useAtomValue(insightsEnabledAtom);
 
@@ -247,7 +238,7 @@ function App() {
         localStorage.removeItem("authToken");
         localStorage.removeItem("iAmToken");
 
-        if( allowManualInput ) {
+        if (allowManualInput) {
             localStorage.removeItem("orgId");
         }
 
@@ -287,7 +278,8 @@ function App() {
         <Loader/>
         <Message/>
 
-        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)} handleComplete={handleInitialConfigComplete}/>
+        <InitialConfigDialog state={initialConfigDialogState} handleClose={() => setInitialConfigDialogState(false)}
+                             handleComplete={handleInitialConfigComplete}/>
 
         <FilterDialog
             handleClose={() => setFilterDialogState(false)}
@@ -297,7 +289,7 @@ function App() {
             reload={reload}
         />
 
-        <ChangelogDialog />
+        <ChangelogDialog/>
 
         <Box
             sx={{
@@ -370,7 +362,7 @@ function App() {
                                                    setFilterDialogState={setFilterDialogState} exit={exit}/>}
             </Container>
 
-            <SettingsButton />
+            <SettingsButton/>
         </Box>
     </ThemeProvider>
 }

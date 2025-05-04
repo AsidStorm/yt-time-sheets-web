@@ -1,5 +1,5 @@
 import React from "react";
-import {Grid2 as Grid, TextField, Link, Button} from "@mui/material";
+import {Grid, TextField, Link, Button} from "@mui/material";
 import {Trans, useTranslation} from "react-i18next";
 import CopyrightCard from "./CopyrightCard";
 import DonateCard from "./DonateCard";

@@ -125,10 +125,12 @@ export function ResultDetailsTable({index, row, date}) {
                             {humanize(detail.value, {[detail.createdById]: detail.value})}
                         </TableCell>
                         {!myUser.isReadOnly && <TableCell align="right" sx={{minWidth: 90}}>
+                            <Tooltip title={t('components:details_table.edit_tooltip')}>
                             <IconButton size="small" color="warning"
                                         onClick={() => openWorkLogUpdateDialog(detail)}>
                                 <EditIcon fontSize="inherit"/>
                             </IconButton>
+                            </Tooltip>
                             <Tooltip title={t('components:details_table.delete_tooltip')}>
                                 <IconButton size="small" color="error" onClick={() => openWorkLogDeleteDialog(detail)}>
                                     <DeleteIcon fontSize="inherit"/>

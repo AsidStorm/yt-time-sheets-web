@@ -119,6 +119,7 @@
   "details_table.caption_only_author": "Автор: {{createdByDisplay}}" ,
   "details_table.title": "{{title}} | <tooltip />",
   "details_table.delete_tooltip": "Удалить запись, мы запросим дополнительное подтверждение",
+  "details_table.edit_tooltip": "Редактировать запись",
 
   "row_title.insights_tooltip": "Инсайты",
   "row_title.epic_tooltip": "{{epicKey}}: {{epicDisplay}}",

@@ -8,7 +8,7 @@ import {
     Button,
     Slide,
     Container,
-    Grid2 as Grid,
+    Grid,
     Checkbox,
     TextField,
     Autocomplete,
@@ -613,7 +613,6 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                                 }}
                                 disableFuture
                                 views={['month', 'year']}
-                                renderInput={(params) => <TextField {...params} />}
                             />
                         </FormControl>
                     </Grid>
@@ -629,7 +628,6 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                                 }}
                                 disableFuture
                                 maxDate={dateTo}
-                                renderInput={(params) => <TextField {...params} />}
                             />
                         </FormControl>
                     </Grid>
@@ -643,7 +641,6 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                                 }}
                                 disableFuture
                                 minDate={dateFrom}
-                                renderInput={(params) => <TextField {...params} />}
                             />
                         </FormControl>
                     </Grid>
@@ -726,7 +723,6 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                                     minutes: renderTimeViewClock,
                                     seconds: renderTimeViewClock,
                                 }}
-                                renderInput={(params) => <TextField {...params} />}
                             />
                         </FormControl>
                     </Grid>}
