@@ -3,11 +3,10 @@ import {
     Paper,
     TableHead,
     TableRow,
-    TableCell,
     TableBody,
     TableContainer,
     Table,
-    Grid2 as Grid,
+    Grid,
     Button
 } from "@mui/material";
 import {makeStyles} from "@mui/styles"
@@ -29,12 +28,10 @@ import {TableVirtuoso} from 'react-virtuoso';
 import InsightsDialog from "./InsightsDialog";
 import {
     resultRowsAtom,
-    myUserAtom,
-    datesAtom
+    myUserAtom
 } from "../jotai/atoms";
 import {ExportButton} from "./ExportButton";
 import {ResultTableRowContent} from "./ResultTable/RowContent";
-import {useDateFormatter} from "../hooks";
 import {DialogsRestrictions} from "./Dialogs/Restrictions";
 import {ResultTableHeader} from "./ResultTable/Header";
 
@@ -70,9 +67,6 @@ function ResultTable() {
 
     const rows = useAtomValue(resultRowsAtom);
     const myUser = useAtomValue(myUserAtom);
-    const dates = useAtomValue(datesAtom);
-
-    const { formatDate } = useDateFormatter();
 
     const [restrictionsDialog, setRestrictionsDialog] = useState(false);
     const [chartsDialog, setChartsDialog] = useState(false);

@@ -1,11 +1,7 @@
 import {useAtomValue} from "jotai";
 import {dateFormatAtom, localeAtom} from "../jotai/atoms";
 import {
-    DATE_FORMAT_EN,
     DATE_FORMAT_MONTH,
-    DATE_FORMAT_RU,
-    LOCALE_EN,
-    LOCALE_RU,
     LOCALIZED_DATE_FORMATS
 } from "../constants";
 import {useTranslation} from "react-i18next";

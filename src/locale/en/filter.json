@@ -31,5 +31,8 @@
   "result_groups.values.PROJECT": "Project",
   "result_groups.values.ISSUE_TYPE": "Issue type",
   "result_groups.values.EPIC": "Epic",
-  "result_groups.label": "Grouping {{ index }}"
+  "result_groups.label": "Grouping {{ index }}",
+
+  "query.title": "Your query",
+  "query.settings.tooltip": "Favorite queries settings"
 }

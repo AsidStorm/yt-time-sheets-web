@@ -25,3 +25,8 @@ export * from './colorTheme';
 export * from './locale';
 export * from './settingsDialog';
 export * from './dialogs';
+export * from './queryLanguage';
+export * from './filterQuery';
+export * from './addQueryToFavoriteDialog';
+export * from './favoriteQueries';
+export * from './favoriteQueriesDialog';

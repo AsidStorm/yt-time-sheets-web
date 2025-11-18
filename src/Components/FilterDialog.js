@@ -8,7 +8,9 @@ import {
     Button,
     Slide,
     Container,
-    Grid2 as Grid,
+    InputLabel,
+    Grid,
+    Tooltip,
     Checkbox,
     TextField,
     Autocomplete,
@@ -18,9 +20,11 @@ import {
     FormControlLabel,
     Radio,
     FormGroup,
-    Stack
+    Stack, Switch, InputAdornment, OutlinedInput
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import {DesktopDatePicker, TimePicker} from "@mui/x-date-pickers";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -45,16 +49,18 @@ import {
 import {post} from "../requests";
 import {pushAnalytics, sleep, sliceIntoChunks} from "../helpers";
 import {useTranslation} from "react-i18next";
-import {useAtomValue} from "jotai";
+import {useAtom, useAtomValue} from "jotai";
 import {
+    favoriteQueriesAtom,
+    filterQueryAtom,
     groupsAtom,
     issueStatusesAtom,
     issueTypesAtom, myUserAtom, orderedGroupsAtom,
-    projectsAtom,
+    projectsAtom, queryLanguageAtom,
     queuesAtom, salaryMapAtom,
     usersAtom,
 } from "../jotai/atoms";
-import {useFilterResult, useLoader, useMessage} from "../hooks";
+import {useFilterResult, useLoader, useMessage, useAddQueryToFavoriteDialog, useFavoriteQueriesDialog} from "../hooks";
 import {DialogsSalary} from "./Dialogs/Salary";
 import {DialogsGroups} from "./Dialogs/Groups";
 
@@ -98,6 +104,9 @@ function FilterDialog({handleClose, state, onApply, reload}) {
     const myUser = useAtomValue(myUserAtom);
     const salaryMap = useAtomValue(salaryMapAtom);
     const orderedGroups = useAtomValue(orderedGroupsAtom);
+    const [query, setQuery] = useAtom(filterQueryAtom);
+    const [queryLanguage, setQueryLanguage] = useAtom(queryLanguageAtom);
+    const favoriteQueries = useAtomValue(favoriteQueriesAtom);
 
     const favoriteGroups = orderedGroups.filter( group => group.isFavorite );
 
@@ -127,6 +136,10 @@ function FilterDialog({handleClose, state, onApply, reload}) {
 
     const [issuesMovedToStatus, setIssuesMovedToStatus] = useState(false);
     const [movedToStatusMonth, setMovedToStatusMonth] = useState(moment());
+
+    const {open: openAddQueryToFavoriteDialog} = useAddQueryToFavoriteDialog();
+    const {open: openFavoriteQueriesDialog} = useFavoriteQueriesDialog();
+    const [queryKey, setQueryKey] = useState(0);
 
     useEffect(() => {
         if (reload) {
@@ -235,14 +248,18 @@ function FilterDialog({handleClose, state, onApply, reload}) {
         if (issuesMovedToStatus) {
             startLoading();
 
-            post("/api/v1/result_v2", {
+            post("/api/v3/result", {
                 userIdentities: selectedUsers.map(user => String(user)),
-                queues: selectedQueues,
-                projects: selectedProjects,
-                issueTypes: selectedIssueTypes,
-                month: parseInt(movedToStatusMonth.format("MM")),
-                year: parseInt(movedToStatusMonth.format("YYYY")),
-                statuses: selectedIssueStatuses
+                filter: {
+                    queues: selectedQueues,
+                    projects: selectedProjects,
+                    issueTypes: selectedIssueTypes
+                },
+                filterStatuses: {
+                    month: parseInt(movedToStatusMonth.format("MM")),
+                    year: parseInt(movedToStatusMonth.format("YYYY")),
+                    statuses: selectedIssueStatuses
+                }
             }).then(process).catch(showError).finally(() => endLoading());
 
             return;
@@ -256,7 +273,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
 
         const fetchData = async filter => {
             // Оптимизация может быть здесь (!) мы можем загружать данные сразу схлопывая их (!), если у нас стоит галочка "Без деталей"
-            const response = await post("/api/v1/result", filter);
+            const response = await post("/api/v3/result", filter);
 
             return {
                 workLogs: response.workLogs,
@@ -277,10 +294,17 @@ function FilterDialog({handleClose, state, onApply, reload}) {
 
             const filter = {
                 userIdentities: selectedUsers.map(user => String(user)),
-                queues: selectedQueues,
-                projects: selectedProjects,
-                issueTypes: selectedIssueTypes
             };
+
+            if( queryLanguage ) {
+                filter.query = query;
+            } else {
+                filter.filter = {
+                    queues: selectedQueues,
+                    projects: selectedProjects,
+                    issueTypes: selectedIssueTypes
+                };
+            }
 
             const loadChunks = async chunks => {
                 const failedChunks = [];
@@ -323,13 +347,20 @@ function FilterDialog({handleClose, state, onApply, reload}) {
         const chunks = sliceIntoChunks(dates, selectedUsers.length !== 0 && selectedUsers.length < 10 ? 20 : 10);
 
         fetchChunks(chunks).then(process).catch(showError).finally(() => endLoading());
-    }, [dateFrom, dateTo, shouldOptimize, dateFormat, hideDetails, selectedProjects, selectedUsers, selectedQueues, highlightTime, timeFormat, selectedIssueTypes, movedToStatusMonth, selectedIssueStatuses, issuesMovedToStatus, resultGroups]);
+    }, [dateFrom, queryLanguage, query, dateTo, shouldOptimize, dateFormat, hideDetails, selectedProjects, selectedUsers, selectedQueues, highlightTime, timeFormat, selectedIssueTypes, movedToStatusMonth, selectedIssueStatuses, issuesMovedToStatus, resultGroups]);
 
     const handleGroupSelection = group => {
         setSelectedUsers(group.members.map(memberId => parseInt(memberId)));
         setGroupsDialogState(false);
 
         pushAnalytics('groupSelected');
+    };
+
+    const handleFastQueryClick = ({ query }) => {
+        setQuery(query);
+        setQueryKey(prev => prev + 1);
+
+        pushAnalytics('fastQueryClicked');
     };
 
     const handleFastGroupSelection = group => {
@@ -425,6 +456,7 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                 </IconButton>
                 <Typography sx={{ml: 2, flex: 1}} variant="h6" component="div">
                     {t('filter:header')}
+                    <FormControlLabel control={<Switch checked={queryLanguage} onChange={(e) => setQueryLanguage(e.target.checked)} color="warning" />} sx={{ml: 5}} label={t('common:button.query_language')} />
                 </Typography>
                 <Button color="inherit" onClick={() => handleApplyClick()}>
                     {t('common:button.apply')}
@@ -480,7 +512,40 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                         {t('common:button.choose_myself')}
                     </Button>}
                 </Grid>
-                <Grid size={{xs: 12}}>
+                {queryLanguage && <React.Fragment>
+                    <Grid size={{xs: 12}}>
+                        <FormControl fullWidth>
+                            <InputLabel>{t('filter:query.title')}</InputLabel>
+                            <OutlinedInput key={queryKey} onChange={(e) => setQuery(e.target.value)} defaultValue={query} label={t('filter:query.title')} variant="outlined" fullWidth endAdornment={
+                            <InputAdornment position="end">
+                                <Tooltip title={t('common:button.add_to_favorite_question')}>
+                                    <IconButton
+                                        onClick={() => openAddQueryToFavoriteDialog()}
+                                        edge="end"
+                                    >
+                                        <FavoriteIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </InputAdornment>
+                        } />
+                        </FormControl>
+                    </Grid>
+                    {favoriteQueries && favoriteQueries.length > 0 && <Grid size={{xs: 12}}>
+                        <Stack direction="row" spacing={1}>
+                            {favoriteQueries.map(({query, name}, key) => <Button variant="text" key={`fast_query_${key}_${query}`}
+                                                                    onClick={() => handleFastQueryClick({query})}
+                                                                    size="small">
+                                {name}
+                            </Button>)}
+                            <Tooltip title={t('filter:query.settings.tooltip')}>
+                                <Button variant="text" size="small" onClick={() => openFavoriteQueriesDialog()}>
+                                    <SettingsIcon />
+                                </Button>
+                            </Tooltip>
+                        </Stack>
+                    </Grid>}
+                </React.Fragment>}
+                {!queryLanguage && <Grid size={{xs: 12}}>
                     <Autocomplete
                         multiple
                         value={queues.filter(value => selectedQueues.includes(value.value))}
@@ -506,8 +571,8 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                             <TextField {...params} label={t('filter:queues.label')}/>
                         )}
                     />
-                </Grid>
-                <Grid size={{xs: 12}}>
+                </Grid>}
+                {!queryLanguage && <Grid size={{xs: 12}}>
                     <Autocomplete
                         multiple
                         value={issueTypes.filter(value => selectedIssueTypes.includes(value.value))}
@@ -533,8 +598,8 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                             <TextField {...params} label={t('filter:issue_types.label')}/>
                         )}
                     />
-                </Grid>
-                <Grid size={{xs: 12, md: 9}}>
+                </Grid>}
+                {!queryLanguage && <Grid size={{xs: 12, md: 9}}>
                     <Autocomplete
                         multiple
                         value={projects.filter(value => selectedProjects.includes(value.value))}
@@ -560,21 +625,21 @@ function FilterDialog({handleClose, state, onApply, reload}) {
                             <TextField {...params} label={t('filter:projects.label')}/>
                         )}
                     />
-                </Grid>
-                <Grid size={{xs: 12, md: 3}}>
+                </Grid>}
+                {!queryLanguage && <Grid size={{xs: 12, md: 3}}>
                     <Button variant="outlined" size="large" fullWidth
                             onClick={() => setSelectedProjects(projects.map(p => p.value))}>
                         {t('common:button.all_projects')}
                     </Button>
-                </Grid>
-                <Grid size={{xs: 12}}>
+                </Grid>}
+                {!queryLanguage && <Grid size={{xs: 12}}>
                     <FormGroup>
                         <FormControlLabel control={<Checkbox/>} label={t('filter:issues_moved_to_status.label')}
                                           checked={issuesMovedToStatus}
                                           onChange={(e) => setIssuesMovedToStatus(e.target.checked)}/>
                     </FormGroup>
-                </Grid>
-                {issuesMovedToStatus && <Fragment>
+                </Grid>}
+                {!queryLanguage && issuesMovedToStatus && <Fragment>
                     <Grid size={{xs: 12, md: 6}}>
                         <Autocomplete
                             multiple

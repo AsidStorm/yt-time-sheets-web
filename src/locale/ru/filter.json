@@ -31,5 +31,8 @@
   "result_groups.values.PROJECT": "Проект",
   "result_groups.values.ISSUE_TYPE": "Тип задачи",
   "result_groups.values.EPIC": "Эпик",
-  "result_groups.label": "Группировка {{ index }}"
+  "result_groups.label": "Группировка {{ index }}",
+
+  "query.title": "Ваш запрос",
+  "query.settings.tooltip": "Управление избранными запросами"
 }

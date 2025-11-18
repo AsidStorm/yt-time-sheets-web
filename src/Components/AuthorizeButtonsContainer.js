@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Grid2 as Grid, SvgIcon} from "@mui/material";
+import {Button, Grid, SvgIcon} from "@mui/material";
 import {pushAnalytics} from "../helpers";
 import CopyrightCard from "./CopyrightCard";
 import SsoDialog from "./SsoDialog";

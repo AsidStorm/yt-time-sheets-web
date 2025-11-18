@@ -90,9 +90,9 @@
   "donate_card.dialog.row_2": "We're glad you're actively using the app, and we thank everyone for their trust and participation.",
   "donate_card.dialog.row_3": "The portal was and will remain free, and we'll continue releasing updates! \uD83D\uDE80",
   "donate_card.dialog.button.donate": "Say Thanks",
-  "donate_card.title": "We're 2.5 years old <dialogLink>^_^</dialogLink>",
+  "donate_card.title": "We're 3 years old <dialogLink>^_^</dialogLink>",
   "donate_card.donate_link_title": "Support the developers",
-  "donate_card.dialog.author": "Andrey Maslennikov",
+  "donate_card.dialog.author": "Andrei Maslennikov",
   "donate_card.dialog.author_description": "Developer of Yandex Tracker Time Sheets",
   "donate_card.dialog.telegram.tooltip": "Message the developer on Telegram",
 
@@ -133,5 +133,14 @@
   "dialogs.groups.tooltip.make_favorite": "Add to favorite. Appears on filter screen",
 
   "authorize_buttons_container.yandex_id": "Join with Yandex ID",
-  "authorize_buttons_container.sso": "Join with SSO"
+  "authorize_buttons_container.sso": "Join with SSO",
+
+  "dialogs.favorite_queries.title": "Favorite queries",
+  "dialogs.favorite_queries.tooltip.remove": "Remove from favorite",
+  "dialogs.favorite_queries.tooltip.move_up": "Move up",
+  "dialogs.favorite_queries.tooltip.move_down": "Move down",
+
+  "dialogs.add_query_to_favorite.title": "Add query to favorite",
+  "dialogs.add_query_to_favorite.fields.query.title": "Your query",
+  "dialogs.add_query_to_favorite.fields.query.name": "Query name"
 }

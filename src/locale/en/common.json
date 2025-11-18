@@ -21,6 +21,9 @@
   "button.thanks": "Thanks",
   "button.settings": "Settings",
   "button.close": "Close",
+  "button.query_language": "Query language",
+  "button.add_to_favorite": "Add to favorite",
+  "button.add_to_favorite_question": "Add to favorite?",
 
   "total": "Total",
   "summary": "SUMMARY",

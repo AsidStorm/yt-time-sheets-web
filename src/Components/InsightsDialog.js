@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Dialog, Grid2 as Grid, Container, Avatar, Tooltip, Link} from "@mui/material";
+import {Dialog, Grid, Container, Avatar, Tooltip, Link} from "@mui/material";
 import {
     DATE_FORMAT,
     DATE_FORMAT_DATE,

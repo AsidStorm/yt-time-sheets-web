@@ -2,7 +2,7 @@ import React, {Fragment, useEffect, useState} from "react";
 import {
     Dialog,
     DialogTitle,
-    Grid2 as Grid,
+    Grid,
     DialogContent,
     TextField,
     Button,

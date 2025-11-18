@@ -22,6 +22,9 @@
   "button.settings": "Настройки",
   "button.close": "Закрыть",
   "button.changelog": "История изменений",
+  "button.query_language": "Язык запросов",
+  "button.add_to_favorite": "Добавить в избранное",
+  "button.add_to_favorite_question": "Добавить в избранное?",
 
   "total": "Итого",
   "summary": "SUMMARY",
