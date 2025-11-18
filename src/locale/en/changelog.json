@@ -1,6 +1,9 @@
 {
   "title": "Changelog",
 
+  "18_11_2025_001": "Added the ability to search for tasks using the query language",
+  "18_11_2025_002": "Optimized the search for a marked time, making queries faster",
+
   "04_05_2025_001": "Added multilingual support",
   "04_05_2025_002": "Added dark theme",
   "04_05_2025_003": "Added insights for final elements",

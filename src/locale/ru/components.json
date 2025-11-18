@@ -92,7 +92,7 @@
   "donate_card.dialog.row_2": "Мы рады, что вы активно пользуетесь приложением, и благодарим каждого за доверие и участие.",
   "donate_card.dialog.row_3": "Портал был и останется бесплатным, а мы продолжим выпускать обновления! \uD83D\uDE80",
   "donate_card.dialog.button.donate": "Поблагодарить",
-  "donate_card.title": "Нам 2,5 года <dialogLink>^_^</dialogLink>",
+  "donate_card.title": "Нам 3 года <dialogLink>^_^</dialogLink>",
   "donate_card.donate_link_title": "Поблагодарить разработчиков",
   "donate_card.dialog.author": "Андрей Масленников",
   "donate_card.dialog.author_description": "Разработчик Yandex Tracker Time Sheets",
@@ -135,5 +135,14 @@
   "dialogs.groups.tooltip.make_favorite": "Добавить в избранное. Появится на экране фильтрации",
 
   "authorize_buttons_container.yandex_id": "Войти с Яндекс ID",
-  "authorize_buttons_container.sso": "Войти с помощью SSO"
+  "authorize_buttons_container.sso": "Войти с помощью SSO",
+
+  "dialogs.favorite_queries.title": "Избранные запросы",
+  "dialogs.favorite_queries.tooltip.remove": "Удалить из избранного",
+  "dialogs.favorite_queries.tooltip.move_up": "Выше",
+  "dialogs.favorite_queries.tooltip.move_down": "Ниже",
+
+  "dialogs.add_query_to_favorite.title": "Добавить запрос в избранное",
+  "dialogs.add_query_to_favorite.fields.query.title": "Ваш запрос",
+  "dialogs.add_query_to_favorite.fields.query.name": "Название запроса"
 }

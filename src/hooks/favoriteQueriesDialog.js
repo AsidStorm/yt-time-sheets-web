@@ -1,8 +1,8 @@
 import {useAtom} from "jotai";
-import {addQueryToFavoriteStateAtom} from "../jotai/atoms";
+import {favoriteQueriesStateAtom} from "../jotai/atoms";
 
-export function useSettingsDialog() {
-    const [state, setState] = useAtom(addQueryToFavoriteStateAtom);
+export function useFavoriteQueriesDialog() {
+    const [state, setState] = useAtom(favoriteQueriesStateAtom);
 
     const open = () => setState(true);
     const close = () => setState(false);

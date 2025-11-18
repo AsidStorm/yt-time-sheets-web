@@ -1,11 +1,10 @@
 import React, {useEffect, useMemo, useState} from "react";
-import createTheme from "@mui/material/styles/createTheme";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid2";
+import {Grid} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Toolbar from "@mui/material/Toolbar";
 import {get} from "./requests";
@@ -41,6 +40,8 @@ import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorCo
 import {useLoader, useMessage} from "./hooks";
 import {SettingsButton} from "./Components/SettingsButton";
 import {Button} from "@mui/material";
+import {AddQueryToFavoriteDialog} from "./Components/Dialogs/AddQueryToFavorite";
+import {FavoriteQueriesDialog} from "./Components/Dialogs/FavoriteQueries";
 
 function App() {
     const {t} = useTranslation();
@@ -153,25 +154,26 @@ function App() {
             startLoading();
 
             const fetchData = async () => {
-                const [me, usersAndGroups, queues, boards, projects, issueTypes, issueStatuses] = await Promise.all([
-                    get("/api/v1/me"),
-                    get("/api/v1/users_and_groups"),
-                    get("/api/v1/queues"),
-                    get("/api/v1/boards"),
-                    get("/api/v1/projects"),
-                    get("/api/v1/issue_types"),
-                    get("/api/v1/issue_statuses")
-                ]);
+                const {
+                    me,
+                    users = [],
+                    groups = [],
+                    queues = [],
+                    boards = [],
+                    projects = [],
+                    issueTypes = [],
+                    issueStatuses = []
+                } = await get("/api/v1/boot")
 
                 return {
-                    me: me.data,
-                    users: usersAndGroups.users,
-                    queues: queues.data,
-                    groups: usersAndGroups.groups,
-                    boards: boards.data,
-                    projects: projects.data,
-                    issueTypes: issueTypes.data,
-                    issueStatuses: issueStatuses.issueStatuses
+                    me,
+                    users: users && Array.isArray(users) ? users : [],
+                    groups: groups && Array.isArray(groups) ? groups : [],
+                    queues: queues && Array.isArray(queues) ? queues : [],
+                    boards: boards && Array.isArray(boards) ? boards : [],
+                    projects: projects && Array.isArray(projects) ? projects : [],
+                    issueTypes: issueTypes && Array.isArray(issueTypes) ? issueTypes : [],
+                    issueStatuses: issueStatuses && Array.isArray(issueStatuses) ? issueStatuses : []
                 };
             };
 
@@ -188,7 +190,7 @@ function App() {
 
                             setBoardsMap(makeObjectFromArray(boards, board => board.id, board => ({
                                 value: board.id,
-                                label: `[${board.id}]: ${board.attributes.name}`
+                                label: `[${board.id}]: ${board.name}`
                             })));
 
                             setIssueStatusesMap(makeObjectFromArray(issueStatuses, status => status.key, status => ({
@@ -213,19 +215,20 @@ function App() {
                             })));
 
                             setQueuesMap(makeObjectFromArray(queues, queue => queue.id, queue => ({
-                                value: queue.id,
-                                label: `${queue.id}: ${queue.attributes.name}`,
-                                title: queue.attributes.name
+                                value: queue.key,
+                                label: `${queue.key}: ${queue.name}`,
+                                title: queue.name
                             })));
 
                             setGroupsMap(makeObjectFromArray(groups, group => group.id, group => ({
                                 value: group.id,
-                                label: group.attributes.label,
-                                members: group.attributes.members
+                                label: group.label,
+                                members: group.members
                             })));
 
                             setFilterDialogState(true);
                         }).catch((e) => {
+                            console.trace(e);
                         showError(e);
                         exit();
                     }).finally(endLoading);
@@ -244,6 +247,7 @@ function App() {
     };
 
     const exit = () => {
+        return;
         localStorage.removeItem("authToken");
         localStorage.removeItem("iAmToken");
 
@@ -298,6 +302,8 @@ function App() {
         />
 
         <ChangelogDialog />
+        <AddQueryToFavoriteDialog />
+        <FavoriteQueriesDialog />
 
         <Box
             sx={{

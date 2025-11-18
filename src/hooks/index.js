@@ -10,3 +10,5 @@ export * from './insightsDialog';
 export * from './dateFormatter';
 export * from './settingsDialog';
 export * from './changelogDialog';
+export * from './addQueryToFavoriteDialog';
+export * from './favoriteQueriesDialog';

@@ -8,7 +8,7 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid2";
+import {Grid} from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import {
     timelineOppositeContentClasses,
@@ -26,6 +26,14 @@ function ChangelogDialog() {
     const {formatDateExact} = useDateFormatter();
 
     const changelog = [
+        {
+            date: moment("18.11.2025", "DD.MM.YYYY"),
+            key: "18_11_2025",
+            list: [
+                "18_11_2025_001",
+                "18_11_2025_002",
+            ]
+        },
         {
             date: moment('03.05.2025', 'DD.MM.YYYY'),
             key: '04_05_2025',

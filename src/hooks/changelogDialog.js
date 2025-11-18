@@ -1,5 +1,5 @@
 import {useAtom} from "jotai/index";
-import {changelogDialogStateAtom, settingsDialogStateAtom} from "../jotai/atoms";
+import {changelogDialogStateAtom} from "../jotai/atoms";
 
 export function useChangelogDialog() {
     const [state, setState] = useAtom(changelogDialogStateAtom);
