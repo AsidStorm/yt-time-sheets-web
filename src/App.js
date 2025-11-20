@@ -1,14 +1,9 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Container from "@mui/material/Container";
-import {Grid} from "@mui/material";
-import Typography from "@mui/material/Typography";
-import Toolbar from "@mui/material/Toolbar";
+import {CssBaseline, Box, Container, Grid, Button, AppBar, Typography, Toolbar} from "@mui/material";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {get} from "./requests";
-import FilterDialog from "./Components/FilterDialog";
+import {FilterDialog} from "./Components/Dialogs/Filter";
 import Loader from "./Components/Loader";
 import Message from "./Components/Message";
 import ResultTable from "./Components/ResultTable";
@@ -29,17 +24,14 @@ import {
     queuesMapAtom,
     groupsMapAtom,
     projectsMapAtom,
-    boardsMapAtom,
     issueTypesMapAtom,
     issueStatusesMapAtom,
     haveWorkLogsAtom, myUserAtom, colorThemeAtom, localeAtom, insightsEnabledAtom,
 } from "./jotai/atoms";
-import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {AuthorizeButtonsContainer} from "./Components/AuthorizeButtonsContainer";
 import {OrganizationSelectorContainer} from "./Components/OrganizationSelectorContainer";
-import {useLoader, useMessage} from "./hooks";
+import {useFilterRequest, useLoader, useMessage} from "./hooks";
 import {SettingsButton} from "./Components/SettingsButton";
-import {Button} from "@mui/material";
 import {AddQueryToFavoriteDialog} from "./Components/Dialogs/AddQueryToFavorite";
 import {FavoriteQueriesDialog} from "./Components/Dialogs/FavoriteQueries";
 
@@ -48,12 +40,12 @@ function App() {
 
     const {startLoading, endLoading} = useLoader();
     const {showSuccess, showError} = useMessage();
+    const {reload} = useFilterRequest();
 
     const setUsersMap = useSetAtom(usersMapAtom);
     const setQueuesMap = useSetAtom(queuesMapAtom);
     const setGroupsMap = useSetAtom(groupsMapAtom);
     const setProjectsMap = useSetAtom(projectsMapAtom);
-    const setBoardsMap = useSetAtom(boardsMapAtom);
     const setIssueTypesMap = useSetAtom(issueTypesMapAtom);
     const setIssueStatusesMap = useSetAtom(issueStatusesMapAtom);
     const haveDataToDisplay = useAtomValue(haveWorkLogsAtom);
@@ -65,7 +57,6 @@ function App() {
 
 
     const [filtered, setFiltered] = useState(false);
-    const [reload, setReload] = useState(false);
 
     const [authorized, setAuthorized] = useState(AUTHORIZED_STATE_NONE);
 
@@ -159,7 +150,6 @@ function App() {
                     users = [],
                     groups = [],
                     queues = [],
-                    boards = [],
                     projects = [],
                     issueTypes = [],
                     issueStatuses = []
@@ -170,7 +160,6 @@ function App() {
                     users: users && Array.isArray(users) ? users : [],
                     groups: groups && Array.isArray(groups) ? groups : [],
                     queues: queues && Array.isArray(queues) ? queues : [],
-                    boards: boards && Array.isArray(boards) ? boards : [],
                     projects: projects && Array.isArray(projects) ? projects : [],
                     issueTypes: issueTypes && Array.isArray(issueTypes) ? issueTypes : [],
                     issueStatuses: issueStatuses && Array.isArray(issueStatuses) ? issueStatuses : []
@@ -187,11 +176,6 @@ function App() {
                                 isAdmin: me.isAdministrator,
                                 isReadOnly: !me.hasLicense
                             });
-
-                            setBoardsMap(makeObjectFromArray(boards, board => board.id, board => ({
-                                value: board.id,
-                                label: `[${board.id}]: ${board.name}`
-                            })));
 
                             setIssueStatusesMap(makeObjectFromArray(issueStatuses, status => status.key, status => ({
                                 value: status.key,
@@ -241,13 +225,10 @@ function App() {
 
     const onFilterApply = () => {
         setFiltered(true);
-        setReload(false);
-
         setFilterDialogState(false); // Закрываем диалоговое окно
     };
 
     const exit = () => {
-        return;
         localStorage.removeItem("authToken");
         localStorage.removeItem("iAmToken");
 
@@ -296,7 +277,6 @@ function App() {
         <FilterDialog
             handleClose={() => setFilterDialogState(false)}
             state={filterDialogState}
-            showError={showError}
             onApply={onFilterApply}
             reload={reload}
         />
@@ -329,7 +309,7 @@ function App() {
                     </Typography>
                     <nav>
                         {filtered && <Button color="inherit" onClick={() => {
-                            setReload(true);
+                            reload();
                             pushAnalytics('reloadButtonClick');
                         }}>
                             {t('common:button.reload')}

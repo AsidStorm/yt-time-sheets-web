@@ -20,8 +20,7 @@ import {pushAnalytics} from "../../helpers";
 export function AddQueryToFavoriteDialog() {
     const {t} = useTranslation();
 
-    const {isOpen, close} = useAddQueryToFavoriteDialog();
-    const query = useAtomValue(filterQueryAtom);
+    const {query, isOpen, close} = useAddQueryToFavoriteDialog();
     const setFavoriteQueries = useSetAtom(favoriteQueriesAtom);
 
     const {showError} = useMessage();

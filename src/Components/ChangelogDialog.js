@@ -27,6 +27,15 @@ function ChangelogDialog() {
 
     const changelog = [
         {
+            date: moment("21.11.2025", "DD.MM.YYYY"),
+            key: "21_11_2025",
+            list: [
+                "21_11_2025_001",
+                "21_11_2025_002",
+                "21_11_2025_003"
+            ]
+        },
+        {
             date: moment("18.11.2025", "DD.MM.YYYY"),
             key: "18_11_2025",
             list: [

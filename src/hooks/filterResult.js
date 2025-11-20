@@ -25,7 +25,7 @@ export function useFilterResult() {
             setTimeFormat(timeFormat);
             setDateFormat(dateFormat);
             setResultGroups(resultGroups);
-            setWorkLogs(workLogs);
+            setWorkLogs(workLogs || []);
             setSelectedUsers(selectedUsers);
             setDates(dates);
             setHideDetails(hideDetails);

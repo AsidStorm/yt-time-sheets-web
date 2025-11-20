@@ -15,5 +15,7 @@
   "success_authorization": "You have successfully logged in.",
   "logout": "You have successfully logged out. Don't forget to revoke the token, as there is no API for that.",
   "query_filter_name_is_empty": "Please, enter query name",
-  "query_filter_query_is_empty": "Please, enter query"
+  "query_filter_query_is_empty": "Please, enter query",
+  "choose_month_and_year": "Choose month and year",
+  "choose_statuses": "Choose statuses"
 }

@@ -90,7 +90,7 @@
   "donate_card.dialog.row_2": "We're glad you're actively using the app, and we thank everyone for their trust and participation.",
   "donate_card.dialog.row_3": "The portal was and will remain free, and we'll continue releasing updates! \uD83D\uDE80",
   "donate_card.dialog.button.donate": "Say Thanks",
-  "donate_card.title": "We're 3 years old <dialogLink>^_^</dialogLink>",
+  "donate_card.title": "We're 3 years old <dialogLink>^_^</dialogLink> | version <changelogLink>211125</changelogLink>",
   "donate_card.donate_link_title": "Support the developers",
   "donate_card.dialog.author": "Andrei Maslennikov",
   "donate_card.dialog.author_description": "Developer of Yandex Tracker Time Sheets",
@@ -112,6 +112,7 @@
   "create_work_log_dialog.selected_issue": "Selected issue:",
   "create_work_log_dialog.sprint_name": "{{name}} (from {{startDate}} to {{endDate}})",
   "create_work_log_dialog.issues_search_type": "How to find issues",
+  "create_work_log_dialog.load_boards": "Load issue boards (for issues search on boards)",
 
   "details_table.caption_issue_with_user": "<issueLink>{{issueDisplay}}</issueLink>. Author: {{createdByDisplay}}",
   "details_table.caption_only_author": "Author: {{createdByDisplay}}" ,

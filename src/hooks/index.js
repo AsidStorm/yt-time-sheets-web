@@ -12,3 +12,5 @@ export * from './settingsDialog';
 export * from './changelogDialog';
 export * from './addQueryToFavoriteDialog';
 export * from './favoriteQueriesDialog';
+export * from './dialogs';
+export * from './filterRequest';

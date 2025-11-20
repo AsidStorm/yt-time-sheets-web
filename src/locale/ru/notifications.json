@@ -15,5 +15,7 @@
   "success_authorization": "Вы успешно авторизованы",
   "logout": "Вы успешно вышли. Не забудьте отозвать токен, т.к. для этого нет API.",
   "query_filter_name_is_empty": "Пожалуйста, введите название запроса",
-  "query_filter_query_is_empty": "Пожалуйста, введите запрос"
+  "query_filter_query_is_empty": "Пожалуйста, введите запрос",
+  "choose_month_and_year": "Выберите месяц и год",
+  "choose_statuses": "Выберите статусы"
 }

@@ -88,6 +88,10 @@ function DonateCard() {
                     dialogLink: <Link href="#" onClick={() => {
                         setInfoDialog(true);
                         pushAnalytics("donateInfo");
+                    }} underline={"none"}/>,
+                    changelogLink: <Link href="#" onClick={() => {
+                        openChangelogDialog();
+                        pushAnalytics('changelogMainClicked');
                     }} underline={"none"}/>
                 }}
             />}

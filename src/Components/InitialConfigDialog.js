@@ -72,9 +72,9 @@ function InitialConfigDialog({state, handleClose, handleComplete}) {
                             <Trans
                                 i18nKey='components:initial_config_dialog.fields.organization_id.description_row_2'
                                 components={{
-                                    trackerSettings: <Link href="https://tracker.yandex.ru/settings" target="_blank"
+                                    trackerSettings: <Link href="https://tracker.yandex.ru/admin/orgs" target="_blank"
                                                            rel="nofollow noopener"/>,
-                                    cloudSettings: <Link href="https://org.cloud.yandex.ru/settings" target="_blank"
+                                    cloudSettings: <Link href="https://center.yandex.cloud/" target="_blank"
                                                          rel="nofollow noopener"/>
                                 }}
                             />

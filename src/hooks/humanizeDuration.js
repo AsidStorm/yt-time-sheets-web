@@ -1,15 +1,14 @@
 import {humanizeDuration} from "../helpers";
-import {useAtomValue} from "jotai/react";
-import {salaryMapAtom, timeFormatAtom} from "../jotai/atoms";
+import {useAtomValue} from "jotai";
+import {timeFormatAtom} from "../jotai/atoms";
 import {useTranslation} from "react-i18next";
 
 export function useHumanizeDuration(override) {
     const {t} = useTranslation();
 
     const timeFormat = useAtomValue(timeFormatAtom);
-    const salaryMap = useAtomValue(salaryMapAtom);
 
-    const localizedHumanizeDuration = humanizeDuration(t, salaryMap);
+    const localizedHumanizeDuration = humanizeDuration(t);
 
     return (duration, owners = {}) => {
         const tf = typeof override === 'function' ? override(timeFormat) : timeFormat;

@@ -44,7 +44,7 @@ export function AuthorizeButtonsContainer({
     };
 
     return <Grid container spacing={2} direction="column"
-                 alignItems="center" alignContent="center" justifyContent="center">
+                 alignItems="center" alignContent="center" justifyContent="center" sx={{ minWidth: 400 }}>
         <SsoDialog
             state={ssoDialog.open}
             handleClose={() => setSsoDialog(prev => ({...prev, open: false}))}
@@ -53,7 +53,7 @@ export function AuthorizeButtonsContainer({
             allowManualInput={allowManualInput}
         />
 
-        {OAuthClientId !== '' && <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
+        {OAuthClientId !== '' && <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}}>
             <Button size="large" fullWidth sx={{height: 65, borderRadius: 7, textTransform: 'none'}} variant="contained"
                     color="yandex" startIcon={<SvgIcon component={YandexIcon} inheritViewBox fontSize="large"/>}
                     onClick={() => {
@@ -66,7 +66,7 @@ export function AuthorizeButtonsContainer({
             </Button>
         </Grid>}
 
-        <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
+        <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}}>
             <Button size="large" fullWidth sx={{height: 65, borderRadius: 7, textTransform: 'none'}} variant="contained"
                     startIcon={<PeopleIcon/>} onClick={() => {
                 setSsoDialog(prev => ({...prev, open: true}));
@@ -77,10 +77,10 @@ export function AuthorizeButtonsContainer({
                 </Typography>
             </Button>
         </Grid>
-        <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
+        <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}}>
             <CopyrightCard/>
         </Grid>
-        <Grid size={{xs: 12, sm: 8, md: 4, lg: 3, xl: 2}}>
+        <Grid size={{xs: 12, sm: 8, md: 6, lg: 4, xl: 3}}>
             <DonateCard/>
         </Grid>
     </Grid>

@@ -197,7 +197,7 @@ export const processRows = (workLogs, queuesMap, dateFormat, resultGroups, highl
         }
     }
 
-    const badTimeDuration = highlightTime !== false ? highlightTime.minute() + (highlightTime.hour() * 60) : 0;
+    const badTimeDuration = highlightTime !== false ? (parseInt(highlightTime) || 0) : 0;
 
     const out = flatten(groups, 0);
     out.push(totalRow);
