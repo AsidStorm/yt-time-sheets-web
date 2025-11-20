@@ -1,8 +1,8 @@
 import {useAtom} from "jotai";
-import {settingsDialogStateAtom} from "../jotai/atoms";
+import {groupsDialogStateAtom} from "../jotai/atoms";
 
-export function useSettingsDialog() {
-    const [state, setState] = useAtom(settingsDialogStateAtom);
+export function useGroupsDialog() {
+    const [state, setState] = useAtom(groupsDialogStateAtom);
 
     const open = () => setState(true);
     const close = () => setState(false);

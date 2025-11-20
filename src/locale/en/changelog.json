@@ -1,6 +1,10 @@
 {
   "title": "Changelog",
 
+  "21_11_2025_001": "Optimized the filtering page speed",
+  "21_11_2025_002": "Moved loading task boards into a separate button (to load the service faster)",
+  "21_11_2025_003": "Fixed a bug that prevented logout when authorization was lost",
+
   "18_11_2025_001": "Added the ability to search for tasks using the query language",
   "18_11_2025_002": "Optimized the search for a marked time, making queries faster",
 

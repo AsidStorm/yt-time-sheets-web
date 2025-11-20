@@ -28,11 +28,19 @@ import {
 } from "../constants";
 import {post, get} from "../requests";
 import moment from "moment";
-import {pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
+import {makeObjectFromArray, pushAnalytics, replaceRuDuration, yandexTrackerIssueUrl} from "../helpers";
 import {renderTimeViewClock} from "@mui/x-date-pickers/timeViewRenderers";
 import {useTranslation} from "react-i18next";
-import {useAtomValue, useSetAtom} from "jotai";
-import {usersAtom, boardsAtom, resultGroupsAtom, myUserAtom, selectedUsersAtom, workLogsAtom} from "../jotai/atoms";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
+import {
+    usersAtom,
+    boardsAtom,
+    resultGroupsAtom,
+    myUserAtom,
+    selectedUsersAtom,
+    workLogsAtom,
+    boardsLoadedAtom, boardsMapAtom
+} from "../jotai/atoms";
 import {useCreateWorkLogDialog, useDateFormatter, useLoader, useMessage} from "../hooks";
 import {DialogsIssueSearch} from "./Dialogs/IssueSearch";
 import Box from "@mui/material/Box";
@@ -60,6 +68,8 @@ function CreateWorkLogDialog() {
     const myUser = useAtomValue(myUserAtom);
     const selectedUsers = useAtomValue(selectedUsersAtom);
     const setWorkLogs = useSetAtom(workLogsAtom);
+    const setBoardsMap = useSetAtom(boardsMapAtom);
+    const [boardsLoaded, setBoardsLoaded] = useAtom(boardsLoadedAtom);
 
     const [userIdentity, setUserIdentity] = useState(null);
 
@@ -101,6 +111,25 @@ function CreateWorkLogDialog() {
 
     const [issuePlaceholder, setIssuePlaceholder] = useState("");
     const [issueDate, setIssueDate] = useState(date);
+
+    const loadBoards = () => {
+        pushAnalytics("loadBoardsButtonClicked");
+
+        startLoading();
+
+        get(`/api/v1/boards`).then(response => {
+            if( response.data && response.data.length > 0 ) {
+                setBoardsMap(makeObjectFromArray(response.data, board => board.id, board => ({
+                    value: board.id,
+                    label: `[${board.id}]: ${board.attributes.name}`
+                })));
+
+                setTaskSearchType(TASK_SEARCH_TYPE_BOARD);
+            }
+
+            setBoardsLoaded(true);
+        }).catch(showError).finally(endLoading);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -257,6 +286,11 @@ function CreateWorkLogDialog() {
                                               label={t('components:create_work_log_dialog.fields.search_type.values.BOARD')}/>
                         </RadioGroup>
                     </FormControl>
+                </Grid>}
+                {!boardsLoaded && <Grid size={{xs: 12}}>
+                    <Button size="small" variant="text" onClick={loadBoards}>{t('components:create_work_log_dialog.load_boards')}</Button>
+                </Grid>}
+                {boardsLoaded && boards.length === 0 && <Grid size={{xs: 12}}>
                 </Grid>}
                 {taskSearchType === TASK_SEARCH_TYPE_BASE && taskFilterBase()}
                 {taskSearchType === TASK_SEARCH_TYPE_BOARD && taskFilterBoards()}

@@ -1,4 +1,4 @@
-import {TIME_FORMAT_HOURS, TIME_FORMAT_MONEY} from "../constants";
+import {TIME_FORMAT_HOURS} from "../constants";
 
 const extractDuration = duration => {
     const seconds = duration / 10e8;
@@ -34,31 +34,7 @@ export const durationToISO = (duration) => {
     return `${minutes}m`;
 };
 
-export const humanizeDuration = (t, salaryMap) => (duration, timeFormat, owners) => {
-    if( timeFormat === TIME_FORMAT_MONEY ) {
-        let totalMoney = 0;
-        let warning = false;
-
-        for( const userId of Object.keys(owners) ) {
-            const salary = salaryMap[userId];
-
-            if( !salary ) {
-                warning = true;
-                continue;
-            }
-
-            const value = owners[userId];
-
-            const { rawMinutes } = extractDuration(value);
-
-            const salaryPerMinute = salary['*'] / 60;
-
-            totalMoney += salaryPerMinute * rawMinutes;
-        }
-
-        return totalMoney.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ') + " ₽" + (warning ? " (!!!)" : ""); // !!! РУБЛИ !!!
-    }
-
+export const humanizeDuration = (t) => (duration, timeFormat) => {
     const { hours, minutes, rawMinutes } = extractDuration(duration);
 
     if (timeFormat === TIME_FORMAT_HOURS && hours > 0) {

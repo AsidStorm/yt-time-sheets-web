@@ -15,9 +15,12 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {favoriteGroupsAtom, orderedGroupsAtom} from "../../jotai/atoms";
 import {createLabelFilter, pushAnalytics} from "../../helpers";
+import {useGroupsDialog} from "../../hooks";
 
-export function DialogsGroups({state, handleClose, onSelect}) {
+export function DialogsGroups({ onSelect }) {
     const {t} = useTranslation();
+
+    const {isOpen, close} = useGroupsDialog();
 
     const groups = useAtomValue(orderedGroupsAtom);
     const setFavorites = useSetAtom(favoriteGroupsAtom);
@@ -41,7 +44,14 @@ export function DialogsGroups({state, handleClose, onSelect}) {
         setFavorites(prev => prev.includes(group.value) ? prev.filter(f => f !== group.value) : [...prev, group.value]);
     };
 
-    return <Dialog onClose={handleClose} open={state} maxWidth="sm" fullWidth>
+    const handleGroupClick = group => {
+        onSelect(group);
+        close();
+
+        pushAnalytics('groupSelected');
+    };
+
+    return <Dialog onClose={close} open={isOpen} maxWidth="sm" fullWidth>
         <DialogTitle>{t('components:groups_dialog.title')}</DialogTitle>
         <List sx={{pt: 0}}>
             <ListItem>
@@ -50,7 +60,7 @@ export function DialogsGroups({state, handleClose, onSelect}) {
                 </FormControl>
             </ListItem>
             {filteredGroups.map(group => (
-                <ListItem button onClick={() => onSelect(group)} key={`group-${group.value}`} sx={{cursor: 'pointer'}}
+                <ListItem button onClick={() => handleGroupClick(group)} key={`group-${group.value}`} sx={{cursor: 'pointer'}}
                           secondaryAction={
                     <Tooltip title={t(`components:dialogs.groups.tooltip.${group.isFavorite ? 'favorite' : 'make_favorite'}`)}>
                               <IconButton edge="end" onClick={(e) => handleFavoriteGroupClick(e, group)}

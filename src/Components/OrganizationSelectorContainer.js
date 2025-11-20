@@ -60,8 +60,8 @@ export function OrganizationSelectorContainer({ defaultOrgId, setAuthorized, set
                 <Trans
                     i18nKey='components:organization_selector_container.description'
                     components={{
-                        trackerSettings: <Link href="https://tracker.yandex.ru/settings" target="_blank" rel="nofollow noreferer" />,
-                        cloudSettings: <Link href="https://org.cloud.yandex.ru/settings" target="_blank" rel="nofollow noreferer" />
+                        trackerSettings: <Link href="https://tracker.yandex.ru/admin/orgs" target="_blank" rel="nofollow noreferer" />,
+                        cloudSettings: <Link href="https://center.yandex.cloud/" target="_blank" rel="nofollow noreferer" />
                     }}
                 />
             </Grid>
