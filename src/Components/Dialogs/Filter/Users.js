@@ -92,7 +92,7 @@ export function UsersFilter() {
                 {t('common:button.choose_group')}
             </Button>}
             {!!myUser.value && <Button variant="outlined" size="large" fullWidth
-                                       onClick={() => setSelectedUsers([myUser.value])}>
+                                       onClick={() => setSelectedUsers([String(myUser.value)])}>
                 {t('common:button.choose_myself')}
             </Button>}
         </Grid>
